@@ -1,0 +1,2201 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <title>SchoolHub - Kasco</title>
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/727/727245.png" type="image/png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <style>
+        /* ============================================================
+                   CSS VARIABLES — Dark & Light Mode
+                   ============================================================ */
+        :root {
+            --bg-primary: #0A0A0F;
+            --bg-secondary: rgba(10, 10, 15, 0.7);
+            --bg-card: rgba(20, 23, 43, 0.8);
+            --bg-card-hover: rgba(20, 23, 43, 1);
+            --bg-input: rgba(255, 255, 255, 0.04);
+            --bg-modal: #14172B;
+            --bg-auth: rgba(20, 23, 43, 0.9);
+            --bg-section: rgba(20, 23, 43, 0.6);
+            --bg-stat: rgba(20, 23, 43, 0.8);
+            --bg-notif: rgba(20, 23, 43, 0.8);
+            --bg-filter: rgba(20, 23, 43, 0.6);
+            --bg-nav: rgba(10, 10, 15, 0.95);
+            --bg-topnav: rgba(10, 10, 15, 0.8);
+            --bg-live: rgba(20, 23, 43, 0.8);
+            --bg-suggestion: rgba(20, 23, 43, 0.95);
+            --bg-toolbar: rgba(20, 23, 43, 0.8);
+            --text-primary: #FFFFFF;
+            --text-secondary: #EDEEF2;
+            --text-muted: #B6BDF0;
+            --text-dim: #9CA3E0;
+            --border-color: rgba(255, 255, 255, 0.06);
+            --border-hover: rgba(108, 92, 231, 0.3);
+            --shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            --toast-bg: #14172B;
+            --purple: #6C5CE7;
+            --purple-light: #8B7CF7;
+            --purple-dark: #4A42DB;
+            --green: #4ade80;
+            --red: #EF4444;
+            --orange: #f59e0b;
+            --yellow: #fbbf24;
+            --blue: #60a5fa;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #F4F6FB;
+            --bg-secondary: rgba(255, 255, 255, 0.85);
+            --bg-card: #FFFFFF;
+            --bg-card-hover: #F1F5F9;
+            --bg-input: rgba(0, 0, 0, 0.04);
+            --bg-modal: #FFFFFF;
+            --bg-auth: #FFFFFF;
+            --bg-section: #F8FAFC;
+            --bg-stat: #FFFFFF;
+            --bg-notif: #FFFFFF;
+            --bg-filter: #F8FAFC;
+            --bg-nav: rgba(255, 255, 255, 0.95);
+            --bg-topnav: rgba(255, 255, 255, 0.9);
+            --bg-live: #FFFFFF;
+            --bg-suggestion: #FFFFFF;
+            --bg-toolbar: #F1F5F9;
+            --text-primary: #1E293B;
+            --text-secondary: #334155;
+            --text-muted: #64748B;
+            --text-dim: #94A3B8;
+            --border-color: rgba(0, 0, 0, 0.06);
+            --border-hover: rgba(108, 92, 231, 0.3);
+            --shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            --toast-bg: #1F2937;
+            --purple: #6C5CE7;
+            --purple-light: #8B7CF7;
+            --purple-dark: #4A42DB;
+            --green: #16a34a;
+            --red: #DC2626;
+            --orange: #d97706;
+            --yellow: #ca8a04;
+            --blue: #2563eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            min-height: 100vh;
+            padding: 1rem;
+            padding-bottom: 90px;
+            transition: background 0.3s, color 0.3s;
+        }
+        .app {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--bg-secondary);
+            backdrop-filter: blur(18px);
+            border-radius: 2rem;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            min-height: 80vh;
+            transition: background 0.3s, border 0.3s;
+        }
+
+        /* ============================================================
+                   TOP NAV — Kasco SchoolHub
+                   ============================================================ */
+        .top-nav {
+            padding: 0.8rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-topnav);
+            flex-wrap: wrap;
+            gap: 10px;
+            transition: background 0.3s, border 0.3s;
+        }
+        .logo h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--purple-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo h1 i {
+            color: var(--purple);
+            background: none;
+            -webkit-background-clip: unset;
+            background-clip: unset;
+        }
+        .logo span {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            display: block;
+            margin-left: 2px;
+        }
+        .top-nav .nav-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .theme-toggle {
+            background: var(--bg-input);
+            padding: 0.35rem 1rem;
+            border-radius: 2rem;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .theme-toggle:hover {
+            background: var(--purple);
+            color: #FFFFFF;
+            border-color: var(--purple);
+        }
+        .menu-btn {
+            background: var(--bg-input);
+            padding: 0.35rem 1rem;
+            border-radius: 2rem;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .menu-btn:hover {
+            background: var(--purple);
+            color: #FFFFFF;
+            border-color: var(--purple);
+        }
+
+        .apply-btn {
+            background: #6C5CE7;
+            padding: 0.35rem 1.2rem;
+            border-radius: 2rem;
+            border: none;
+            color: #FFFFFF;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+        .apply-btn:hover {
+            background: #4A42DB;
+            transform: scale(1.02);
+        }
+        .login-btn {
+            background: var(--bg-input);
+            padding: 0.35rem 1.2rem;
+            border-radius: 2rem;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Inter', sans-serif;
+        }
+        .login-btn:hover {
+            background: var(--purple);
+            color: #FFFFFF;
+            border-color: var(--purple);
+        }
+
+        /* ============================================================
+                   SIDEBAR
+                   ============================================================ */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1500;
+        }
+        .sidebar-overlay.active {
+            display: block;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 300px;
+            height: 100%;
+            background: var(--bg-modal);
+            z-index: 1600;
+            transition: 0.3s;
+            padding: 2rem 1.5rem;
+            border-left: 1px solid var(--border-color);
+            overflow-y: auto;
+        }
+        .sidebar.open {
+            right: 0;
+        }
+        .sidebar .close-sidebar {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            float: right;
+        }
+        .sidebar .close-sidebar:hover {
+            color: var(--text-primary);
+        }
+        .sidebar .sidebar-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar .sidebar-title i {
+            color: var(--purple);
+        }
+        .sidebar .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            border-radius: 1rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: 0.3s;
+            margin-bottom: 4px;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+        }
+        .sidebar .sidebar-item:hover {
+            background: rgba(108, 92, 231, 0.15);
+            color: var(--text-primary);
+        }
+        .sidebar .sidebar-item.active-sidebar {
+            background: var(--purple);
+            color: #FFFFFF;
+        }
+        .sidebar .sidebar-item i {
+            width: 24px;
+            font-size: 1.1rem;
+            color: var(--purple);
+        }
+        .sidebar .sidebar-item:hover i {
+            color: var(--purple-light);
+        }
+        .sidebar .sidebar-divider {
+            border-top: 1px solid var(--border-color);
+            margin: 12px 0;
+        }
+        .sidebar .sidebar-footer {
+            padding: 0 16px;
+            margin-top: 12px;
+        }
+        .sidebar .sidebar-footer .name {
+            color: var(--purple-light);
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .sidebar .sidebar-footer .school {
+            color: var(--text-dim);
+            font-size: 11px;
+        }
+
+        /* ============================================================
+                   PAGES
+                   ============================================================ */
+        .page {
+            display: none;
+            padding: 1.5rem;
+            animation: fadeIn 0.3s ease;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-primary);
+        }
+        .page-title i {
+            color: var(--purple);
+        }
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 16px;
+            margin-bottom: 24px;
+        }
+
+        /* ============================================================
+                   AUTH CARDS
+                   ============================================================ */
+        .auth-card {
+            background: var(--bg-auth);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            max-width: 450px;
+            margin: 0 auto;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            transition: background 0.3s, border 0.3s;
+        }
+        .auth-card h2 {
+            text-align: center;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .auth-card h2 i {
+            color: var(--purple);
+        }
+        .auth-card .sub {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 1.5rem;
+        }
+        .auth-card .built-by {
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 12px;
+            margin-top: 1.2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        .auth-card .built-by strong {
+            color: var(--purple-light);
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+        .form-group label {
+            display: block;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 1rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--purple);
+        }
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: var(--text-dim);
+        }
+        .form-group select option {
+            background: var(--bg-modal);
+            color: var(--text-secondary);
+        }
+
+        .password-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        .password-wrapper input {
+            width: 100%;
+            padding-right: 48px;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 4px;
+            transition: 0.2s;
+        }
+        .password-toggle:hover {
+            color: var(--purple);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            border-radius: 2rem;
+            background: var(--purple);
+            border: none;
+            color: #FFFFFF;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-primary:hover {
+            background: var(--purple-dark);
+            transform: scale(1.01);
+        }
+        .btn-secondary {
+            width: 100%;
+            padding: 14px;
+            border-radius: 2rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+        }
+        .btn-small {
+            padding: 8px 16px;
+            border-radius: 2rem;
+            border: none;
+            color: #FFFFFF;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-small:hover {
+            transform: scale(1.02);
+        }
+        .btn-purple {
+            background: var(--purple);
+        }
+        .btn-purple:hover {
+            background: var(--purple-dark);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+        .btn-outline:hover {
+            background: var(--bg-input);
+        }
+
+        .auth-toggle {
+            text-align: center;
+            margin-top: 12px;
+            color: var(--text-muted);
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .auth-toggle:hover {
+            color: var(--purple-light);
+            text-decoration: underline;
+        }
+
+        /* ============================================================
+                   FIND YOUR SCHOOL
+                   ============================================================ */
+        .pupil-join-card {
+            background: var(--bg-section);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            transition: background 0.3s, border 0.3s;
+        }
+        .pupil-join-card h3 {
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .pupil-join-card h3 i {
+            color: var(--purple);
+        }
+        .pupil-join-card .join-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .pupil-join-card .join-grid .full-width {
+            grid-column: span 2;
+        }
+
+        /* ============================================================
+                   SUBJECT CARDS
+                   ============================================================ */
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1.2rem;
+        }
+        .subject-card {
+            background: var(--bg-card);
+            border-radius: 1.2rem;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: 0.3s;
+            color: var(--text-secondary);
+        }
+        .subject-card:hover {
+            transform: translateY(-4px);
+            background: var(--bg-card-hover);
+            border-color: var(--purple);
+        }
+        .subject-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            color: var(--purple);
+        }
+        .subject-card h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .subject-card p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* ============================================================
+                   AI CARDS
+                   ============================================================ */
+        .ai-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+        .ai-card {
+            background: var(--bg-card);
+            border-radius: 1.2rem;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .ai-card:hover {
+            transform: translateY(-4px);
+            background: var(--bg-card-hover);
+            border-color: var(--purple);
+        }
+        .ai-card .ai-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: rgba(108, 92, 231, 0.15);
+            color: var(--purple);
+            border: 2px solid rgba(108, 92, 231, 0.2);
+        }
+        .ai-card h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .ai-card p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* ============================================================
+                   GROUPS
+                   ============================================================ */
+        .groups-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 4px;
+            flex-wrap: wrap;
+        }
+        .groups-tabs button {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            padding: 10px 20px;
+            border-radius: 2rem;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+        .groups-tabs button:hover {
+            color: var(--text-primary);
+            background: var(--bg-input);
+        }
+        .groups-tabs button.active-tab {
+            background: var(--purple);
+            color: #FFFFFF;
+        }
+        .groups-tabs button .tab-badge {
+            background: var(--purple);
+            color: #FFFFFF;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 1px 8px;
+            border-radius: 30px;
+        }
+        .group-content {
+            display: none;
+        }
+        .group-content.active-content {
+            display: block;
+        }
+        .group-card {
+            background: var(--bg-card);
+            border-radius: 1rem;
+            padding: 1.2rem 1.5rem;
+            border: 1px solid var(--border-color);
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: var(--shadow);
+        }
+        .group-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--purple);
+        }
+        .group-card .left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+        }
+        .group-card .left .icon {
+            font-size: 2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(108, 92, 231, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: var(--purple);
+        }
+        .group-card .left .info h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .group-card .left .info p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        .group-card .right {
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .group-card .right .meta {
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+        .group-card .right .badge {
+            background: var(--purple);
+            color: #FFFFFF;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 12px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        /* ============================================================
+                   ALERTS
+                   ============================================================ */
+        .notif-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .notif-item {
+            background: var(--bg-notif);
+            border-radius: 1rem;
+            padding: 1rem 1.2rem;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: 0.2s;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            box-shadow: var(--shadow);
+        }
+        .notif-item:hover {
+            background: var(--bg-card-hover);
+        }
+        .notif-item .icon {
+            font-size: 1.4rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(108, 92, 231, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: var(--purple);
+        }
+        .notif-item .info {
+            flex: 1;
+        }
+        .notif-item .info p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .notif-item .info .time {
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+        .notif-item .badge-new {
+            background: var(--purple);
+            color: #FFFFFF;
+            font-size: 10px;
+            padding: 2px 12px;
+            border-radius: 30px;
+            flex-shrink: 0;
+        }
+
+        /* ============================================================
+                   BOTTOM NAV
+                   ============================================================ */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-nav);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 12px;
+            z-index: 1000;
+            transition: background 0.3s, border 0.3s;
+        }
+        .bottom-nav button {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            font-size: 10px;
+            font-family: 'Inter', sans-serif;
+            transition: 0.3s;
+            padding: 4px 12px;
+            position: relative;
+        }
+        .bottom-nav button i {
+            font-size: 1.4rem;
+            transition: 0.3s;
+            color: var(--text-dim);
+        }
+        .bottom-nav button span {
+            font-weight: 500;
+        }
+        .bottom-nav button.active {
+            color: var(--purple);
+        }
+        .bottom-nav button.active i {
+            color: var(--purple);
+            transform: translateY(-2px);
+        }
+        .bottom-nav button .nav-badge {
+            position: absolute;
+            top: 0;
+            right: 4px;
+            background: var(--purple);
+            color: #FFFFFF;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 1px 7px;
+            border-radius: 30px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        /* ============================================================
+                   TOAST
+                   ============================================================ */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--toast-bg);
+            backdrop-filter: blur(16px);
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            z-index: 1100;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            max-width: 90%;
+            text-align: center;
+            white-space: pre-line;
+            box-shadow: var(--shadow);
+        }
+
+        /* ============================================================
+                   MODALS
+                   ============================================================ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-content {
+            background: var(--bg-modal);
+            border-radius: 2rem;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            transition: background 0.3s;
+        }
+        .modal-content h2 {
+            text-align: center;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .modal-content h2 i {
+            color: var(--purple);
+        }
+        .modal-content .sub {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 1.2rem;
+        }
+        .close-modal-btn {
+            display: block;
+            margin: 1.2rem auto 0;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 10px 30px;
+            border-radius: 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .close-modal-btn:hover {
+            background: var(--bg-card-hover);
+        }
+
+        /* ============================================================
+                   RESPONSIVE
+                   ============================================================ */
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+                padding-bottom: 80px;
+            }
+            .top-nav {
+                padding: 0.6rem 1rem;
+            }
+            .page {
+                padding: 1rem;
+            }
+            .sidebar {
+                width: 280px;
+                right: -280px;
+            }
+            .subject-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+            .subject-card {
+                padding: 1rem 0.5rem;
+            }
+            .subject-card .icon {
+                font-size: 2rem;
+            }
+            .subject-card h4 {
+                font-size: 13px;
+            }
+            .subject-card p {
+                font-size: 10px;
+            }
+            .ai-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .pupil-join-card .join-grid {
+                grid-template-columns: 1fr;
+            }
+            .pupil-join-card .join-grid .full-width {
+                grid-column: span 1;
+            }
+            .bottom-nav button {
+                font-size: 9px;
+                padding: 2px 8px;
+            }
+            .bottom-nav button i {
+                font-size: 1.2rem;
+            }
+            .groups-tabs button {
+                font-size: 12px;
+                padding: 8px 14px;
+            }
+            .group-card {
+                padding: 1rem;
+            }
+            .group-card .left .icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.4rem;
+            }
+            .auth-card {
+                padding: 1.5rem;
+            }
+            .theme-toggle span {
+                display: none;
+            }
+        }
+
+        @media (max-width: 450px) {
+            .subject-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .ai-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+    TOP NAV — Kasco SchoolHub
+    ============================================================ -->
+    <div class="top-nav">
+        <div class="logo">
+            <h1><i class="fas fa-graduation-cap"></i> SchoolHub</h1>
+            <span>Kasco · Built by Abraham Chiputa</span>
+        </div>
+        <div class="nav-actions">
+            <button class="apply-btn" onclick="showApplyForm()">
+                <i class="fas fa-user-plus"></i> Apply as Admin
+            </button>
+            <button class="login-btn" id="authBtn" onclick="toggleAuth()">
+                <i class="fas fa-user"></i> Login
+            </button>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                <i class="fas fa-moon" id="themeIcon"></i>
+                <span id="themeLabel">Dark</span>
+            </button>
+            <button class="menu-btn" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    SIDEBAR
+    ============================================================ -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar" id="sidebar">
+        <button class="close-sidebar" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
+        <div class="sidebar-title"><i class="fas fa-graduation-cap"></i> Menu</div>
+
+        <button class="sidebar-item active-sidebar" onclick="switchPage('studentPortal', this)">
+            <i class="fas fa-user-graduate"></i> Student Portal
+        </button>
+        <button class="sidebar-item" onclick="switchPage('aiPage', this)">
+            <i class="fas fa-robot"></i> AI
+        </button>
+        <button class="sidebar-item" onclick="switchPage('groupsPage', this)">
+            <i class="fas fa-users"></i> Groups
+        </button>
+        <button class="sidebar-item" onclick="switchPage('alertsPage', this)">
+            <i class="fas fa-bell"></i> Alerts
+        </button>
+
+        <div class="sidebar-divider"></div>
+
+        <button class="sidebar-item" onclick="showToast('Login/Signup coming soon!')">
+            <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+        <button class="sidebar-item" onclick="showToast('About SchoolHub - Kasco')">
+            <i class="fas fa-info-circle"></i> About
+        </button>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-footer">
+            <div class="name"><i class="fas fa-user-graduate" style="color:var(--purple);"></i> Abraham Chiputa</div>
+            <div class="school"><i class="fas fa-school" style="color:var(--purple);"></i> Kasco School Management System</div>
+            <div style="color: var(--text-dim); font-size: 10px; margin-top: 4px;">JETS Project 2025</div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    APP CONTENT
+    ============================================================ -->
+    <div class="app">
+
+        <!-- ============================================================
+        STUDENT PORTAL
+        ============================================================ -->
+        <div class="page active" id="studentPortal">
+
+            <div class="pupil-join-card">
+                <h3><i class="fas fa-school"></i> Find Your School</h3>
+                <p style="color: var(--text-muted); font-size:14px; margin-bottom:16px;">Enter your details to access your classes at Kasco</p>
+
+                <div class="join-grid">
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-school" style="color:var(--purple);"></i> School Name</label>
+                        <input type="text" id="pupilSchoolInput" value="Kasco" placeholder="Enter your school name" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-user" style="color:var(--purple);"></i> Your Name</label>
+                        <input type="text" id="pupilNameInput" placeholder="Full name" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-layer-group" style="color:var(--purple);"></i> Class/Grade</label>
+                        <select id="pupilGradeInput">
+                            <option value="">Select Grade</option>
+                            <option value="1">Grade 1</option>
+                            <option value="2">Grade 2</option>
+                            <option value="3">Grade 3</option>
+                            <option value="4">Grade 4</option>
+                            <option value="5">Grade 5</option>
+                            <option value="6">Grade 6</option>
+                            <option value="7">Grade 7</option>
+                            <option value="8">Grade 8</option>
+                            <option value="9">Grade 9</option>
+                            <option value="10">Grade 10</option>
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-book" style="color:var(--purple);"></i> Subject</label>
+                        <select id="pupilSubjectInput">
+                            <option value="">Select Subject</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="English">English</option>
+                            <option value="Science">Science</option>
+                            <option value="History">History</option>
+                            <option value="Geography">Geography</option>
+                            <option value="Computer Studies">Computer Studies</option>
+                            <option value="Art & Design">Art & Design</option>
+                            <option value="Business Studies">Business Studies</option>
+                            <option value="Religious Education">Religious Education</option>
+                            <option value="Physical Education">Physical Education</option>
+                            <option value="Music">Music</option>
+                            <option value="Home Economics">Home Economics</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="findPupilClass()" style="margin-top:8px;">
+                    <i class="fas fa-search"></i> Find My Class
+                </button>
+
+                <div id="pupilJoinResult" style="margin-top:16px; display:none;"></div>
+            </div>
+
+            <!-- LIVE CLASSES -->
+            <div style="margin-bottom:30px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+                    <div class="page-title" style="font-size:20px; margin-bottom:0;"><i class="fas fa-video"></i> Live Classes</div>
+                    <span style="color:var(--text-muted); font-size:13px;"><i class="fas fa-globe" style="color:var(--purple);"></i> Public · No login required</span>
+                </div>
+
+                <div class="live-card" onclick="openLiveList()" style="background:var(--bg-live); border-radius:1.2rem; padding:1.5rem; border:1px solid var(--border-color); cursor:pointer; transition:0.3s; display:flex; align-items:center; gap:16px; box-shadow:var(--shadow);">
+                    <span class="live-badge" style="background:var(--purple); color:#FFFFFF; font-size:12px; font-weight:700; padding:4px 14px; border-radius:30px; display:inline-flex; align-items:center; gap:6px; animation:livePulse 1.5s infinite; flex-shrink:0;">
+                        <i class="fas fa-circle"></i> LIVE
+                    </span>
+                    <div class="info" style="flex:1;">
+                        <h4 style="font-size:16px; font-weight:600; color:var(--text-primary);">3 live classes now</h4>
+                        <p style="font-size:13px; color:var(--text-muted);"><i class="fas fa-globe" style="color:var(--purple);"></i> 150+ students watching globally · Tap to see all</p>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="color:var(--text-muted); font-size:13px;"><i class="fas fa-chevron-right" style="color:var(--purple);"></i> View All</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUBJECTS -->
+            <div class="page-title"><i class="fas fa-graduation-cap"></i> Subjects</div>
+            <p class="page-subtitle">Tap a subject to explore resources at Kasco</p>
+            <div class="subject-grid" id="subjectGrid">
+                <div class="subject-card" onclick="showToast('Mathematics - Kasco')"><div class="icon"><i class="fas fa-calculator"></i></div><h4>Mathematics</h4><p>Numbers &amp; Logic</p></div>
+                <div class="subject-card" onclick="showToast('English - Kasco')"><div class="icon"><i class="fas fa-book-open"></i></div><h4>English</h4><p>Language &amp; Literature</p></div>
+                <div class="subject-card" onclick="showToast('Science - Kasco')"><div class="icon"><i class="fas fa-flask"></i></div><h4>Science</h4><p>Biology, Chemistry, Physics</p></div>
+                <div class="subject-card" onclick="showToast('History - Kasco')"><div class="icon"><i class="fas fa-landmark"></i></div><h4>History</h4><p>Past &amp; Civilizations</p></div>
+                <div class="subject-card" onclick="showToast('Geography - Kasco')"><div class="icon"><i class="fas fa-globe-africa"></i></div><h4>Geography</h4><p>Maps &amp; Environments</p></div>
+                <div class="subject-card" onclick="showToast('Computer Studies - Kasco')"><div class="icon"><i class="fas fa-laptop-code"></i></div><h4>Computer Studies</h4><p>Tech &amp; Coding</p></div>
+                <div class="subject-card" onclick="showToast('Art & Design - Kasco')"><div class="icon"><i class="fas fa-palette"></i></div><h4>Art &amp; Design</h4><p>Creative Expression</p></div>
+                <div class="subject-card" onclick="showToast('Business Studies - Kasco')"><div class="icon"><i class="fas fa-chart-line"></i></div><h4>Business Studies</h4><p>Economics &amp; Commerce</p></div>
+                <div class="subject-card" onclick="showToast('Religious Education - Kasco')"><div class="icon"><i class="fas fa-place-of-worship"></i></div><h4>Religious Education</h4><p>Faith &amp; Values</p></div>
+                <div class="subject-card" onclick="showToast('Physical Education - Kasco')"><div class="icon"><i class="fas fa-running"></i></div><h4>Physical Education</h4><p>Health &amp; Fitness</p></div>
+                <div class="subject-card" onclick="showToast('Music - Kasco')"><div class="icon"><i class="fas fa-music"></i></div><h4>Music</h4><p>Rhythm &amp; Theory</p></div>
+                <div class="subject-card" onclick="showToast('Home Economics - Kasco')"><div class="icon"><i class="fas fa-utensils"></i></div><h4>Home Economics</h4><p>Life Skills</p></div>
+            </div>
+
+            <!-- AI SECTION -->
+            <div style="margin-top:40px;">
+                <div class="page-title"><i class="fas fa-robot"></i> AI Assistants</div>
+                <p class="page-subtitle">Choose your favorite AI tutor</p>
+                <div class="ai-grid">
+                    <div class="ai-card" onclick="openAI('DeepSeek')"><div class="ai-logo">DS</div><h4>DeepSeek</h4><p>Advanced reasoning</p></div>
+                    <div class="ai-card" onclick="openAI('Grok')"><div class="ai-logo">G</div><h4>Grok</h4><p>Conversational &amp; witty</p></div>
+                    <div class="ai-card" onclick="openAI('ChatGPT')"><div class="ai-logo">GPT</div><h4>ChatGPT</h4><p>Versatile &amp; creative</p></div>
+                    <div class="ai-card" onclick="openAI('Claude')"><div class="ai-logo">C</div><h4>Claude</h4><p>Safe &amp; thoughtful</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        AI PAGE
+        ============================================================ -->
+        <div class="page" id="aiPage">
+            <div class="page-title"><i class="fas fa-robot"></i> AI Assistants</div>
+            <p class="page-subtitle">Choose your favorite AI tutor</p>
+            <div class="ai-grid">
+                <div class="ai-card" onclick="openAI('DeepSeek')"><div class="ai-logo">DS</div><h4>DeepSeek</h4><p>Advanced reasoning</p></div>
+                <div class="ai-card" onclick="openAI('Grok')"><div class="ai-logo">G</div><h4>Grok</h4><p>Conversational &amp; witty</p></div>
+                <div class="ai-card" onclick="openAI('ChatGPT')"><div class="ai-logo">GPT</div><h4>ChatGPT</h4><p>Versatile &amp; creative</p></div>
+                <div class="ai-card" onclick="openAI('Claude')"><div class="ai-logo">C</div><h4>Claude</h4><p>Safe &amp; thoughtful</p></div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        GROUPS PAGE
+        ============================================================ -->
+        <div class="page" id="groupsPage">
+            <div class="page-title"><i class="fas fa-users"></i> Groups</div>
+            <p class="page-subtitle">Connect with classmates and study together at Kasco</p>
+
+            <div class="groups-tabs">
+                <button class="active-tab" onclick="switchGroupTab('school', this)"><i class="fas fa-school"></i> School</button>
+                <button onclick="switchGroupTab('class', this)"><i class="fas fa-chalkboard"></i> Class <span class="tab-badge">5</span></button>
+                <button onclick="switchGroupTab('social', this)"><i class="fas fa-globe"></i> Social <span class="tab-badge">12</span></button>
+            </div>
+
+            <div class="group-content active-content" id="schoolGroups">
+                <div class="group-card" onclick="showToast('Kasco School Announcements')"><div class="left"><div class="icon"><i class="fas fa-bullhorn"></i></div><div class="info"><h4>Kasco School Announcements</h4><p>Latest updates from administration</p></div></div><div class="right"><div class="meta">3 new</div></div></div>
+                <div class="group-card" onclick="showToast('Kasco Exam Timetables')"><div class="left"><div class="icon"><i class="fas fa-calendar-alt"></i></div><div class="info"><h4>Kasco Exam Timetables</h4><p>Final exams schedule</p></div></div><div class="right"><div class="meta">View</div></div></div>
+                <div class="group-card" onclick="showToast('Kasco School Events')"><div class="left"><div class="icon"><i class="fas fa-star"></i></div><div class="info"><h4>Kasco School Events</h4><p>Sports day, assemblies, parent meetings</p></div></div><div class="right"><div class="meta">2 upcoming</div></div></div>
+            </div>
+
+            <div class="group-content" id="classGroups">
+                <div class="group-card" onclick="openChat('Grade 12 Math', 'fa-calculator')"><div class="left"><div class="icon"><i class="fas fa-calculator"></i></div><div class="info"><h4>Grade 12 Math</h4><p>Mr. Banda · 25 pupils</p></div></div><div class="right"><div class="meta">5 new</div><span class="badge">Active</span></div></div>
+                <div class="group-card" onclick="openChat('Grade 10 Science', 'fa-flask')"><div class="left"><div class="icon"><i class="fas fa-flask"></i></div><div class="info"><h4>Grade 10 Science</h4><p>Mrs. Zulu · 22 pupils</p></div></div><div class="right"><div class="meta">3 new</div><span class="badge">Active</span></div></div>
+                <div class="group-card" onclick="openChat('Grade 11 English', 'fa-book-open')"><div class="left"><div class="icon"><i class="fas fa-book-open"></i></div><div class="info"><h4>Grade 11 English</h4><p>Ms. Phiri · 18 pupils</p></div></div><div class="right"><div class="meta">2 new</div><span class="badge">Active</span></div></div>
+            </div>
+
+            <div class="group-content" id="socialGroups">
+                <div class="group-card" onclick="showToast('Global Science Help - 1,200 members')"><div class="left"><div class="icon"><i class="fas fa-flask"></i></div><div class="info"><h4>Global Science Help</h4><p>1,200 members · Worldwide</p></div></div><div class="right"><span class="badge">Invite Only</span></div></div>
+                <div class="group-card" onclick="showToast('Math Masters - 850 members')"><div class="left"><div class="icon"><i class="fas fa-calculator"></i></div><div class="info"><h4>Math Masters</h4><p>850 members · Global</p></div></div><div class="right"><span class="badge">Invite Only</span></div></div>
+                <div class="group-card" onclick="showToast('History Explorers - 600 members')"><div class="left"><div class="icon"><i class="fas fa-landmark"></i></div><div class="info"><h4>History Explorers</h4><p>600 members · Global</p></div></div><div class="right"><span class="badge">Invite Only</span></div></div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        ALERTS PAGE
+        ============================================================ -->
+        <div class="page" id="alertsPage">
+            <div class="page-title"><i class="fas fa-bell"></i> Notifications</div>
+            <p class="page-subtitle">Stay updated with your classes at Kasco</p>
+            <div class="notif-tap-hint" style="font-size:12px; color:var(--text-dim); text-align:center; margin-bottom:12px; padding:6px; border-radius:8px; background:var(--bg-input);">
+                <i class="fas fa-hand-pointer"></i> Tap to open · Hold for more options
+            </div>
+            <div class="notif-list" id="notifList">
+                <div class="notif-item" data-notif-id="notif1" onclick="showToast('New notes uploaded at Kasco')">
+                    <div class="icon"><i class="fas fa-file-alt"></i></div><div class="info"><p><strong>Teacher Smith</strong> uploaded new notes at Kasco</p><span class="time">10 min ago</span></div><span class="badge-new">New</span>
+                </div>
+                <div class="notif-item" data-notif-id="notif2" onclick="showToast('Quiz results available at Kasco')">
+                    <div class="icon"><i class="fas fa-chart-bar"></i></div><div class="info"><p><strong>Quiz results</strong> for Grade 12 Science available</p><span class="time">1 hour ago</span></div><span class="badge-new">New</span>
+                </div>
+                <div class="notif-item" data-notif-id="notif3" onclick="showToast('Sarah invited you to join Science Squad')">
+                    <div class="icon"><i class="fas fa-user-plus"></i></div><div class="info"><p><strong>Sarah</strong> invited you to join "Science Squad"</p><span class="time">3 hours ago</span></div><span class="badge-new">New</span>
+                </div>
+                <div class="notif-item" data-notif-id="notif4" onclick="showToast('Homework reminder: English essay due tomorrow')">
+                    <div class="icon"><i class="fas fa-bullhorn"></i></div><div class="info"><p><strong>Homework reminder:</strong> English essay due tomorrow</p><span class="time">5 hours ago</span></div>
+                </div>
+                <div class="notif-item" data-notif-id="notif5" onclick="showToast('New Past Papers added at Kasco')">
+                    <div class="icon"><i class="fas fa-book"></i></div><div class="info"><p>New <strong>Past Papers</strong> for 2025 added to Library</p><span class="time">1 day ago</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        APPLY FORM (School Admin Application)
+        ============================================================ -->
+        <div class="modal-overlay" id="applyModal">
+            <div class="modal-content" style="max-width:500px;">
+                <h2><i class="fas fa-crown" style="color:#F59E0B;"></i> Apply as School Admin</h2>
+                <p class="sub">Fill in your school details to apply for Kasco</p>
+
+                <div class="form-group">
+                    <label><i class="fas fa-school" style="color:var(--purple);"></i> School Name</label>
+                    <input type="text" id="applySchoolName" placeholder="e.g., Kasco Secondary" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-map-marker-alt" style="color:var(--purple);"></i> Location</label>
+                    <input type="text" id="applyLocation" placeholder="e.g., Lusaka, Zambia" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-user" style="color:var(--purple);"></i> Admin Name</label>
+                    <input type="text" id="applyAdminName" placeholder="Your full name" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope" style="color:var(--purple);"></i> Admin Email</label>
+                    <input type="email" id="applyEmail" placeholder="your@email.com" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-phone" style="color:var(--purple);"></i> Phone Number</label>
+                    <input type="text" id="applyPhone" placeholder="e.g., +260 97 1234567" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-building" style="color:var(--purple);"></i> School Type</label>
+                    <select id="applySchoolType">
+                        <option value="primary">Primary</option>
+                        <option value="secondary">Secondary</option>
+                        <option value="both">Both Primary & Secondary</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-comment" style="color:var(--purple);"></i> Additional Message</label>
+                    <textarea id="applyMessage" rows="3" placeholder="Any additional information..."></textarea>
+                </div>
+
+                <button class="btn-primary" onclick="submitApplication()">
+                    <i class="fas fa-paper-plane"></i> Submit Application
+                </button>
+                <button class="close-modal-btn" onclick="closeModal('applyModal')">Cancel</button>
+
+                <div class="built-by">
+                    Built by <strong>Abraham Chiputa</strong> · Kasco · JETS 2025
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        LOGIN MODAL (Firebase Auth)
+        ============================================================ -->
+        <div class="modal-overlay" id="authModal">
+            <div class="modal-content" style="max-width:450px;">
+                <div id="loginForm">
+                    <h2><i class="fas fa-graduation-cap"></i> Login to SchoolHub</h2>
+                    <p class="sub">Kasco School Management System</p>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope" style="color:var(--purple);"></i> Email</label>
+                        <input type="email" id="loginEmail" placeholder="your@email.com" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock" style="color:var(--purple);"></i> Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="loginPassword" placeholder="Enter password" />
+                            <button class="password-toggle" onclick="togglePasswordVisibility('loginPassword', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" onclick="handleLogin()">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+
+                    <div class="auth-toggle" onclick="showSignup()">
+                        Don't have an account? Sign up
+                    </div>
+                    <div class="auth-toggle" onclick="showResetPassword()" style="font-size:13px; color:var(--text-dim);">
+                        Forgot password?
+                    </div>
+
+                    <div class="built-by">
+                        Built by <strong>Abraham Chiputa</strong> · Kasco · JETS 2025
+                    </div>
+                </div>
+
+                <div id="signupForm" style="display:none;">
+                    <h2><i class="fas fa-user-plus"></i> Sign Up</h2>
+                    <p class="sub">Create your Kasco account</p>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope" style="color:var(--purple);"></i> Email</label>
+                        <input type="email" id="signupEmail" placeholder="your@email.com" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-user" style="color:var(--purple);"></i> Full Name</label>
+                        <input type="text" id="signupName" placeholder="Your full name" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock" style="color:var(--purple);"></i> Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="signupPassword" placeholder="Create a password (min 6 characters)" />
+                            <button class="password-toggle" onclick="togglePasswordVisibility('signupPassword', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-user-tag" style="color:var(--purple);"></i> Role</label>
+                        <select id="signupRole">
+                            <option value="student">Student</option>
+                            <option value="teacher">Teacher</option>
+                            <option value="parent">Parent</option>
+                            <option value="schooladmin">School Admin</option>
+                        </select>
+                    </div>
+
+                    <button class="btn-primary" onclick="handleSignup()">
+                        <i class="fas fa-user-plus"></i> Sign Up
+                    </button>
+
+                    <div class="auth-toggle" onclick="showLogin()">
+                        Already have an account? Login
+                    </div>
+
+                    <div class="built-by">
+                        Built by <strong>Abraham Chiputa</strong> · Kasco · JETS 2025
+                    </div>
+                </div>
+
+                <div id="resetPasswordForm" style="display:none;">
+                    <h2><i class="fas fa-key"></i> Reset Password</h2>
+                    <p class="sub">Enter your email to receive a password reset link</p>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope" style="color:var(--purple);"></i> Email</label>
+                        <input type="email" id="resetEmail" placeholder="your@email.com" />
+                    </div>
+
+                    <button class="btn-primary" onclick="handleResetPassword()">
+                        <i class="fas fa-envelope"></i> Send Reset Link
+                    </button>
+
+                    <div class="auth-toggle" onclick="showLogin()">
+                        Back to Login
+                    </div>
+
+                    <div class="built-by">
+                        Built by <strong>Abraham Chiputa</strong> · Kasco · JETS 2025
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        CHAT MODAL
+        ============================================================ -->
+        <div class="chat-modal" id="chatModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); backdrop-filter:blur(12px); z-index:3000; align-items:center; justify-content:center;">
+            <div class="chat-modal-content" style="background:var(--bg-modal); border-radius:2rem; width:95%; max-width:500px; height:85vh; max-height:600px; display:flex; flex-direction:column; border:1px solid rgba(108,92,231,0.2); overflow:hidden;">
+                <div class="chat-header" style="padding:1rem 1.5rem; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; flex-wrap:wrap; gap:8px;">
+                    <h3 style="font-size:1.1rem; display:flex; align-items:center; gap:10px; color:var(--text-primary);">
+                        <i class="fas fa-comments" style="color:var(--purple);"></i>
+                        <span id="chatGroupTitle">Kasco Group Chat</span>
+                        <span class="status" style="font-size:12px; color:var(--green);">● 5 online</span>
+                    </h3>
+                    <div class="chat-actions" style="display:flex; gap:6px;">
+                        <button onclick="showToast('Share a book')" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:4px 10px; border-radius:20px; cursor:pointer; font-size:12px; transition:0.2s;"><i class="fas fa-share-alt"></i></button>
+                        <button onclick="leaveGroup()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:4px 10px; border-radius:20px; cursor:pointer; font-size:12px; transition:0.2s;"><i class="fas fa-sign-out-alt"></i> Leave</button>
+                        <button class="close-chat" onclick="closeChat()" style="background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer;"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="chat-messages" id="chatMessages" style="flex:1; overflow-y:auto; padding:1rem 1.5rem; display:flex; flex-direction:column; gap:10px;">
+                    <div class="homework-banner" style="background:rgba(108,92,231,0.1); border:1px solid rgba(108,92,231,0.15); border-radius:1rem; padding:12px 16px; margin-bottom:10px;">
+                        <h4 style="font-size:13px; color:var(--purple-light); display:flex; align-items:center; gap:6px;"><i class="fas fa-pencil-alt"></i> Homework: Algebra</h4>
+                        <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Solve equations 1-10 on page 45. Due Friday.</p>
+                    </div>
+                    <div class="chat-msg received" style="max-width:80%; padding:10px 16px; border-radius:1rem; font-size:14px; line-height:1.4; background:var(--bg-input); color:var(--text-secondary); align-self:flex-start; border-bottom-left-radius:4px;">
+                        <div class="sender" style="font-size:11px; font-weight:600; color:var(--text-muted); margin-bottom:2px;">Alex</div>
+                        Anyone understand question 5?
+                        <span class="time" style="font-size:10px; color:var(--text-dim); margin-top:4px; display:block;">10:28 AM</span>
+                    </div>
+                    <div class="chat-msg sent" style="max-width:80%; padding:10px 16px; border-radius:1rem; font-size:14px; line-height:1.4; background:var(--purple); color:#FFFFFF; align-self:flex-end; border-bottom-right-radius:4px;">
+                        I can help! It's using the quadratic formula.
+                        <span class="time" style="font-size:10px; color:rgba(255,255,255,0.6); margin-top:4px; display:block;">10:30 AM</span>
+                    </div>
+                </div>
+                <div class="chat-input-area" style="padding:0.8rem 1.5rem; border-top:1px solid var(--border-color); display:flex; gap:8px; flex-shrink:0; flex-wrap:wrap;">
+                    <input type="text" id="chatInput" placeholder="Type a message..." style="flex:1; padding:10px 16px; border-radius:2rem; border:1px solid var(--border-color); background:var(--bg-input); color:var(--text-secondary); font-size:14px; outline:none; min-width:100px;" />
+                    <div class="chat-tools" style="display:flex; gap:4px; align-items:center;">
+                        <button onclick="attachImage()" title="Image" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:8px 12px; border-radius:50%; cursor:pointer; font-size:16px; transition:0.2s; width:40px; height:40px; display:flex; align-items:center; justify-content:center;"><i class="fas fa-image"></i></button>
+                        <button onclick="startVoiceRecording()" id="voiceBtn" title="Voice" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:8px 12px; border-radius:50%; cursor:pointer; font-size:16px; transition:0.2s; width:40px; height:40px; display:flex; align-items:center; justify-content:center;"><i class="fas fa-microphone"></i></button>
+                        <button onclick="attachVideo()" title="Video" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:8px 12px; border-radius:50%; cursor:pointer; font-size:16px; transition:0.2s; width:40px; height:40px; display:flex; align-items:center; justify-content:center;"><i class="fas fa-video"></i></button>
+                        <button onclick="attachFile()" title="File" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:8px 12px; border-radius:50%; cursor:pointer; font-size:16px; transition:0.2s; width:40px; height:40px; display:flex; align-items:center; justify-content:center;"><i class="fas fa-paperclip"></i></button>
+                    </div>
+                    <button class="send-btn" onclick="sendMessage()" style="background:var(--purple); border:none; color:#FFFFFF; padding:10px 20px; border-radius:2rem; font-weight:600; cursor:pointer; font-size:14px; display:flex; align-items:center; gap:6px;"><i class="fas fa-paper-plane"></i> Send</button>
+                </div>
+                <div class="built-by" style="padding:0.6rem 1.5rem; border-top:1px solid var(--border-color); text-align:center; color:var(--text-dim); font-size:11px;">
+                    Kasco · Built by <strong style="color:var(--purple-light);">Abraham Chiputa</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        BOTTOM NAV
+        ============================================================ -->
+        <nav class="bottom-nav">
+            <button class="active" onclick="switchPage('studentPortal', this)"><i class="fas fa-home"></i><span>Home</span></button>
+            <button onclick="switchPage('aiPage', this)"><i class="fas fa-robot"></i><span>AI</span></button>
+            <button onclick="switchPage('groupsPage', this)"><i class="fas fa-users"></i><span>Groups</span><span class="nav-badge">5</span></button>
+            <button onclick="switchPage('alertsPage', this)"><i class="fas fa-bell"></i><span>Alerts</span><span class="nav-badge">3</span></button>
+        </nav>
+
+    </div>
+
+    <!-- ============================================================
+    JAVASCRIPT
+    ============================================================ -->
+    <script>
+        // ============================================================
+        // FIREBASE CONFIG — Abraham Chiputa's SchoolHub
+        // ============================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBHUqu7soV2YZszMPsMCyC5EnpbJNAOQX4",
+            authDomain: "school-hub-74c59.firebaseapp.com",
+            projectId: "school-hub-74c59",
+            storageBucket: "school-hub-74c59.firebasestorage.app",
+            messagingSenderId: "435201200693",
+            appId: "1:435201200693:web:69709b31d4ec3c1ba9977c"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // ============================================================
+        // GITHUB CONFIG — Repository: kasco-hub (WITH TOKEN FOR UPLOADS)
+        // ============================================================
+        const GITHUB_CONFIG = {
+            username: 'cyberkiller2010',
+            repo: 'kasco-hub',
+            token: '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'
+        };
+
+        console.log('GitHub Repo:', GITHUB_CONFIG.username + '/' + GITHUB_CONFIG.repo);
+        console.log('GitHub token loaded for file uploads');
+
+        // ============================================================
+        // THEME TOGGLE
+        // ============================================================
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            const icon = document.getElementById('themeIcon');
+            const label = document.getElementById('themeLabel');
+            if (newTheme === 'dark') {
+                icon.className = 'fas fa-moon';
+                label.textContent = 'Dark';
+            } else {
+                icon.className = 'fas fa-sun';
+                label.textContent = 'Light';
+            }
+        }
+
+        // ============================================================
+        // SIDEBAR
+        // ============================================================
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        // ============================================================
+        // PAGE NAVIGATION
+        // ============================================================
+        function switchPage(pageId, btn) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById(pageId);
+            if (target) target.classList.add('active');
+            document.querySelectorAll('.bottom-nav button').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active-sidebar'));
+            if (btn) {
+                btn.classList.add('active');
+                document.querySelectorAll('.sidebar-item').forEach(i => {
+                    if (i.textContent.trim().toLowerCase().includes(pageId.replace('Page', '').toLowerCase())) {
+                        i.classList.add('active-sidebar');
+                    }
+                });
+            }
+            toggleSidebar();
+        }
+
+        // ============================================================
+        // TOAST
+        // ============================================================
+        function showToast(msg) {
+            let t = document.querySelector('.toast');
+            if (t) t.remove();
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // ============================================================
+        // PASSWORD TOGGLE
+        // ============================================================
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        // ============================================================
+        // MODAL HELPERS
+        // ============================================================
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        // ============================================================
+        // AUTH — LOGIN / SIGNUP / RESET
+        // ============================================================
+        function toggleAuth() {
+            openModal('authModal');
+        }
+
+        function showLogin() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('resetPasswordForm').style.display = 'none';
+        }
+
+        function showSignup() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'block';
+            document.getElementById('resetPasswordForm').style.display = 'none';
+        }
+
+        function showResetPassword() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('resetPasswordForm').style.display = 'block';
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!email || !password) {
+                showToast('Please enter email and password');
+                return;
+            }
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    showToast('Welcome back, ' + user.email + '!');
+                    closeModal('authModal');
+                })
+                .catch((error) => {
+                    if (error.code === 'auth/user-not-found') {
+                        showToast('User not found. Please sign up first.');
+                    } else if (error.code === 'auth/wrong-password') {
+                        showToast('Incorrect password. Please try again.');
+                    } else if (error.code === 'auth/invalid-email') {
+                        showToast('Invalid email format.');
+                    } else {
+                        showToast(error.message);
+                    }
+                });
+        }
+
+        function handleSignup() {
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value.trim();
+            const name = document.getElementById('signupName').value.trim();
+            const role = document.getElementById('signupRole').value;
+
+            if (!email || !password || !name) {
+                showToast('Please fill all fields');
+                return;
+            }
+
+            if (password.length < 6) {
+                showToast('Password must be at least 6 characters');
+                return;
+            }
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    showToast('Account created successfully! Welcome ' + name + '!');
+                    closeModal('authModal');
+                    const users = JSON.parse(localStorage.getItem('schoolhub_users') || '{}');
+                    users[user.uid] = {
+                        name: name,
+                        email: email,
+                        role: role,
+                        school: 'Kasco',
+                        created: new Date().toISOString()
+                    };
+                    localStorage.setItem('schoolhub_users', JSON.stringify(users));
+                    showToast('Welcome to Kasco, ' + name + '!');
+                })
+                .catch((error) => {
+                    if (error.code === 'auth/email-already-in-use') {
+                        showToast('Email already in use. Please login.');
+                    } else {
+                        showToast(error.message);
+                    }
+                });
+        }
+
+        function handleResetPassword() {
+            const email = document.getElementById('resetEmail').value.trim();
+
+            if (!email) {
+                showToast('Please enter your email');
+                return;
+            }
+
+            auth.sendPasswordResetEmail(email)
+                .then(() => {
+                    showToast('Password reset email sent! Check your inbox.');
+                    showLogin();
+                })
+                .catch((error) => {
+                    if (error.code === 'auth/user-not-found') {
+                        showToast('No account found with this email.');
+                    } else {
+                        showToast(error.message);
+                    }
+                });
+        }
+
+        // Auth state listener
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log('Logged in:', user.email);
+                document.getElementById('authBtn').innerHTML = '<i class="fas fa-user-check"></i> ' + user.email;
+                document.getElementById('authBtn').style.background = 'rgba(74,222,128,0.2)';
+                document.getElementById('authBtn').style.color = '#4ade80';
+            } else {
+                console.log('Logged out');
+                document.getElementById('authBtn').innerHTML = '<i class="fas fa-user"></i> Login';
+                document.getElementById('authBtn').style.background = '';
+                document.getElementById('authBtn').style.color = '';
+            }
+        });
+
+        // ============================================================
+        // STUDENT PORTAL - Find Pupil Class
+        // ============================================================
+        function findPupilClass() {
+            const school = document.getElementById('pupilSchoolInput').value.trim() || 'Kasco';
+            const name = document.getElementById('pupilNameInput').value.trim();
+            const grade = document.getElementById('pupilGradeInput').value;
+            const subject = document.getElementById('pupilSubjectInput').value;
+
+            if (!name || !grade || !subject) {
+                showToast('Please fill all fields');
+                return;
+            }
+
+            const resultDiv = document.getElementById('pupilJoinResult');
+            resultDiv.style.display = 'block';
+
+            const samplePupils = [
+                { name: 'John Banda', grade: '12', subject: 'Mathematics' },
+                { name: 'Mary Zulu', grade: '12', subject: 'Science' },
+                { name: 'Peter Phiri', grade: '10', subject: 'English' },
+                { name: 'Grace Mwale', grade: '11', subject: 'History' },
+                { name: 'David Ngoma', grade: '9', subject: 'Geography' }
+            ];
+
+            const found = samplePupils.find(p =>
+                p.name.toLowerCase() === name.toLowerCase() &&
+                p.grade === grade
+            );
+
+            if (found) {
+                resultDiv.innerHTML = `
+                            <div style="background:rgba(108,92,231,0.15); border:1px solid rgba(108,92,231,0.3); border-radius:1rem; padding:1.2rem;">
+                                <div style="display:flex; align-items:center; gap:10px; color:var(--purple-light); font-weight:600; font-size:1.1rem;">
+                                    <i class="fas fa-check-circle" style="color:var(--green);"></i> Welcome to Kasco, ${name}!
+                                </div>
+                                <div style="color:var(--text-muted); font-size:14px; margin-top:8px;">
+                                    <i class="fas fa-school" style="color:var(--purple);"></i> Kasco · 
+                                    <i class="fas fa-layer-group" style="color:var(--purple);"></i> Grade ${grade} · 
+                                    <i class="fas fa-book" style="color:var(--purple);"></i> ${subject}
+                                </div>
+                                <div style="color:var(--text-dim); font-size:13px; margin-top:8px;">
+                                    <i class="fas fa-check" style="color:var(--green);"></i> You now have access to your class resources
+                                </div>
+                                <div style="color:var(--text-dim); font-size:11px; margin-top:8px; border-top:1px solid var(--border-color); padding-top:8px;">
+                                    <i class="fas fa-user-graduate" style="color:var(--purple);"></i> Built by Abraham Chiputa · Kasco · JETS 2025
+                                </div>
+                            </div>
+                        `;
+                showToast('Welcome to Kasco, ' + name + '!');
+            } else {
+                resultDiv.innerHTML = `
+                            <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); border-radius:1rem; padding:1.2rem;">
+                                <div style="display:flex; align-items:center; gap:10px; color:var(--red); font-weight:600;">
+                                    <i class="fas fa-times-circle"></i> No match found at Kasco
+                                </div>
+                                <div style="color:var(--text-muted); font-size:14px; margin-top:8px;">
+                                    We couldn't find "${name}" in Grade ${grade} for ${subject} at Kasco.
+                                </div>
+                                <div style="color:var(--text-dim); font-size:13px; margin-top:8px;">
+                                    <i class="fas fa-lightbulb" style="color:var(--orange);"></i> Check spelling or contact your teacher at Kasco.
+                                </div>
+                                <div style="color:var(--text-dim); font-size:11px; margin-top:8px; border-top:1px solid var(--border-color); padding-top:8px;">
+                                    <i class="fas fa-user-graduate" style="color:var(--purple);"></i> Built by Abraham Chiputa · Kasco · JETS 2025
+                                </div>
+                            </div>
+                        `;
+                showToast('No match found at Kasco');
+            }
+        }
+
+        // ============================================================
+        // AI
+        // ============================================================
+        function openAI(provider) {
+            const urls = {
+                'DeepSeek': 'https://chat.deepseek.com/',
+                'Grok': 'https://grok.x.ai/',
+                'ChatGPT': 'https://chat.openai.com/',
+                'Claude': 'https://claude.ai/'
+            };
+            const url = urls[provider];
+            if (url) {
+                window.open(url, '_blank');
+                showToast('Opening ' + provider + '...');
+            } else {
+                showToast(provider + ' coming soon!');
+            }
+        }
+
+        // ============================================================
+        // GROUPS - TABS
+        // ============================================================
+        function switchGroupTab(tab, btn) {
+            document.querySelectorAll('.groups-tabs button').forEach(b => b.classList.remove('active-tab'));
+            if (btn) btn.classList.add('active-tab');
+            document.querySelectorAll('.group-content').forEach(c => c.classList.remove('active-content'));
+            if (tab === 'school') {
+                document.getElementById('schoolGroups').classList.add('active-content');
+            } else if (tab === 'class') {
+                document.getElementById('classGroups').classList.add('active-content');
+            } else if (tab === 'social') {
+                document.getElementById('socialGroups').classList.add('active-content');
+            }
+        }
+
+        // ============================================================
+        // CHAT
+        // ============================================================
+        let currentChatGroup = '';
+        let isRecording = false;
+        let mediaRecorder = null;
+        let audioChunks = [];
+
+        function openChat(groupName, icon) {
+            currentChatGroup = groupName;
+            document.getElementById('chatGroupTitle').innerHTML = '<i class="fas ' + icon +
+                '" style="color:var(--purple);"></i> ' + groupName;
+            document.getElementById('chatModal').style.display = 'flex';
+            document.getElementById('chatInput').focus();
+        }
+
+        function closeChat() {
+            document.getElementById('chatModal').style.display = 'none';
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                document.getElementById('voiceBtn').classList.remove('recording');
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+            const container = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = 'chat-msg sent';
+            const time = new Date();
+            const timeStr = time.getHours() + ':' + String(time.getMinutes()).padStart(2, '0');
+            div.innerHTML = msg + '<span class="time">' + timeStr + '</span>';
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            input.value = '';
+            setTimeout(() => {
+                const reply = document.createElement('div');
+                reply.className = 'chat-msg received';
+                const replies = ['Good question!', 'I agree!', 'Can you explain more?', "That's helpful!"];
+                const randomReply = replies[Math.floor(Math.random() * replies.length)];
+                const replyTime = new Date();
+                const rTime = replyTime.getHours() + ':' + String(replyTime.getMinutes()).padStart(2, '0');
+                reply.innerHTML = '<div class="sender">Someone</div>' + randomReply + '<span class="time">' + rTime +
+                    '</span>';
+                container.appendChild(reply);
+                container.scrollTop = container.scrollHeight;
+            }, 1000 + Math.random() * 2000);
+        }
+
+        function attachImage() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        const container = document.getElementById('chatMessages');
+                        const div = document.createElement('div');
+                        div.className = 'chat-msg sent';
+                        const time = new Date();
+                        const timeStr = time.getHours() + ':' + String(time.getMinutes()).padStart(2, '0');
+                        div.innerHTML = '<img src="' + ev.target.result + '" alt="Shared image" />' +
+                            '<span class="time">' + timeStr + '</span>';
+                        container.appendChild(div);
+                        container.scrollTop = container.scrollHeight;
+                        showToast('Image shared!');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        }
+
+        function startVoiceRecording() {
+            if (isRecording) {
+                if (mediaRecorder) mediaRecorder.stop();
+                isRecording = false;
+                document.getElementById('voiceBtn').classList.remove('recording');
+                document.getElementById('voiceBtn').innerHTML = '<i class="fas fa-microphone"></i>';
+                showToast('Stopped');
+                return;
+            }
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(function(stream) {
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    mediaRecorder.ondataavailable = function(event) { audioChunks.push(event.data); };
+                    mediaRecorder.onstop = function() {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        const container = document.getElementById('chatMessages');
+                        const div = document.createElement('div');
+                        div.className = 'chat-msg sent';
+                        const time = new Date();
+                        const timeStr = time.getHours() + ':' + String(time.getMinutes()).padStart(2, '0');
+                        div.innerHTML = '<audio controls src="' + audioUrl + '"></audio>' +
+                            '<span class="time">' + timeStr + '</span>';
+                        container.appendChild(div);
+                        container.scrollTop = container.scrollHeight;
+                        showToast('Voice note sent!');
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+                    mediaRecorder.start();
+                    isRecording = true;
+                    document.getElementById('voiceBtn').classList.add('recording');
+                    document.getElementById('voiceBtn').innerHTML = '<i class="fas fa-stop"></i>';
+                    showToast('Recording... tap again to stop');
+                })
+                .catch(function(err) { showToast('Microphone access denied'); });
+        }
+
+        function attachVideo() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'video/*';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        const container = document.getElementById('chatMessages');
+                        const div = document.createElement('div');
+                        div.className = 'chat-msg sent';
+                        const time = new Date();
+                        const timeStr = time.getHours() + ':' + String(time.getMinutes()).padStart(2, '0');
+                        div.innerHTML = '<video controls src="' + ev.target.result +
+                            '" style="max-width:200px;border-radius:10px;"></video>' +
+                            '<span class="time">' + timeStr + '</span>';
+                        container.appendChild(div);
+                        container.scrollTop = container.scrollHeight;
+                        showToast('Video shared!');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        }
+
+        function attachFile() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    showToast('File: ' + file.name);
+                    const container = document.getElementById('chatMessages');
+                    const div = document.createElement('div');
+                    div.className = 'chat-msg sent';
+                    const time = new Date();
+                    const timeStr = time.getHours() + ':' + String(time.getMinutes()).padStart(2, '0');
+                    div.innerHTML = '<i class="fas fa-paperclip" style="color:var(--purple);"></i> <strong>' + file
+                        .name +
+                        '</strong> (' + (file.size / 1024).toFixed(1) +
+                        ' KB)<br><span style="font-size:12px;color:var(--text-muted);">File shared</span>' +
+                        '<span class="time">' + timeStr + '</span>';
+                    container.appendChild(div);
+                    container.scrollTop = container.scrollHeight;
+                }
+            };
+            input.click();
+        }
+
+        function leaveGroup() {
+            if (confirm('Leave this group?')) {
+                showToast('Left ' + currentChatGroup);
+                closeChat();
+            }
+        }
+
+        // ============================================================
+        // LIVE CLASSES
+        // ============================================================
+        function openLiveList() {
+            showToast('Live Classes at Kasco:\n\n' +
+                'Mathematics - Grade 12 (45 watching)\n' +
+                'Physics - Grade 10 (32 watching)\n' +
+                'English Literature (28 watching)\n\n' +
+                'Built by Abraham Chiputa · Kasco');
+        }
+
+        // ============================================================
+        // APPLY FORM — School Admin Application
+        // ============================================================
+        function showApplyForm() {
+            openModal('applyModal');
+        }
+
+        function submitApplication() {
+            const schoolName = document.getElementById('applySchoolName').value.trim();
+            const location = document.getElementById('applyLocation').value.trim();
+            const adminName = document.getElementById('applyAdminName').value.trim();
+            const email = document.getElementById('applyEmail').value.trim();
+            const phone = document.getElementById('applyPhone').value.trim();
+            const schoolType = document.getElementById('applySchoolType').value;
+            const message = document.getElementById('applyMessage').value.trim();
+
+            if (!schoolName) { showToast('Please enter your school name'); return; }
+            if (!adminName) { showToast('Please enter your name'); return; }
+            if (!email) { showToast('Please enter your email address'); return; }
+
+            // WhatsApp notification to Abraham Chiputa
+            const whatsappMsg = 'New School Admin Application - Kasco\n\n' +
+                'School: ' + schoolName + '\n' +
+                'Admin: ' + adminName + '\n' +
+                'Email: ' + email + '\n' +
+                'Phone: ' + (phone || 'Not provided') + '\n' +
+                'Location: ' + (location || 'Not provided') + '\n' +
+                'School Type: ' + schoolType + '\n' +
+                'Message: ' + (message || 'No additional message') + '\n\n' +
+                'Applied: ' + new Date().toLocaleString() + '\n\n' +
+                'Sent to Abraham Chiputa · Kasco';
+
+            const waUrl = 'https://wa.me/260770231269?text=' + encodeURIComponent(whatsappMsg);
+            window.open(waUrl, '_blank');
+
+            // Email notification
+            const emailSubject = 'New School Admin Application - Kasco';
+            const emailBody = 'Dear Abraham Chiputa,\n\n' +
+                'A new school has applied to join SchoolHub at Kasco!\n\n' +
+                'APPLICATION DETAILS\n' +
+                '─────────────────────\n' +
+                'School: ' + schoolName + '\n' +
+                'Admin: ' + adminName + '\n' +
+                'Email: ' + email + '\n' +
+                'Phone: ' + (phone || 'Not provided') + '\n' +
+                'Location: ' + (location || 'Not provided') + '\n' +
+                'School Type: ' + schoolType + '\n' +
+                'Message: ' + (message || 'No additional message') + '\n' +
+                'Applied: ' + new Date().toLocaleString() + '\n\n' +
+                'Action Required:\n' +
+                'Log in to Super Admin Dashboard to approve/reject\n\n' +
+                'Regards,\n' +
+                'SchoolHub System\n' +
+                'Kasco · Built by Abraham Chiputa';
+
+            const emailUrl =
+                'mailto:mundiamartin293@gmail.com?subject=' + encodeURIComponent(emailSubject) + '&body=' + encodeURIComponent(
+                    emailBody);
+            window.open(emailUrl, '_blank');
+
+            closeModal('applyModal');
+            showToast('Application submitted to Abraham Chiputa!');
+            showToast('Check your email and WhatsApp for confirmation.');
+        }
+
+        // ============================================================
+        // KEYBOARD SHORTCUTS
+        // ============================================================
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal('applyModal');
+                closeModal('authModal');
+                closeChat();
+            }
+            if (e.key === 'Enter' && document.activeElement?.id === 'chatInput') {
+                sendMessage();
+            }
+        });
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        console.log('SchoolHub - Kasco loaded successfully!');
+        console.log('Built by Abraham Chiputa');
+        console.log('Kasco School Management System');
+        console.log('JETS Project 2025');
+        console.log('Firebase Auth connected');
+        console.log('GitHub token loaded for file uploads');
+        console.log('Repository: cyberkiller2010/kasco-hub');
+    </script>
+
+</body>
+</html>
