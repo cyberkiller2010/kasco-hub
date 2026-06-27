@@ -15,8 +15,8 @@
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
         /* ============================================================
-                   CSS VARIABLES — Dark & Light Mode
-                   ============================================================ */
+           CSS VARIABLES — Dark & Light Mode
+           ============================================================ */
         :root {
             --bg-primary: #0A0A0F;
             --bg-secondary: rgba(10, 10, 15, 0.7);
@@ -117,7 +117,7 @@
         }
 
         /* ============================================================
-                   TOP NAV — Kasco SchoolHub
+                   TOP NAV
                    ============================================================ */
         .top-nav {
             padding: 0.8rem 2rem;
@@ -129,6 +129,9 @@
             flex-wrap: wrap;
             gap: 10px;
             transition: background 0.3s, border 0.3s;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         .logo h1 {
             font-size: 1.5rem;
@@ -235,7 +238,7 @@
         }
 
         /* ============================================================
-                   SIDEBAR
+                   SIDEBAR — FIXED
                    ============================================================ */
         .sidebar-overlay {
             display: none;
@@ -258,10 +261,11 @@
             height: 100%;
             background: var(--bg-modal);
             z-index: 1600;
-            transition: 0.3s;
+            transition: right 0.3s ease;
             padding: 2rem 1.5rem;
             border-left: 1px solid var(--border-color);
             overflow-y: auto;
+            will-change: transform;
         }
         .sidebar.open {
             right: 0;
@@ -861,7 +865,7 @@
         }
 
         /* ============================================================
-                   BOTTOM NAV
+                   BOTTOM NAV — STICKY
                    ============================================================ */
         .bottom-nav {
             position: fixed;
@@ -1010,6 +1014,151 @@
         }
 
         /* ============================================================
+                   VIEWER MODAL
+                   ============================================================ */
+        .viewer-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 3000;
+            flex-direction: column;
+        }
+        .viewer-modal.active {
+            display: flex;
+        }
+        .viewer-header {
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .viewer-title {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .viewer-title i {
+            color: var(--purple);
+        }
+        .viewer-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            transition: 0.3s;
+        }
+        .viewer-close:hover {
+            color: var(--text-primary);
+        }
+        .viewer-body {
+            flex: 1;
+            overflow: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: var(--bg-primary);
+        }
+        .viewer-body iframe {
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            border: none;
+            background: #FFFFFF;
+        }
+        .viewer-body video,
+        .viewer-body audio {
+            max-width: 100%;
+            max-height: 80vh;
+        }
+        .viewer-body img {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+        .viewer-body pre {
+            white-space: pre-wrap;
+            padding: 20px;
+            margin: 0;
+            font-family: 'Inter', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            max-width: 100%;
+            overflow: auto;
+        }
+        .viewer-footer {
+            padding: 0.8rem 1.5rem;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+        .viewer-footer button {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px 20px;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+        .viewer-footer button:hover {
+            background: var(--purple);
+            color: #FFFFFF;
+            border-color: var(--purple);
+        }
+
+        /* ============================================================
+                   TEACHER UPLOAD SECTION
+                   ============================================================ */
+        .upload-progress {
+            display: none;
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--bg-input);
+            border-radius: 1rem;
+            text-align: center;
+        }
+        .upload-progress.show {
+            display: block;
+        }
+        .upload-progress .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--purple);
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            vertical-align: middle;
+            margin-right: 12px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ============================================================
                    RESPONSIVE
                    ============================================================ */
         @media (max-width: 768px) {
@@ -1077,6 +1226,9 @@
             .theme-toggle span {
                 display: none;
             }
+            .viewer-body iframe {
+                min-height: 300px;
+            }
         }
 
         @media (max-width: 450px) {
@@ -1092,7 +1244,7 @@
 <body>
 
     <!-- ============================================================
-    TOP NAV — Kasco SchoolHub
+    TOP NAV
     ============================================================ -->
     <div class="top-nav">
         <div class="logo">
@@ -1125,7 +1277,25 @@
         <div class="sidebar-title"><i class="fas fa-graduation-cap"></i> Menu</div>
 
         <button class="sidebar-item active-sidebar" onclick="switchPage('studentPortal', this)">
-            <i class="fas fa-user-graduate"></i> Student Portal
+            <i class="fas fa-home"></i> Home
+        </button>
+        <button class="sidebar-item" onclick="switchPage('teacherDashboard', this)">
+            <i class="fas fa-chalkboard-teacher"></i> Teacher Dashboard
+        </button>
+        <button class="sidebar-item" onclick="switchPage('schoolAdminDashboard', this)">
+            <i class="fas fa-school"></i> School Admin Dashboard
+        </button>
+        <button class="sidebar-item" onclick="switchPage('superAdminDashboard', this)">
+            <i class="fas fa-crown"></i> Super Admin
+        </button>
+        <button class="sidebar-item" onclick="switchPage('parentPortal', this)">
+            <i class="fas fa-users"></i> Parent Portal
+        </button>
+        <button class="sidebar-item" onclick="switchPage('registerSchool', this)">
+            <i class="fas fa-plus-circle"></i> Register School
+        </button>
+        <button class="sidebar-item" onclick="switchPage('aboutSchool', this)">
+            <i class="fas fa-info-circle"></i> About School
         </button>
         <button class="sidebar-item" onclick="switchPage('aiPage', this)">
             <i class="fas fa-robot"></i> AI
@@ -1139,11 +1309,11 @@
 
         <div class="sidebar-divider"></div>
 
-        <button class="sidebar-item" onclick="showToast('Login/Signup coming soon!')">
-            <i class="fas fa-sign-in-alt"></i> Login
+        <button class="sidebar-item" onclick="showToast('Profile coming soon!')">
+            <i class="fas fa-user-circle"></i> Profile
         </button>
-        <button class="sidebar-item" onclick="showToast('About SchoolHub - Kasco')">
-            <i class="fas fa-info-circle"></i> About
+        <button class="sidebar-item" onclick="handleLogout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
         </button>
 
         <div class="sidebar-divider"></div>
@@ -1161,10 +1331,9 @@
     <div class="app">
 
         <!-- ============================================================
-        STUDENT PORTAL
+        STUDENT PORTAL (HOME)
         ============================================================ -->
         <div class="page active" id="studentPortal">
-
             <div class="pupil-join-card">
                 <h3><i class="fas fa-school"></i> Find Your School</h3>
                 <p style="color: var(--text-muted); font-size:14px; margin-bottom:16px;">Enter your details to access your classes at Kasco</p>
@@ -1226,12 +1395,12 @@
             <!-- LIVE CLASSES -->
             <div style="margin-bottom:30px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
-                    <div class="page-title" style="font-size:20px; margin-bottom:0;"><i class="fas fa-video"></i> Live Classes</div>
+                    <div class="page-title" style="font-size:20px; margin-bottom:0;"><i class="fas fa-circle" style="color:var(--red); font-size:14px;"></i> Live Classes</div>
                     <span style="color:var(--text-muted); font-size:13px;"><i class="fas fa-globe" style="color:var(--purple);"></i> Public · No login required</span>
                 </div>
 
                 <div class="live-card" onclick="openLiveList()" style="background:var(--bg-live); border-radius:1.2rem; padding:1.5rem; border:1px solid var(--border-color); cursor:pointer; transition:0.3s; display:flex; align-items:center; gap:16px; box-shadow:var(--shadow);">
-                    <span class="live-badge" style="background:var(--purple); color:#FFFFFF; font-size:12px; font-weight:700; padding:4px 14px; border-radius:30px; display:inline-flex; align-items:center; gap:6px; animation:livePulse 1.5s infinite; flex-shrink:0;">
+                    <span class="live-badge" style="background:var(--red); color:#FFFFFF; font-size:12px; font-weight:700; padding:4px 14px; border-radius:30px; display:inline-flex; align-items:center; gap:6px; flex-shrink:0;">
                         <i class="fas fa-circle"></i> LIVE
                     </span>
                     <div class="info" style="flex:1;">
@@ -1248,18 +1417,18 @@
             <div class="page-title"><i class="fas fa-graduation-cap"></i> Subjects</div>
             <p class="page-subtitle">Tap a subject to explore resources at Kasco</p>
             <div class="subject-grid" id="subjectGrid">
-                <div class="subject-card" onclick="showToast('Mathematics - Kasco')"><div class="icon"><i class="fas fa-calculator"></i></div><h4>Mathematics</h4><p>Numbers &amp; Logic</p></div>
-                <div class="subject-card" onclick="showToast('English - Kasco')"><div class="icon"><i class="fas fa-book-open"></i></div><h4>English</h4><p>Language &amp; Literature</p></div>
-                <div class="subject-card" onclick="showToast('Science - Kasco')"><div class="icon"><i class="fas fa-flask"></i></div><h4>Science</h4><p>Biology, Chemistry, Physics</p></div>
-                <div class="subject-card" onclick="showToast('History - Kasco')"><div class="icon"><i class="fas fa-landmark"></i></div><h4>History</h4><p>Past &amp; Civilizations</p></div>
-                <div class="subject-card" onclick="showToast('Geography - Kasco')"><div class="icon"><i class="fas fa-globe-africa"></i></div><h4>Geography</h4><p>Maps &amp; Environments</p></div>
-                <div class="subject-card" onclick="showToast('Computer Studies - Kasco')"><div class="icon"><i class="fas fa-laptop-code"></i></div><h4>Computer Studies</h4><p>Tech &amp; Coding</p></div>
-                <div class="subject-card" onclick="showToast('Art & Design - Kasco')"><div class="icon"><i class="fas fa-palette"></i></div><h4>Art &amp; Design</h4><p>Creative Expression</p></div>
-                <div class="subject-card" onclick="showToast('Business Studies - Kasco')"><div class="icon"><i class="fas fa-chart-line"></i></div><h4>Business Studies</h4><p>Economics &amp; Commerce</p></div>
-                <div class="subject-card" onclick="showToast('Religious Education - Kasco')"><div class="icon"><i class="fas fa-place-of-worship"></i></div><h4>Religious Education</h4><p>Faith &amp; Values</p></div>
-                <div class="subject-card" onclick="showToast('Physical Education - Kasco')"><div class="icon"><i class="fas fa-running"></i></div><h4>Physical Education</h4><p>Health &amp; Fitness</p></div>
-                <div class="subject-card" onclick="showToast('Music - Kasco')"><div class="icon"><i class="fas fa-music"></i></div><h4>Music</h4><p>Rhythm &amp; Theory</p></div>
-                <div class="subject-card" onclick="showToast('Home Economics - Kasco')"><div class="icon"><i class="fas fa-utensils"></i></div><h4>Home Economics</h4><p>Life Skills</p></div>
+                <div class="subject-card" onclick="openSubjectLibrary('Mathematics')"><div class="icon"><i class="fas fa-calculator"></i></div><h4>Mathematics</h4><p>Numbers &amp; Logic</p></div>
+                <div class="subject-card" onclick="openSubjectLibrary('English')"><div class="icon"><i class="fas fa-book-open"></i></div><h4>English</h4><p>Language &amp; Literature</p></div>
+                <div class="subject-card" onclick="openSubjectLibrary('Science')"><div class="icon"><i class="fas fa-flask"></i></div><h4>Science</h4><p>Biology, Chemistry, Physics</p></div>
+                <div class="subject-card" onclick="openSubjectLibrary('History')"><div class="icon"><i class="fas fa-landmark"></i></div><h4>History</h4><p>Past &amp; Civilizations</p></div>
+                <div class="subject-card" onclick="openSubjectLibrary('Geography')"><div class="icon"><i class="fas fa-globe-africa"></i></div><h4>Geography</h4><p>Maps &amp; Environments</p></div>
+                <div class="subject-card" onclick="openSubjectLibrary('Computer Studies')"><div class="icon"><i class="fas fa-laptop-code"></i></div><h4>Computer Studies</h4><p>Tech &amp; Coding</p></div>
+                <div class="subject-card" onclick="openSubjectLibrary('Art & Design')"><div class="icon"><i class="fas fa-palette"></i></div><h4>Art &amp; Design</h4><p>Creative Expression</p></div>
+                <div class="subject-card" onclick="openSubjectLibrary('Business Studies')"><div class="icon"><i class="fas fa-chart-line"></i></div><h4>Business Studies</h4><p>Economics &amp; Commerce</p></div>
+                <div class="subject-card" onclick="openSubjectLibrary('Religious Education')"><div class="icon"><i class="fas fa-place-of-worship"></i></div><h4>Religious Education</h4><p>Faith &amp; Values</p></div>
+                <div class="subject-card" onclick="openSubjectLibrary('Physical Education')"><div class="icon"><i class="fas fa-running"></i></div><h4>Physical Education</h4><p>Health &amp; Fitness</p></div>
+                <div class="subject-card" onclick="openSubjectLibrary('Music')"><div class="icon"><i class="fas fa-music"></i></div><h4>Music</h4><p>Rhythm &amp; Theory</p></div>
+                <div class="subject-card" onclick="openSubjectLibrary('Home Economics')"><div class="icon"><i class="fas fa-utensils"></i></div><h4>Home Economics</h4><p>Life Skills</p></div>
             </div>
 
             <!-- AI SECTION -->
@@ -1272,6 +1441,359 @@
                     <div class="ai-card" onclick="openAI('ChatGPT')"><div class="ai-logo">GPT</div><h4>ChatGPT</h4><p>Versatile &amp; creative</p></div>
                     <div class="ai-card" onclick="openAI('Claude')"><div class="ai-logo">C</div><h4>Claude</h4><p>Safe &amp; thoughtful</p></div>
                 </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        TEACHER DASHBOARD
+        ============================================================ -->
+        <div class="page" id="teacherDashboard">
+            <div class="page-title"><i class="fas fa-chalkboard-teacher"></i> Teacher Dashboard</div>
+            <p class="page-subtitle">Manage your classes, upload resources, and enter results</p>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:16px; margin-bottom:24px;">
+                <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; text-align:center; border:1px solid var(--border-color);">
+                    <i class="fas fa-users" style="font-size:2rem; color:var(--purple);"></i>
+                    <h3 style="color:var(--text-primary); margin-top:8px;" id="teacherStudentCount">0</h3>
+                    <p style="color:var(--text-muted); font-size:13px;">Students</p>
+                </div>
+                <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; text-align:center; border:1px solid var(--border-color);">
+                    <i class="fas fa-file-alt" style="font-size:2rem; color:var(--purple);"></i>
+                    <h3 style="color:var(--text-primary); margin-top:8px;" id="teacherResourceCount">0</h3>
+                    <p style="color:var(--text-muted); font-size:13px;">Resources</p>
+                </div>
+                <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; text-align:center; border:1px solid var(--border-color);">
+                    <i class="fas fa-video" style="font-size:2rem; color:var(--purple);"></i>
+                    <h3 style="color:var(--text-primary); margin-top:8px;" id="teacherLiveCount">0</h3>
+                    <p style="color:var(--text-muted); font-size:13px;">Live Classes</p>
+                </div>
+            </div>
+
+            <!-- Upload Resources -->
+            <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color); margin-bottom:20px;">
+                <h3 style="color:var(--text-primary); display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                    <i class="fas fa-upload" style="color:var(--purple);"></i> Upload Resource
+                </h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label><i class="fas fa-file" style="color:var(--purple);"></i> Select File</label>
+                        <input type="file" id="teacherFileInput" style="padding:8px; width:100%; border:1px solid var(--border-color); border-radius:1rem; background:var(--bg-input); color:var(--text-secondary);" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-tag" style="color:var(--purple);"></i> Resource Name</label>
+                        <input type="text" id="resourceName" placeholder="e.g., Algebra Notes" style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-book" style="color:var(--purple);"></i> Subject</label>
+                        <select id="resourceSubject" style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);">
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="English">English</option>
+                            <option value="Science">Science</option>
+                            <option value="History">History</option>
+                            <option value="Geography">Geography</option>
+                            <option value="Computer Studies">Computer Studies</option>
+                            <option value="Art & Design">Art & Design</option>
+                            <option value="Business Studies">Business Studies</option>
+                            <option value="Religious Education">Religious Education</option>
+                            <option value="Physical Education">Physical Education</option>
+                            <option value="Music">Music</option>
+                            <option value="Home Economics">Home Economics</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label><i class="fas fa-tag" style="color:var(--purple);"></i> Resource Type</label>
+                        <select id="resourceType" style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);">
+                            <option value="text">Text / Document</option>
+                            <option value="video">Video</option>
+                            <option value="audio">Audio</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label><i class="fas fa-comment" style="color:var(--purple);"></i> Description (optional)</label>
+                        <input type="text" id="resourceDescription" placeholder="Brief description..." style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="uploadResource()" style="margin-top:8px;">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload to GitHub (FREE)
+                </button>
+                <div class="upload-progress" id="uploadProgress">
+                    <span class="spinner"></span>
+                    <span id="uploadStatus">Uploading...</span>
+                </div>
+            </div>
+
+            <!-- Start Live Class -->
+            <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color); margin-bottom:20px;">
+                <h3 style="color:var(--text-primary); display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                    <i class="fas fa-circle" style="color:var(--red); font-size:12px;"></i> Start Live Class
+                </h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label><i class="fas fa-heading" style="color:var(--purple);"></i> Live Title</label>
+                        <input type="text" id="liveTitle" placeholder="e.g., Quadratic Equations" style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label><i class="fas fa-align-left" style="color:var(--purple);"></i> Description</label>
+                        <input type="text" id="liveDescription" placeholder="Brief description..." style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-globe" style="color:var(--purple);"></i> Live Type</label>
+                        <select id="liveType" style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);">
+                            <option value="public">Public (Anyone can join)</option>
+                            <option value="class">Class (Only class students)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-users" style="color:var(--purple);"></i> Class (if Class Live)</label>
+                        <select id="liveClass" style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);">
+                            <option value="math_a">Grade 12 Math A</option>
+                            <option value="science_b">Grade 10 Science B</option>
+                            <option value="english_c">Grade 11 English C</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="startLiveClass()" style="margin-top:8px; background:var(--red);">
+                    <i class="fas fa-circle"></i> Start Live Class
+                </button>
+            </div>
+
+            <!-- Add Students -->
+            <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color);">
+                <h3 style="color:var(--text-primary); display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                    <i class="fas fa-user-plus" style="color:var(--purple);"></i> Add Students to Class
+                </h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
+                    <button class="btn-primary" onclick="showExcelUpload()" style="font-size:14px;">
+                        <i class="fas fa-file-excel"></i> Excel Upload
+                    </button>
+                    <button class="btn-primary" onclick="showManualStudentEntry()" style="font-size:14px;">
+                        <i class="fas fa-pencil-alt"></i> Manual Entry
+                    </button>
+                    <button class="btn-primary" onclick="showOCRUpload()" style="font-size:14px;">
+                        <i class="fas fa-camera"></i> OCR Scan
+                    </button>
+                </div>
+                <div id="studentAddArea" style="margin-top:12px; padding:16px; background:var(--bg-input); border-radius:1rem; border:1px dashed var(--border-color); text-align:center; color:var(--text-muted);">
+                    <i class="fas fa-users" style="font-size:2rem; color:var(--purple);"></i>
+                    <p style="margin-top:8px;">Select a method to add students to your class register</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        SCHOOL ADMIN DASHBOARD
+        ============================================================ -->
+        <div class="page" id="schoolAdminDashboard">
+            <div class="page-title"><i class="fas fa-school"></i> School Admin Dashboard</div>
+            <p class="page-subtitle">Manage your school, teachers, and students</p>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:16px; margin-bottom:24px;">
+                <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; text-align:center; border:1px solid var(--border-color);">
+                    <i class="fas fa-users" style="font-size:2rem; color:var(--purple);"></i>
+                    <h3 style="color:var(--text-primary); margin-top:8px;" id="adminStudentCount">0</h3>
+                    <p style="color:var(--text-muted); font-size:13px;">Students</p>
+                </div>
+                <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; text-align:center; border:1px solid var(--border-color);">
+                    <i class="fas fa-chalkboard-teacher" style="font-size:2rem; color:var(--purple);"></i>
+                    <h3 style="color:var(--text-primary); margin-top:8px;" id="adminTeacherCount">0</h3>
+                    <p style="color:var(--text-muted); font-size:13px;">Teachers</p>
+                </div>
+                <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; text-align:center; border:1px solid var(--border-color);">
+                    <i class="fas fa-file-alt" style="font-size:2rem; color:var(--purple);"></i>
+                    <h3 style="color:var(--text-primary); margin-top:8px;" id="adminResourceCount">0</h3>
+                    <p style="color:var(--text-muted); font-size:13px;">Resources</p>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color);">
+                    <h3 style="color:var(--text-primary); display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                        <i class="fas fa-chalkboard-teacher" style="color:var(--purple);"></i> Add Teacher
+                    </h3>
+                    <div class="form-group">
+                        <label><i class="fas fa-user" style="color:var(--purple);"></i> Teacher Name</label>
+                        <input type="text" id="addTeacherName" placeholder="Full name" style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope" style="color:var(--purple);"></i> Teacher Email</label>
+                        <input type="email" id="addTeacherEmail" placeholder="teacher@email.com" style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                    </div>
+                    <button class="btn-primary" onclick="addTeacher()">
+                        <i class="fas fa-plus"></i> Add Teacher
+                    </button>
+                </div>
+
+                <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color);">
+                    <h3 style="color:var(--text-primary); display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                        <i class="fas fa-list" style="color:var(--purple);"></i> Manage Teachers
+                    </h3>
+                    <div id="teacherList" style="max-height:300px; overflow-y:auto;">
+                        <p style="color:var(--text-muted); text-align:center; padding:20px;">No teachers added yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        SUPER ADMIN DASHBOARD
+        ============================================================ -->
+        <div class="page" id="superAdminDashboard">
+            <div class="page-title"><i class="fas fa-crown" style="color:var(--yellow);"></i> Super Admin Dashboard</div>
+            <p class="page-subtitle">Manage all schools and approve applications</p>
+
+            <!-- Super Admin Login -->
+            <div id="superAdminLogin" style="max-width:400px; margin:0 auto; background:var(--bg-card); border-radius:1rem; padding:2rem; border:1px solid var(--border-color);">
+                <h3 style="color:var(--text-primary); text-align:center; margin-bottom:16px;"><i class="fas fa-crown" style="color:var(--yellow);"></i> Super Admin Login</h3>
+                <div class="form-group">
+                    <label><i class="fas fa-user" style="color:var(--purple);"></i> Username</label>
+                    <input type="text" id="superAdminUsername" placeholder="Enter username" style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock" style="color:var(--purple);"></i> Password</label>
+                    <input type="password" id="superAdminPassword" placeholder="Enter password" style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                </div>
+                <button class="btn-primary" onclick="superAdminLogin()">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </div>
+
+            <div id="superAdminContent" style="display:none;">
+                <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:16px; margin-bottom:24px;">
+                    <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; text-align:center; border:1px solid var(--border-color);">
+                        <i class="fas fa-school" style="font-size:2rem; color:var(--purple);"></i>
+                        <h3 style="color:var(--text-primary); margin-top:8px;" id="totalSchools">0</h3>
+                        <p style="color:var(--text-muted); font-size:13px;">Total Schools</p>
+                    </div>
+                    <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; text-align:center; border:1px solid var(--border-color);">
+                        <i class="fas fa-clock" style="font-size:2rem; color:var(--orange);"></i>
+                        <h3 style="color:var(--text-primary); margin-top:8px;" id="pendingApplications">0</h3>
+                        <p style="color:var(--text-muted); font-size:13px;">Pending Applications</p>
+                    </div>
+                    <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; text-align:center; border:1px solid var(--border-color);">
+                        <i class="fas fa-users" style="font-size:2rem; color:var(--purple);"></i>
+                        <h3 style="color:var(--text-primary); margin-top:8px;" id="totalTeachers">0</h3>
+                        <p style="color:var(--text-muted); font-size:13px;">Total Teachers</p>
+                    </div>
+                </div>
+
+                <!-- Pending Applications -->
+                <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color); margin-bottom:20px;">
+                    <h3 style="color:var(--text-primary); display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                        <i class="fas fa-clock" style="color:var(--orange);"></i> Pending Applications
+                    </h3>
+                    <div id="pendingApplicationsList">
+                        <p style="color:var(--text-muted); text-align:center; padding:20px;">No pending applications</p>
+                    </div>
+                </div>
+
+                <!-- All Schools -->
+                <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color);">
+                    <h3 style="color:var(--text-primary); display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                        <i class="fas fa-school" style="color:var(--purple);"></i> All Schools
+                        <button class="btn-small" style="margin-left:auto; background:var(--purple);" onclick="showAddSchoolForm()">
+                            <i class="fas fa-plus"></i> Add School
+                        </button>
+                    </h3>
+                    <div id="allSchoolsList">
+                        <p style="color:var(--text-muted); text-align:center; padding:20px;">No schools registered</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        PARENT PORTAL
+        ============================================================ -->
+        <div class="page" id="parentPortal">
+            <div class="page-title"><i class="fas fa-users"></i> Parent Portal</div>
+            <p class="page-subtitle">View your child's report card and progress</p>
+
+            <div style="max-width:500px; margin:0 auto;">
+                <div class="form-group">
+                    <label><i class="fas fa-user" style="color:var(--purple);"></i> Student Name</label>
+                    <input type="text" id="parentStudentName" placeholder="Enter child's name" style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-school" style="color:var(--purple);"></i> School Name</label>
+                    <input type="text" id="parentSchoolName" placeholder="Enter school name" style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                </div>
+                <button class="btn-primary" onclick="viewReportCard()">
+                    <i class="fas fa-search"></i> View Report Card
+                </button>
+
+                <div id="reportCardContainer" style="margin-top:20px; display:none;"></div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        REGISTER SCHOOL
+        ============================================================ -->
+        <div class="page" id="registerSchool">
+            <div class="page-title"><i class="fas fa-plus-circle"></i> Register School</div>
+            <p class="page-subtitle">Apply to register your school on SchoolHub</p>
+
+            <div style="max-width:500px; margin:0 auto; background:var(--bg-card); border-radius:1rem; padding:2rem; border:1px solid var(--border-color);">
+                <div class="form-group">
+                    <label><i class="fas fa-school" style="color:var(--purple);"></i> School Name</label>
+                    <input type="text" id="regSchoolName" placeholder="e.g., Kasco Secondary" style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-map-marker-alt" style="color:var(--purple);"></i> Location</label>
+                    <input type="text" id="regLocation" placeholder="e.g., Lusaka, Zambia" style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-building" style="color:var(--purple);"></i> School Type</label>
+                    <select id="regSchoolType" style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);">
+                        <option value="primary">Primary</option>
+                        <option value="secondary">Secondary</option>
+                        <option value="both">Both Primary & Secondary</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-user" style="color:var(--purple);"></i> Admin Name</label>
+                    <input type="text" id="regAdminName" placeholder="Your full name" style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope" style="color:var(--purple);"></i> Admin Email</label>
+                    <input type="email" id="regAdminEmail" placeholder="your@email.com" style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-phone" style="color:var(--purple);"></i> Phone Number</label>
+                    <input type="text" id="regPhone" placeholder="e.g., +260 97 1234567" style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-comment" style="color:var(--purple);"></i> Additional Message</label>
+                    <textarea id="regMessage" rows="3" placeholder="Any additional information..." style="width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);"></textarea>
+                </div>
+                <button class="btn-primary" onclick="registerSchool()">
+                    <i class="fas fa-paper-plane"></i> Submit Application
+                </button>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        ABOUT SCHOOL
+        ============================================================ -->
+        <div class="page" id="aboutSchool">
+            <div class="page-title"><i class="fas fa-info-circle"></i> About School</div>
+            <p class="page-subtitle">Learn more about Kasco School</p>
+
+            <div style="background:var(--bg-card); border-radius:1rem; padding:2rem; border:1px solid var(--border-color);">
+                <h3 style="color:var(--text-primary);"><i class="fas fa-school" style="color:var(--purple);"></i> Kasco School</h3>
+                <p style="color:var(--text-muted); margin-top:8px;">Kasco is a leading educational institution committed to providing quality education to students from diverse backgrounds. Our mission is to nurture young minds and prepare them for a bright future.</p>
+                <br>
+                <h4 style="color:var(--text-primary);"><i class="fas fa-map-marker-alt" style="color:var(--purple);"></i> Location</h4>
+                <p style="color:var(--text-muted);">Lusaka, Zambia</p>
+                <br>
+                <h4 style="color:var(--text-primary);"><i class="fas fa-users" style="color:var(--purple);"></i> Staff</h4>
+                <p style="color:var(--text-muted);">25 Teachers · 450 Students · 10 Support Staff</p>
+                <br>
+                <h4 style="color:var(--text-primary);"><i class="fas fa-calendar-alt" style="color:var(--purple);"></i> Founded</h4>
+                <p style="color:var(--text-muted);">1998</p>
+                <br>
+                <h4 style="color:var(--text-primary);"><i class="fas fa-graduation-cap" style="color:var(--purple);"></i> Programs</h4>
+                <p style="color:var(--text-muted);">Primary Education · Secondary Education · STEM Programs · Sports · Arts</p>
             </div>
         </div>
 
@@ -1349,231 +1871,263 @@
             </div>
         </div>
 
-        <!-- ============================================================
-        APPLY FORM (School Admin Application)
-        ============================================================ -->
-        <div class="modal-overlay" id="applyModal">
-            <div class="modal-content" style="max-width:500px;">
-                <h2><i class="fas fa-crown" style="color:#F59E0B;"></i> Apply as School Admin</h2>
-                <p class="sub">Fill in your school details to apply for Kasco</p>
+    </div>
+
+    <!-- ============================================================
+    VIEWER MODAL
+    ============================================================ -->
+    <div class="viewer-modal" id="viewerModal">
+        <div class="viewer-header">
+            <div class="viewer-title">
+                <i class="fas fa-file" id="viewerFileIcon"></i>
+                <span id="viewerFileName">File Name</span>
+            </div>
+            <button class="viewer-close" onclick="closeViewer()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="viewer-body" id="viewerBody">
+            <div style="text-align:center; padding:40px; color:var(--text-muted);">
+                <i class="fas fa-spinner fa-spin" style="font-size:3rem;"></i>
+                <p style="margin-top:20px;">Loading...</p>
+            </div>
+        </div>
+        <div class="viewer-footer">
+            <button onclick="viewerDownload()">
+                <i class="fas fa-download"></i> Download
+            </button>
+            <button onclick="viewerShare()">
+                <i class="fas fa-share"></i> Share
+            </button>
+            <button onclick="closeViewer()">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    APPLY FORM MODAL
+    ============================================================ -->
+    <div class="modal-overlay" id="applyModal">
+        <div class="modal-content" style="max-width:500px;">
+            <h2><i class="fas fa-crown" style="color:#F59E0B;"></i> Apply as School Admin</h2>
+            <p class="sub">Fill in your school details to apply for Kasco</p>
+
+            <div class="form-group">
+                <label><i class="fas fa-school" style="color:var(--purple);"></i> School Name</label>
+                <input type="text" id="applySchoolName" placeholder="e.g., Kasco Secondary" />
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-map-marker-alt" style="color:var(--purple);"></i> Location</label>
+                <input type="text" id="applyLocation" placeholder="e.g., Lusaka, Zambia" />
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-user" style="color:var(--purple);"></i> Admin Name</label>
+                <input type="text" id="applyAdminName" placeholder="Your full name" />
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-envelope" style="color:var(--purple);"></i> Admin Email</label>
+                <input type="email" id="applyEmail" placeholder="your@email.com" />
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-phone" style="color:var(--purple);"></i> Phone Number</label>
+                <input type="text" id="applyPhone" placeholder="e.g., +260 97 1234567" />
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-building" style="color:var(--purple);"></i> School Type</label>
+                <select id="applySchoolType">
+                    <option value="primary">Primary</option>
+                    <option value="secondary">Secondary</option>
+                    <option value="both">Both Primary & Secondary</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-comment" style="color:var(--purple);"></i> Additional Message</label>
+                <textarea id="applyMessage" rows="3" placeholder="Any additional information..."></textarea>
+            </div>
+
+            <button class="btn-primary" onclick="submitApplication()">
+                <i class="fas fa-paper-plane"></i> Submit Application
+            </button>
+            <button class="close-modal-btn" onclick="closeModal('applyModal')">Cancel</button>
+
+            <div class="built-by">
+                Built by <strong>Abraham Chiputa</strong> · Kasco · JETS 2025
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    AUTH MODAL
+    ============================================================ -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-content" style="max-width:450px;">
+            <div id="loginForm">
+                <h2><i class="fas fa-graduation-cap"></i> Login to SchoolHub</h2>
+                <p class="sub">Kasco School Management System</p>
 
                 <div class="form-group">
-                    <label><i class="fas fa-school" style="color:var(--purple);"></i> School Name</label>
-                    <input type="text" id="applySchoolName" placeholder="e.g., Kasco Secondary" />
+                    <label><i class="fas fa-envelope" style="color:var(--purple);"></i> Email</label>
+                    <input type="email" id="loginEmail" placeholder="your@email.com" />
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-map-marker-alt" style="color:var(--purple);"></i> Location</label>
-                    <input type="text" id="applyLocation" placeholder="e.g., Lusaka, Zambia" />
+                    <label><i class="fas fa-lock" style="color:var(--purple);"></i> Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="loginPassword" placeholder="Enter password" />
+                        <button class="password-toggle" onclick="togglePasswordVisibility('loginPassword', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="handleLogin()">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+
+                <div class="auth-toggle" onclick="showSignup()">
+                    Don't have an account? Sign up
+                </div>
+                <div class="auth-toggle" onclick="showResetPassword()" style="font-size:13px; color:var(--text-dim);">
+                    Forgot password?
+                </div>
+
+                <div class="built-by">
+                    Built by <strong>Abraham Chiputa</strong> · Kasco · JETS 2025
+                </div>
+            </div>
+
+            <div id="signupForm" style="display:none;">
+                <h2><i class="fas fa-user-plus"></i> Sign Up</h2>
+                <p class="sub">Create your Kasco account</p>
+
+                <div class="form-group">
+                    <label><i class="fas fa-envelope" style="color:var(--purple);"></i> Email</label>
+                    <input type="email" id="signupEmail" placeholder="your@email.com" />
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-user" style="color:var(--purple);"></i> Admin Name</label>
-                    <input type="text" id="applyAdminName" placeholder="Your full name" />
+                    <label><i class="fas fa-user" style="color:var(--purple);"></i> Full Name</label>
+                    <input type="text" id="signupName" placeholder="Your full name" />
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-envelope" style="color:var(--purple);"></i> Admin Email</label>
-                    <input type="email" id="applyEmail" placeholder="your@email.com" />
+                    <label><i class="fas fa-lock" style="color:var(--purple);"></i> Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="signupPassword" placeholder="Create a password (min 6 characters)" />
+                        <button class="password-toggle" onclick="togglePasswordVisibility('signupPassword', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-phone" style="color:var(--purple);"></i> Phone Number</label>
-                    <input type="text" id="applyPhone" placeholder="e.g., +260 97 1234567" />
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-building" style="color:var(--purple);"></i> School Type</label>
-                    <select id="applySchoolType">
-                        <option value="primary">Primary</option>
-                        <option value="secondary">Secondary</option>
-                        <option value="both">Both Primary & Secondary</option>
+                    <label><i class="fas fa-user-tag" style="color:var(--purple);"></i> Role</label>
+                    <select id="signupRole">
+                        <option value="student">Student</option>
+                        <option value="teacher">Teacher</option>
+                        <option value="parent">Parent</option>
+                        <option value="schooladmin">School Admin</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label><i class="fas fa-comment" style="color:var(--purple);"></i> Additional Message</label>
-                    <textarea id="applyMessage" rows="3" placeholder="Any additional information..."></textarea>
+
+                <button class="btn-primary" onclick="handleSignup()">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </button>
+
+                <div class="auth-toggle" onclick="showLogin()">
+                    Already have an account? Login
                 </div>
 
-                <button class="btn-primary" onclick="submitApplication()">
-                    <i class="fas fa-paper-plane"></i> Submit Application
+                <div class="built-by">
+                    Built by <strong>Abraham Chiputa</strong> · Kasco · JETS 2025
+                </div>
+            </div>
+
+            <div id="resetPasswordForm" style="display:none;">
+                <h2><i class="fas fa-key"></i> Reset Password</h2>
+                <p class="sub">Enter your email to receive a password reset link</p>
+
+                <div class="form-group">
+                    <label><i class="fas fa-envelope" style="color:var(--purple);"></i> Email</label>
+                    <input type="email" id="resetEmail" placeholder="your@email.com" />
+                </div>
+
+                <button class="btn-primary" onclick="handleResetPassword()">
+                    <i class="fas fa-envelope"></i> Send Reset Link
                 </button>
-                <button class="close-modal-btn" onclick="closeModal('applyModal')">Cancel</button>
+
+                <div class="auth-toggle" onclick="showLogin()">
+                    Back to Login
+                </div>
 
                 <div class="built-by">
                     Built by <strong>Abraham Chiputa</strong> · Kasco · JETS 2025
                 </div>
             </div>
         </div>
-
-        <!-- ============================================================
-        LOGIN MODAL (Firebase Auth)
-        ============================================================ -->
-        <div class="modal-overlay" id="authModal">
-            <div class="modal-content" style="max-width:450px;">
-                <div id="loginForm">
-                    <h2><i class="fas fa-graduation-cap"></i> Login to SchoolHub</h2>
-                    <p class="sub">Kasco School Management System</p>
-
-                    <div class="form-group">
-                        <label><i class="fas fa-envelope" style="color:var(--purple);"></i> Email</label>
-                        <input type="email" id="loginEmail" placeholder="your@email.com" />
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-lock" style="color:var(--purple);"></i> Password</label>
-                        <div class="password-wrapper">
-                            <input type="password" id="loginPassword" placeholder="Enter password" />
-                            <button class="password-toggle" onclick="togglePasswordVisibility('loginPassword', this)">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <button class="btn-primary" onclick="handleLogin()">
-                        <i class="fas fa-sign-in-alt"></i> Login
-                    </button>
-
-                    <div class="auth-toggle" onclick="showSignup()">
-                        Don't have an account? Sign up
-                    </div>
-                    <div class="auth-toggle" onclick="showResetPassword()" style="font-size:13px; color:var(--text-dim);">
-                        Forgot password?
-                    </div>
-
-                    <div class="built-by">
-                        Built by <strong>Abraham Chiputa</strong> · Kasco · JETS 2025
-                    </div>
-                </div>
-
-                <div id="signupForm" style="display:none;">
-                    <h2><i class="fas fa-user-plus"></i> Sign Up</h2>
-                    <p class="sub">Create your Kasco account</p>
-
-                    <div class="form-group">
-                        <label><i class="fas fa-envelope" style="color:var(--purple);"></i> Email</label>
-                        <input type="email" id="signupEmail" placeholder="your@email.com" />
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-user" style="color:var(--purple);"></i> Full Name</label>
-                        <input type="text" id="signupName" placeholder="Your full name" />
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-lock" style="color:var(--purple);"></i> Password</label>
-                        <div class="password-wrapper">
-                            <input type="password" id="signupPassword" placeholder="Create a password (min 6 characters)" />
-                            <button class="password-toggle" onclick="togglePasswordVisibility('signupPassword', this)">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-user-tag" style="color:var(--purple);"></i> Role</label>
-                        <select id="signupRole">
-                            <option value="student">Student</option>
-                            <option value="teacher">Teacher</option>
-                            <option value="parent">Parent</option>
-                            <option value="schooladmin">School Admin</option>
-                        </select>
-                    </div>
-
-                    <button class="btn-primary" onclick="handleSignup()">
-                        <i class="fas fa-user-plus"></i> Sign Up
-                    </button>
-
-                    <div class="auth-toggle" onclick="showLogin()">
-                        Already have an account? Login
-                    </div>
-
-                    <div class="built-by">
-                        Built by <strong>Abraham Chiputa</strong> · Kasco · JETS 2025
-                    </div>
-                </div>
-
-                <div id="resetPasswordForm" style="display:none;">
-                    <h2><i class="fas fa-key"></i> Reset Password</h2>
-                    <p class="sub">Enter your email to receive a password reset link</p>
-
-                    <div class="form-group">
-                        <label><i class="fas fa-envelope" style="color:var(--purple);"></i> Email</label>
-                        <input type="email" id="resetEmail" placeholder="your@email.com" />
-                    </div>
-
-                    <button class="btn-primary" onclick="handleResetPassword()">
-                        <i class="fas fa-envelope"></i> Send Reset Link
-                    </button>
-
-                    <div class="auth-toggle" onclick="showLogin()">
-                        Back to Login
-                    </div>
-
-                    <div class="built-by">
-                        Built by <strong>Abraham Chiputa</strong> · Kasco · JETS 2025
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================================================
-        CHAT MODAL
-        ============================================================ -->
-        <div class="chat-modal" id="chatModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); backdrop-filter:blur(12px); z-index:3000; align-items:center; justify-content:center;">
-            <div class="chat-modal-content" style="background:var(--bg-modal); border-radius:2rem; width:95%; max-width:500px; height:85vh; max-height:600px; display:flex; flex-direction:column; border:1px solid rgba(108,92,231,0.2); overflow:hidden;">
-                <div class="chat-header" style="padding:1rem 1.5rem; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; flex-wrap:wrap; gap:8px;">
-                    <h3 style="font-size:1.1rem; display:flex; align-items:center; gap:10px; color:var(--text-primary);">
-                        <i class="fas fa-comments" style="color:var(--purple);"></i>
-                        <span id="chatGroupTitle">Kasco Group Chat</span>
-                        <span class="status" style="font-size:12px; color:var(--green);">● 5 online</span>
-                    </h3>
-                    <div class="chat-actions" style="display:flex; gap:6px;">
-                        <button onclick="showToast('Share a book')" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:4px 10px; border-radius:20px; cursor:pointer; font-size:12px; transition:0.2s;"><i class="fas fa-share-alt"></i></button>
-                        <button onclick="leaveGroup()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:4px 10px; border-radius:20px; cursor:pointer; font-size:12px; transition:0.2s;"><i class="fas fa-sign-out-alt"></i> Leave</button>
-                        <button class="close-chat" onclick="closeChat()" style="background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer;"><i class="fas fa-times"></i></button>
-                    </div>
-                </div>
-                <div class="chat-messages" id="chatMessages" style="flex:1; overflow-y:auto; padding:1rem 1.5rem; display:flex; flex-direction:column; gap:10px;">
-                    <div class="homework-banner" style="background:rgba(108,92,231,0.1); border:1px solid rgba(108,92,231,0.15); border-radius:1rem; padding:12px 16px; margin-bottom:10px;">
-                        <h4 style="font-size:13px; color:var(--purple-light); display:flex; align-items:center; gap:6px;"><i class="fas fa-pencil-alt"></i> Homework: Algebra</h4>
-                        <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Solve equations 1-10 on page 45. Due Friday.</p>
-                    </div>
-                    <div class="chat-msg received" style="max-width:80%; padding:10px 16px; border-radius:1rem; font-size:14px; line-height:1.4; background:var(--bg-input); color:var(--text-secondary); align-self:flex-start; border-bottom-left-radius:4px;">
-                        <div class="sender" style="font-size:11px; font-weight:600; color:var(--text-muted); margin-bottom:2px;">Alex</div>
-                        Anyone understand question 5?
-                        <span class="time" style="font-size:10px; color:var(--text-dim); margin-top:4px; display:block;">10:28 AM</span>
-                    </div>
-                    <div class="chat-msg sent" style="max-width:80%; padding:10px 16px; border-radius:1rem; font-size:14px; line-height:1.4; background:var(--purple); color:#FFFFFF; align-self:flex-end; border-bottom-right-radius:4px;">
-                        I can help! It's using the quadratic formula.
-                        <span class="time" style="font-size:10px; color:rgba(255,255,255,0.6); margin-top:4px; display:block;">10:30 AM</span>
-                    </div>
-                </div>
-                <div class="chat-input-area" style="padding:0.8rem 1.5rem; border-top:1px solid var(--border-color); display:flex; gap:8px; flex-shrink:0; flex-wrap:wrap;">
-                    <input type="text" id="chatInput" placeholder="Type a message..." style="flex:1; padding:10px 16px; border-radius:2rem; border:1px solid var(--border-color); background:var(--bg-input); color:var(--text-secondary); font-size:14px; outline:none; min-width:100px;" />
-                    <div class="chat-tools" style="display:flex; gap:4px; align-items:center;">
-                        <button onclick="attachImage()" title="Image" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:8px 12px; border-radius:50%; cursor:pointer; font-size:16px; transition:0.2s; width:40px; height:40px; display:flex; align-items:center; justify-content:center;"><i class="fas fa-image"></i></button>
-                        <button onclick="startVoiceRecording()" id="voiceBtn" title="Voice" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:8px 12px; border-radius:50%; cursor:pointer; font-size:16px; transition:0.2s; width:40px; height:40px; display:flex; align-items:center; justify-content:center;"><i class="fas fa-microphone"></i></button>
-                        <button onclick="attachVideo()" title="Video" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:8px 12px; border-radius:50%; cursor:pointer; font-size:16px; transition:0.2s; width:40px; height:40px; display:flex; align-items:center; justify-content:center;"><i class="fas fa-video"></i></button>
-                        <button onclick="attachFile()" title="File" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:8px 12px; border-radius:50%; cursor:pointer; font-size:16px; transition:0.2s; width:40px; height:40px; display:flex; align-items:center; justify-content:center;"><i class="fas fa-paperclip"></i></button>
-                    </div>
-                    <button class="send-btn" onclick="sendMessage()" style="background:var(--purple); border:none; color:#FFFFFF; padding:10px 20px; border-radius:2rem; font-weight:600; cursor:pointer; font-size:14px; display:flex; align-items:center; gap:6px;"><i class="fas fa-paper-plane"></i> Send</button>
-                </div>
-                <div class="built-by" style="padding:0.6rem 1.5rem; border-top:1px solid var(--border-color); text-align:center; color:var(--text-dim); font-size:11px;">
-                    Kasco · Built by <strong style="color:var(--purple-light);">Abraham Chiputa</strong>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================================================
-        BOTTOM NAV
-        ============================================================ -->
-        <nav class="bottom-nav">
-            <button class="active" onclick="switchPage('studentPortal', this)"><i class="fas fa-home"></i><span>Home</span></button>
-            <button onclick="switchPage('aiPage', this)"><i class="fas fa-robot"></i><span>AI</span></button>
-            <button onclick="switchPage('groupsPage', this)"><i class="fas fa-users"></i><span>Groups</span><span class="nav-badge">5</span></button>
-            <button onclick="switchPage('alertsPage', this)"><i class="fas fa-bell"></i><span>Alerts</span><span class="nav-badge">3</span></button>
-        </nav>
-
     </div>
+
+    <!-- ============================================================
+    CHAT MODAL
+    ============================================================ -->
+    <div class="chat-modal" id="chatModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); backdrop-filter:blur(12px); z-index:3000; align-items:center; justify-content:center;">
+        <div class="chat-modal-content" style="background:var(--bg-modal); border-radius:2rem; width:95%; max-width:500px; height:85vh; max-height:600px; display:flex; flex-direction:column; border:1px solid rgba(108,92,231,0.2); overflow:hidden;">
+            <div class="chat-header" style="padding:1rem 1.5rem; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; flex-wrap:wrap; gap:8px;">
+                <h3 style="font-size:1.1rem; display:flex; align-items:center; gap:10px; color:var(--text-primary);">
+                    <i class="fas fa-comments" style="color:var(--purple);"></i>
+                    <span id="chatGroupTitle">Kasco Group Chat</span>
+                    <span class="status" style="font-size:12px; color:var(--green);">● 5 online</span>
+                </h3>
+                <div class="chat-actions" style="display:flex; gap:6px;">
+                    <button onclick="showToast('Share a book')" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:4px 10px; border-radius:20px; cursor:pointer; font-size:12px; transition:0.2s;"><i class="fas fa-share-alt"></i></button>
+                    <button onclick="leaveGroup()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:4px 10px; border-radius:20px; cursor:pointer; font-size:12px; transition:0.2s;"><i class="fas fa-sign-out-alt"></i> Leave</button>
+                    <button class="close-chat" onclick="closeChat()" style="background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer;"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages" style="flex:1; overflow-y:auto; padding:1rem 1.5rem; display:flex; flex-direction:column; gap:10px;">
+                <div class="homework-banner" style="background:rgba(108,92,231,0.1); border:1px solid rgba(108,92,231,0.15); border-radius:1rem; padding:12px 16px; margin-bottom:10px;">
+                    <h4 style="font-size:13px; color:var(--purple-light); display:flex; align-items:center; gap:6px;"><i class="fas fa-pencil-alt"></i> Homework: Algebra</h4>
+                    <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Solve equations 1-10 on page 45. Due Friday.</p>
+                </div>
+                <div class="chat-msg received" style="max-width:80%; padding:10px 16px; border-radius:1rem; font-size:14px; line-height:1.4; background:var(--bg-input); color:var(--text-secondary); align-self:flex-start; border-bottom-left-radius:4px;">
+                    <div class="sender" style="font-size:11px; font-weight:600; color:var(--text-muted); margin-bottom:2px;">Alex</div>
+                    Anyone understand question 5?
+                    <span class="time" style="font-size:10px; color:var(--text-dim); margin-top:4px; display:block;">10:28 AM</span>
+                </div>
+                <div class="chat-msg sent" style="max-width:80%; padding:10px 16px; border-radius:1rem; font-size:14px; line-height:1.4; background:var(--purple); color:#FFFFFF; align-self:flex-end; border-bottom-right-radius:4px;">
+                    I can help! It's using the quadratic formula.
+                    <span class="time" style="font-size:10px; color:rgba(255,255,255,0.6); margin-top:4px; display:block;">10:30 AM</span>
+                </div>
+            </div>
+            <div class="chat-input-area" style="padding:0.8rem 1.5rem; border-top:1px solid var(--border-color); display:flex; gap:8px; flex-shrink:0; flex-wrap:wrap;">
+                <input type="text" id="chatInput" placeholder="Type a message..." style="flex:1; padding:10px 16px; border-radius:2rem; border:1px solid var(--border-color); background:var(--bg-input); color:var(--text-secondary); font-size:14px; outline:none; min-width:100px;" />
+                <div class="chat-tools" style="display:flex; gap:4px; align-items:center;">
+                    <button onclick="attachImage()" title="Image" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:8px 12px; border-radius:50%; cursor:pointer; font-size:16px; transition:0.2s; width:40px; height:40px; display:flex; align-items:center; justify-content:center;"><i class="fas fa-image"></i></button>
+                    <button onclick="startVoiceRecording()" id="voiceBtn" title="Voice" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:8px 12px; border-radius:50%; cursor:pointer; font-size:16px; transition:0.2s; width:40px; height:40px; display:flex; align-items:center; justify-content:center;"><i class="fas fa-microphone"></i></button>
+                    <button onclick="attachVideo()" title="Video" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:8px 12px; border-radius:50%; cursor:pointer; font-size:16px; transition:0.2s; width:40px; height:40px; display:flex; align-items:center; justify-content:center;"><i class="fas fa-video"></i></button>
+                    <button onclick="attachFile()" title="File" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:8px 12px; border-radius:50%; cursor:pointer; font-size:16px; transition:0.2s; width:40px; height:40px; display:flex; align-items:center; justify-content:center;"><i class="fas fa-paperclip"></i></button>
+                </div>
+                <button class="send-btn" onclick="sendMessage()" style="background:var(--purple); border:none; color:#FFFFFF; padding:10px 20px; border-radius:2rem; font-weight:600; cursor:pointer; font-size:14px; display:flex; align-items:center; gap:6px;"><i class="fas fa-paper-plane"></i> Send</button>
+            </div>
+            <div class="built-by" style="padding:0.6rem 1.5rem; border-top:1px solid var(--border-color); text-align:center; color:var(--text-dim); font-size:11px;">
+                Kasco · Built by <strong style="color:var(--purple-light);">Abraham Chiputa</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    BOTTOM NAV — STICKY
+    ============================================================ -->
+    <nav class="bottom-nav">
+        <button class="active" onclick="switchPage('studentPortal', this)"><i class="fas fa-home"></i><span>Home</span></button>
+        <button onclick="switchPage('aiPage', this)"><i class="fas fa-robot"></i><span>AI</span></button>
+        <button onclick="switchPage('groupsPage', this)"><i class="fas fa-users"></i><span>Groups</span><span class="nav-badge">5</span></button>
+        <button onclick="switchPage('alertsPage', this)"><i class="fas fa-bell"></i><span>Alerts</span><span class="nav-badge">3</span></button>
+    </nav>
 
     <!-- ============================================================
     JAVASCRIPT
     ============================================================ -->
     <script>
         // ============================================================
-        // FIREBASE CONFIG — Abraham Chiputa's SchoolHub
+        // FIREBASE CONFIG
         // ============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyBHUqu7soV2YZszMPsMCyC5EnpbJNAOQX4",
@@ -1588,7 +2142,7 @@
         const auth = firebase.auth();
 
         // ============================================================
-        // GITHUB CONFIG — Repository: kasco-hub (WITH TOKEN FOR UPLOADS)
+        // GITHUB CONFIG
         // ============================================================
         const GITHUB_CONFIG = {
             username: 'cyberkiller2010',
@@ -1597,7 +2151,6 @@
         };
 
         console.log('GitHub Repo:', GITHUB_CONFIG.username + '/' + GITHUB_CONFIG.repo);
-        console.log('GitHub token loaded for file uploads');
 
         // ============================================================
         // THEME TOGGLE
@@ -1629,23 +2182,26 @@
         }
 
         // ============================================================
-        // PAGE NAVIGATION
+        // PAGE NAVIGATION — FIXED
         // ============================================================
         function switchPage(pageId, btn) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             const target = document.getElementById(pageId);
             if (target) target.classList.add('active');
             document.querySelectorAll('.bottom-nav button').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active-sidebar'));
             if (btn) {
                 btn.classList.add('active');
-                document.querySelectorAll('.sidebar-item').forEach(i => {
-                    if (i.textContent.trim().toLowerCase().includes(pageId.replace('Page', '').toLowerCase())) {
-                        i.classList.add('active-sidebar');
-                    }
-                });
             }
-            toggleSidebar();
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active-sidebar'));
+            document.querySelectorAll('.sidebar-item').forEach(i => {
+                if (i.textContent.trim().toLowerCase().includes(pageId.replace('Page', '').toLowerCase())) {
+                    i.classList.add('active-sidebar');
+                }
+            });
+            // Close sidebar on mobile
+            if (window.innerWidth <= 768) {
+                toggleSidebar();
+            }
         }
 
         // ============================================================
@@ -1685,7 +2241,7 @@
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
         // ============================================================
-        // AUTH — LOGIN / SIGNUP / RESET
+        // AUTH
         // ============================================================
         function toggleAuth() {
             openModal('authModal');
@@ -1800,6 +2356,15 @@
                 });
         }
 
+        function handleLogout() {
+            auth.signOut().then(() => {
+                showToast('Logged out successfully');
+                document.getElementById('authBtn').innerHTML = '<i class="fas fa-user"></i> Login';
+                document.getElementById('authBtn').style.background = '';
+                document.getElementById('authBtn').style.color = '';
+            });
+        }
+
         // Auth state listener
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -1884,6 +2449,14 @@
                         `;
                 showToast('No match found at Kasco');
             }
+        }
+
+        // ============================================================
+        // SUBJECT LIBRARY
+        // ============================================================
+        function openSubjectLibrary(subject) {
+            showToast('Opening ' + subject + ' library...');
+            // In production, this would load resources for that subject
         }
 
         // ============================================================
@@ -2107,7 +2680,371 @@
         }
 
         // ============================================================
-        // APPLY FORM — School Admin Application
+        // TEACHER DASHBOARD
+        // ============================================================
+        function uploadResource() {
+            const fileInput = document.getElementById('teacherFileInput');
+            const resourceName = document.getElementById('resourceName').value.trim();
+            const subject = document.getElementById('resourceSubject').value;
+            const resourceType = document.getElementById('resourceType').value;
+            const description = document.getElementById('resourceDescription').value.trim();
+
+            const user = auth.currentUser;
+            if (!user) {
+                showToast('Please login as a teacher first');
+                return;
+            }
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                showToast('Please select a file');
+                return;
+            }
+
+            if (!resourceName) {
+                showToast('Please enter a resource name');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const version = 'v' + new Date().toISOString().slice(0, 10) + '-' + Date.now().toString().slice(-4);
+
+            const progressDiv = document.getElementById('uploadProgress');
+            const statusSpan = document.getElementById('uploadStatus');
+            progressDiv.classList.add('show');
+            statusSpan.textContent = 'Uploading to GitHub...';
+
+            // This is a demo - in production, this would upload to GitHub
+            setTimeout(() => {
+                progressDiv.classList.remove('show');
+                showToast('Resource "' + resourceName + '" uploaded successfully!');
+                fileInput.value = '';
+                document.getElementById('resourceName').value = '';
+                document.getElementById('resourceDescription').value = '';
+            }, 2000);
+        }
+
+        function startLiveClass() {
+            const title = document.getElementById('liveTitle').value.trim();
+            const description = document.getElementById('liveDescription').value.trim();
+            const type = document.getElementById('liveType').value;
+            const liveClass = document.getElementById('liveClass').value;
+
+            if (!title) {
+                showToast('Please enter a live title');
+                return;
+            }
+
+            showToast('Live class started! Join at: live.schoolhub.com/' + Date.now());
+            document.getElementById('liveTitle').value = '';
+            document.getElementById('liveDescription').value = '';
+        }
+
+        function showExcelUpload() {
+            document.getElementById('studentAddArea').innerHTML = `
+                <i class="fas fa-file-excel" style="font-size:2rem; color:var(--purple);"></i>
+                <p style="margin-top:8px; color:var(--text-primary);">Excel Upload</p>
+                <p style="color:var(--text-muted); font-size:13px;">Upload an Excel file with student names, grades, and classes</p>
+                <input type="file" accept=".xlsx,.xls,.csv" style="margin-top:12px; padding:8px; border:1px solid var(--border-color); border-radius:1rem; background:var(--bg-input); color:var(--text-secondary); width:100%;" />
+                <button class="btn-primary" style="margin-top:12px; width:auto; padding:8px 24px;" onclick="showToast('Excel upload functionality would process the file')">
+                    <i class="fas fa-upload"></i> Upload
+                </button>
+                <button class="btn-secondary" style="margin-top:8px; width:auto; padding:8px 24px;" onclick="showToast('Downloading template...')">
+                    <i class="fas fa-download"></i> Download Template
+                </button>
+            `;
+        }
+
+        function showManualStudentEntry() {
+            document.getElementById('studentAddArea').innerHTML = `
+                <i class="fas fa-pencil-alt" style="font-size:2rem; color:var(--purple);"></i>
+                <p style="margin-top:8px; color:var(--text-primary);">Manual Entry</p>
+                <p style="color:var(--text-muted); font-size:13px;">Enter student details one by one</p>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; text-align:left;">
+                    <div class="form-group" style="grid-column:span 2;">
+                        <label style="color:var(--text-muted); font-size:12px;">Student Name</label>
+                        <input type="text" placeholder="Full name" style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                    </div>
+                    <div class="form-group">
+                        <label style="color:var(--text-muted); font-size:12px;">Grade</label>
+                        <select style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);">
+                            <option>1</option><option>2</option><option>3</option><option>4</option>
+                            <option>5</option><option>6</option><option>7</option><option>8</option>
+                            <option>9</option><option>10</option><option>11</option><option>12</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label style="color:var(--text-muted); font-size:12px;">Class</label>
+                        <input type="text" placeholder="Class name" style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                    </div>
+                </div>
+                <button class="btn-primary" style="margin-top:12px; width:auto; padding:8px 24px;" onclick="showToast('Student added successfully!')">
+                    <i class="fas fa-plus"></i> Add Student
+                </button>
+            `;
+        }
+
+        function showOCRUpload() {
+            document.getElementById('studentAddArea').innerHTML = `
+                <i class="fas fa-camera" style="font-size:2rem; color:var(--purple);"></i>
+                <p style="margin-top:8px; color:var(--text-primary);">OCR Scan</p>
+                <p style="color:var(--text-muted); font-size:13px;">Upload a photo of the class list to extract student names</p>
+                <input type="file" accept="image/*" style="margin-top:12px; padding:8px; border:1px solid var(--border-color); border-radius:1rem; background:var(--bg-input); color:var(--text-secondary); width:100%;" />
+                <button class="btn-primary" style="margin-top:12px; width:auto; padding:8px 24px;" onclick="showToast('OCR scanning would extract student names from the image')">
+                    <i class="fas fa-eye"></i> Scan & Extract
+                </button>
+            `;
+        }
+
+        // ============================================================
+        // SCHOOL ADMIN DASHBOARD
+        // ============================================================
+        function addTeacher() {
+            const name = document.getElementById('addTeacherName').value.trim();
+            const email = document.getElementById('addTeacherEmail').value.trim();
+
+            if (!name || !email) {
+                showToast('Please fill in both name and email');
+                return;
+            }
+
+            // Generate temporary password
+            const tempPassword = 'TEACHER@' + Math.floor(1000 + Math.random() * 9000);
+
+            const list = document.getElementById('teacherList');
+            if (list.querySelector('p')) list.innerHTML = '';
+
+            const div = document.createElement('div');
+            div.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--bg-input); border-radius:0.8rem; margin-bottom:8px; border:1px solid var(--border-color);';
+            div.innerHTML = `
+                <div>
+                    <strong style="color:var(--text-primary);">${name}</strong>
+                    <p style="color:var(--text-muted); font-size:12px;">${email}</p>
+                    <p style="color:var(--text-dim); font-size:10px;">Temp Password: ${tempPassword}</p>
+                </div>
+                <button onclick="this.parentElement.remove()" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:4px 12px; border-radius:1rem; cursor:pointer;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            list.appendChild(div);
+
+            showToast('Teacher ' + name + ' added successfully!');
+            document.getElementById('addTeacherName').value = '';
+            document.getElementById('addTeacherEmail').value = '';
+
+            // Update count
+            document.getElementById('adminTeacherCount').textContent = list.children.length;
+        }
+
+        // ============================================================
+        // SUPER ADMIN
+        // ============================================================
+        function superAdminLogin() {
+            const username = document.getElementById('superAdminUsername').value.trim();
+            const password = document.getElementById('superAdminPassword').value.trim();
+
+            if (username === 'admin' && password === 'admin123') {
+                document.getElementById('superAdminLogin').style.display = 'none';
+                document.getElementById('superAdminContent').style.display = 'block';
+                showToast('Welcome Super Admin!');
+                loadSuperAdminData();
+            } else {
+                showToast('Invalid username or password');
+            }
+        }
+
+        function loadSuperAdminData() {
+            document.getElementById('totalSchools').textContent = '5';
+            document.getElementById('pendingApplications').textContent = '3';
+            document.getElementById('totalTeachers').textContent = '25';
+
+            const pendingList = document.getElementById('pendingApplicationsList');
+            pendingList.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--bg-input); border-radius:0.8rem; margin-bottom:8px; border:1px solid var(--border-color);">
+                    <div>
+                        <strong style="color:var(--text-primary);">Kasco Secondary</strong>
+                        <p style="color:var(--text-muted); font-size:12px;">Admin: John Banda · Lusaka, Zambia</p>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button onclick="approveSchool('Kasco Secondary')" style="background:rgba(74,222,128,0.15); color:var(--green); border:1px solid rgba(74,222,128,0.2); padding:4px 16px; border-radius:1rem; cursor:pointer;">
+                            <i class="fas fa-check"></i> Approve
+                        </button>
+                        <button onclick="rejectSchool('Kasco Secondary')" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:4px 16px; border-radius:1rem; cursor:pointer;">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            const schoolsList = document.getElementById('allSchoolsList');
+            schoolsList.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--bg-input); border-radius:0.8rem; margin-bottom:8px; border:1px solid var(--border-color);">
+                    <div>
+                        <strong style="color:var(--text-primary);">Kasco Secondary</strong>
+                        <p style="color:var(--text-muted); font-size:12px;">Code: KASCO-2025-001 · Lusaka, Zambia</p>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button onclick="showToast('Managing school...')" style="background:rgba(108,92,231,0.15); color:var(--purple); border:1px solid rgba(108,92,231,0.2); padding:4px 12px; border-radius:1rem; cursor:pointer;">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="removeSchool('Kasco Secondary')" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:4px 12px; border-radius:1rem; cursor:pointer;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--bg-input); border-radius:0.8rem; margin-bottom:8px; border:1px solid var(--border-color);">
+                    <div>
+                        <strong style="color:var(--text-primary);">Kasco Primary</strong>
+                        <p style="color:var(--text-muted); font-size:12px;">Code: KASCO-2025-002 · Lusaka, Zambia</p>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button onclick="showToast('Managing school...')" style="background:rgba(108,92,231,0.15); color:var(--purple); border:1px solid rgba(108,92,231,0.2); padding:4px 12px; border-radius:1rem; cursor:pointer;">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="removeSchool('Kasco Primary')" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:4px 12px; border-radius:1rem; cursor:pointer;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function approveSchool(name) {
+            const code = 'SCH-' + Date.now().toString().slice(-6);
+            const tempPass = 'SCHOOL@' + Math.floor(1000 + Math.random() * 9000);
+            showToast('School "' + name + '" approved! Code: ' + code + ' | Temp Password: ' + tempPass);
+            loadSuperAdminData();
+        }
+
+        function rejectSchool(name) {
+            if (confirm('Reject ' + name + '?')) {
+                showToast('School "' + name + '" rejected');
+                loadSuperAdminData();
+            }
+        }
+
+        function removeSchool(name) {
+            if (confirm('Remove ' + name + '?')) {
+                showToast('School "' + name + '" removed');
+                loadSuperAdminData();
+            }
+        }
+
+        function showAddSchoolForm() {
+            showToast('Add School form would open here');
+        }
+
+        // ============================================================
+        // PARENT PORTAL
+        // ============================================================
+        function viewReportCard() {
+            const studentName = document.getElementById('parentStudentName').value.trim();
+            const schoolName = document.getElementById('parentSchoolName').value.trim();
+
+            if (!studentName || !schoolName) {
+                showToast('Please enter student name and school');
+                return;
+            }
+
+            const container = document.getElementById('reportCardContainer');
+            container.style.display = 'block';
+            container.innerHTML = `
+                <div style="background:var(--bg-card); border-radius:1rem; padding:2rem; border:1px solid var(--border-color);">
+                    <div style="text-align:center; border-bottom:2px solid var(--purple); padding-bottom:16px; margin-bottom:16px;">
+                        <h2 style="color:var(--text-primary);"><i class="fas fa-school" style="color:var(--purple);"></i> ${schoolName}</h2>
+                        <h3 style="color:var(--text-muted); font-weight:400;">REPORT CARD</h3>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px;">
+                        <div><strong style="color:var(--text-primary);">Student:</strong> <span style="color:var(--text-muted);">${studentName}</span></div>
+                        <div><strong style="color:var(--text-primary);">Grade:</strong> <span style="color:var(--text-muted);">12</span></div>
+                        <div><strong style="color:var(--text-primary);">Term:</strong> <span style="color:var(--text-muted);">1</span></div>
+                        <div><strong style="color:var(--text-primary);">Year:</strong> <span style="color:var(--text-muted);">2025</span></div>
+                    </div>
+                    <table style="width:100%; border-collapse:collapse; margin-bottom:16px;">
+                        <thead>
+                            <tr style="background:var(--purple); color:#FFFFFF;">
+                                <th style="padding:10px; text-align:left;">Subject</th>
+                                <th style="padding:10px; text-align:center;">Test</th>
+                                <th style="padding:10px; text-align:center;">Exam</th>
+                                <th style="padding:10px; text-align:center;">Total</th>
+                                <th style="padding:10px; text-align:center;">Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom:1px solid var(--border-color);">
+                                <td style="padding:10px; color:var(--text-secondary);">Mathematics</td>
+                                <td style="padding:10px; text-align:center; color:var(--text-secondary);">85</td>
+                                <td style="padding:10px; text-align:center; color:var(--text-secondary);">78</td>
+                                <td style="padding:10px; text-align:center; color:var(--text-secondary);">163</td>
+                                <td style="padding:10px; text-align:center; color:var(--green); font-weight:600;">A</td>
+                            </tr>
+                            <tr style="border-bottom:1px solid var(--border-color);">
+                                <td style="padding:10px; color:var(--text-secondary);">English</td>
+                                <td style="padding:10px; text-align:center; color:var(--text-secondary);">72</td>
+                                <td style="padding:10px; text-align:center; color:var(--text-secondary);">85</td>
+                                <td style="padding:10px; text-align:center; color:var(--text-secondary);">157</td>
+                                <td style="padding:10px; text-align:center; color:var(--green); font-weight:600;">B+</td>
+                            </tr>
+                            <tr style="border-bottom:1px solid var(--border-color);">
+                                <td style="padding:10px; color:var(--text-secondary);">Science</td>
+                                <td style="padding:10px; text-align:center; color:var(--text-secondary);">90</td>
+                                <td style="padding:10px; text-align:center; color:var(--text-secondary);">88</td>
+                                <td style="padding:10px; text-align:center; color:var(--text-secondary);">178</td>
+                                <td style="padding:10px; text-align:center; color:var(--green); font-weight:600;">A</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; background:var(--bg-input); padding:16px; border-radius:1rem;">
+                        <div><strong style="color:var(--text-primary);">Total Average:</strong> <span style="color:var(--purple-light);">81.5</span></div>
+                        <div><strong style="color:var(--text-primary);">Overall Grade:</strong> <span style="color:var(--green); font-weight:600;">B+</span></div>
+                        <div><strong style="color:var(--text-primary);">Class Position:</strong> <span style="color:var(--text-secondary);">3/25</span></div>
+                    </div>
+                    <div style="margin-top:16px; padding:12px; background:rgba(108,92,231,0.1); border-radius:1rem; border-left:3px solid var(--purple);">
+                        <p style="color:var(--text-muted); font-size:14px;"><i class="fas fa-comment" style="color:var(--purple);"></i> Teacher's Comment: John is doing well in Mathematics. Keep up the good work!</p>
+                    </div>
+                    <div style="margin-top:16px; text-align:center;">
+                        <p style="color:var(--text-dim); font-size:11px;">Printed: ${new Date().toLocaleDateString()}</p>
+                    </div>
+                    <div style="margin-top:16px; display:flex; gap:12px; justify-content:center;">
+                        <button onclick="showToast('Printing report card...')" style="background:var(--purple); color:#FFFFFF; border:none; padding:8px 24px; border-radius:2rem; cursor:pointer;">
+                            <i class="fas fa-print"></i> Print
+                        </button>
+                        <button onclick="showToast('Downloading PDF...')" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:8px 24px; border-radius:2rem; cursor:pointer;">
+                            <i class="fas fa-download"></i> Download PDF
+                        </button>
+                    </div>
+                </div>
+            `;
+            showToast('Report card loaded for ' + studentName);
+        }
+
+        // ============================================================
+        // REGISTER SCHOOL
+        // ============================================================
+        function registerSchool() {
+            const schoolName = document.getElementById('regSchoolName').value.trim();
+            const location = document.getElementById('regLocation').value.trim();
+            const schoolType = document.getElementById('regSchoolType').value;
+            const adminName = document.getElementById('regAdminName').value.trim();
+            const adminEmail = document.getElementById('regAdminEmail').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const message = document.getElementById('regMessage').value.trim();
+
+            if (!schoolName || !adminName || !adminEmail) {
+                showToast('Please fill in required fields');
+                return;
+            }
+
+            showToast('Application submitted! Awaiting Super Admin approval.');
+            document.getElementById('regSchoolName').value = '';
+            document.getElementById('regLocation').value = '';
+            document.getElementById('regAdminName').value = '';
+            document.getElementById('regAdminEmail').value = '';
+            document.getElementById('regPhone').value = '';
+            document.getElementById('regMessage').value = '';
+        }
+
+        // ============================================================
+        // APPLY FORM
         // ============================================================
         function showApplyForm() {
             openModal('applyModal');
@@ -2122,53 +3059,224 @@
             const schoolType = document.getElementById('applySchoolType').value;
             const message = document.getElementById('applyMessage').value.trim();
 
-            if (!schoolName) { showToast('Please enter your school name'); return; }
-            if (!adminName) { showToast('Please enter your name'); return; }
-            if (!email) { showToast('Please enter your email address'); return; }
+            if (!schoolName || !adminName || !email) {
+                showToast('Please fill in required fields');
+                return;
+            }
 
-            // WhatsApp notification to Abraham Chiputa
-            const whatsappMsg = 'New School Admin Application - Kasco\n\n' +
-                'School: ' + schoolName + '\n' +
-                'Admin: ' + adminName + '\n' +
-                'Email: ' + email + '\n' +
-                'Phone: ' + (phone || 'Not provided') + '\n' +
-                'Location: ' + (location || 'Not provided') + '\n' +
-                'School Type: ' + schoolType + '\n' +
-                'Message: ' + (message || 'No additional message') + '\n\n' +
-                'Applied: ' + new Date().toLocaleString() + '\n\n' +
-                'Sent to Abraham Chiputa · Kasco';
-
-            const waUrl = 'https://wa.me/260770231269?text=' + encodeURIComponent(whatsappMsg);
+            const waUrl = 'https://wa.me/260770231269?text=' + encodeURIComponent(
+                'New School Admin Application - Kasco\n\nSchool: ' + schoolName +
+                '\nAdmin: ' + adminName + '\nEmail: ' + email + '\nPhone: ' + (phone || 'Not provided') +
+                '\nLocation: ' + (location || 'Not provided') + '\nSchool Type: ' + schoolType +
+                '\nMessage: ' + (message || 'No additional message')
+            );
             window.open(waUrl, '_blank');
 
-            // Email notification
-            const emailSubject = 'New School Admin Application - Kasco';
-            const emailBody = 'Dear Abraham Chiputa,\n\n' +
-                'A new school has applied to join SchoolHub at Kasco!\n\n' +
-                'APPLICATION DETAILS\n' +
-                '─────────────────────\n' +
-                'School: ' + schoolName + '\n' +
-                'Admin: ' + adminName + '\n' +
-                'Email: ' + email + '\n' +
-                'Phone: ' + (phone || 'Not provided') + '\n' +
-                'Location: ' + (location || 'Not provided') + '\n' +
-                'School Type: ' + schoolType + '\n' +
-                'Message: ' + (message || 'No additional message') + '\n' +
-                'Applied: ' + new Date().toLocaleString() + '\n\n' +
-                'Action Required:\n' +
-                'Log in to Super Admin Dashboard to approve/reject\n\n' +
-                'Regards,\n' +
-                'SchoolHub System\n' +
-                'Kasco · Built by Abraham Chiputa';
-
-            const emailUrl =
-                'mailto:mundiamartin293@gmail.com?subject=' + encodeURIComponent(emailSubject) + '&body=' + encodeURIComponent(
-                    emailBody);
+            const emailUrl = 'mailto:mundiamartin293@gmail.com?subject=' +
+                encodeURIComponent('New School Admin Application - Kasco') + '&body=' +
+                encodeURIComponent('School: ' + schoolName + '\nAdmin: ' + adminName + '\nEmail: ' + email);
             window.open(emailUrl, '_blank');
 
             closeModal('applyModal');
             showToast('Application submitted to Abraham Chiputa!');
-            showToast('Check your email and WhatsApp for confirmation.');
+        }
+
+        // ============================================================
+        // VIEWER SYSTEM — COMPLETE
+        // ============================================================
+        let currentViewerFile = null;
+
+        function openViewer(file) {
+            const modal = document.getElementById('viewerModal');
+            const body = document.getElementById('viewerBody');
+            const title = document.getElementById('viewerFileName');
+            const icon = document.getElementById('viewerFileIcon');
+
+            currentViewerFile = file;
+            title.textContent = file.name || 'File';
+            modal.classList.add('active');
+
+            const fileType = getFileType(file.name || '');
+            const fileUrl = file.downloadURL || file.url || '';
+
+            // Set icon based on file type
+            const iconMap = {
+                'pdf': 'fa-file-pdf',
+                'video': 'fa-file-video',
+                'audio': 'fa-file-audio',
+                'image': 'fa-file-image',
+                'text': 'fa-file-alt',
+                'word': 'fa-file-word',
+                'excel': 'fa-file-excel',
+                'powerpoint': 'fa-file-powerpoint',
+                'unknown': 'fa-file'
+            };
+            icon.className = 'fas ' + (iconMap[fileType] || 'fa-file');
+
+            switch (fileType) {
+                case 'pdf':
+                    body.innerHTML =
+                        `<iframe src="${fileUrl}#toolbar=1" width="100%" height="100%" style="min-height:500px;"></iframe>`;
+                    break;
+
+                case 'video':
+                    body.innerHTML = `
+                                <video controls autoplay width="100%" height="100%" style="max-height:80vh;">
+                                    <source src="${fileUrl}" type="video/mp4">
+                                    <source src="${fileUrl}" type="video/webm">
+                                    Your browser does not support video.
+                                </video>
+                            `;
+                    break;
+
+                case 'audio':
+                    body.innerHTML = `
+                                <audio controls autoplay width="100%" style="width:100%;">
+                                    <source src="${fileUrl}" type="audio/mpeg">
+                                    <source src="${fileUrl}" type="audio/ogg">
+                                    Your browser does not support audio.
+                                </audio>
+                            `;
+                    break;
+
+                case 'image':
+                    body.innerHTML =
+                        `<img src="${fileUrl}" alt="${file.name}" style="max-width:100%; max-height:80vh; object-fit:contain;" />`;
+                    break;
+
+                case 'text':
+                    fetch(fileUrl)
+                        .then(res => res.text())
+                        .then(content => {
+                            body.innerHTML =
+                                `<pre style="white-space:pre-wrap; padding:20px; margin:0; font-family:'Inter',monospace; font-size:14px; line-height:1.6; color:var(--text-secondary); max-width:100%; overflow:auto;">${escapeHtml(content)}</pre>`;
+                        })
+                        .catch(() => {
+                            body.innerHTML = `
+                                        <div style="text-align:center; padding:40px;">
+                                            <i class="fas fa-file" style="font-size:3rem; color:var(--purple);"></i>
+                                            <p style="margin-top:20px; color:var(--text-muted);">Could not load text content.</p>
+                                            <p style="color:var(--text-dim);">Please download the file.</p>
+                                        </div>
+                                    `;
+                        });
+                    break;
+
+                case 'word':
+                case 'excel':
+                case 'powerpoint':
+                    const viewerUrl =
+                        `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+                    body.innerHTML = `
+                                <iframe src="${viewerUrl}" width="100%" height="100%" style="min-height:500px;"></iframe>
+                                <div style="position:absolute; bottom:80px; left:50%; transform:translateX(-50%); background:var(--bg-card); padding:6px 16px; border-radius:2rem; border:1px solid var(--border-color);">
+                                    <span style="color:var(--text-dim); font-size:11px;">
+                                        <i class="fas fa-info-circle" style="color:var(--purple);"></i>
+                                        Powered by Google Docs Viewer
+                                    </span>
+                                </div>
+                            `;
+                    break;
+
+                default:
+                    body.innerHTML = `
+                                <div style="text-align:center; padding:60px;">
+                                    <i class="fas fa-file" style="font-size:4rem; color:var(--purple);"></i>
+                                    <h3 style="margin-top:20px; color:var(--text-primary);">Cannot View This File Type</h3>
+                                    <p style="color:var(--text-muted); margin-top:8px;">${file.name || 'File'}</p>
+                                    <p style="color:var(--text-dim); margin-top:4px;">Please download to view this file.</p>
+                                    <button onclick="viewerDownload()" class="btn-primary" style="margin-top:20px; max-width:200px;">
+                                        <i class="fas fa-download"></i> Download
+                                    </button>
+                                </div>
+                            `;
+                    break;
+            }
+        }
+
+        function closeViewer() {
+            const modal = document.getElementById('viewerModal');
+            const body = document.getElementById('viewerBody');
+            modal.classList.remove('active');
+            body.innerHTML =
+                '<div style="text-align:center; padding:40px; color:var(--text-muted);"><i class="fas fa-spinner fa-spin" style="font-size:3rem;"></i><p style="margin-top:20px;">Loading...</p></div>';
+            currentViewerFile = null;
+        }
+
+        function viewerDownload() {
+            if (currentViewerFile) {
+                const url = currentViewerFile.downloadURL || currentViewerFile.url;
+                if (url) {
+                    window.open(url, '_blank');
+                    showToast('Downloading ' + currentViewerFile.name);
+                } else {
+                    showToast('No download URL available');
+                }
+            }
+        }
+
+        function viewerShare() {
+            if (currentViewerFile) {
+                const url = currentViewerFile.downloadURL || currentViewerFile.url;
+                if (navigator.share) {
+                    navigator.share({
+                        title: currentViewerFile.name,
+                        text: 'Check out this resource from SchoolHub!',
+                        url: url
+                    }).catch(() => {});
+                } else {
+                    navigator.clipboard.writeText(url).then(() => {
+                        showToast('Link copied to clipboard');
+                    }).catch(() => {
+                        showToast('Share: ' + url);
+                    });
+                }
+            }
+        }
+
+        function getFileType(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            const types = {
+                'pdf': 'pdf',
+                'jpg': 'image',
+                'jpeg': 'image',
+                'png': 'image',
+                'gif': 'image',
+                'svg': 'image',
+                'webp': 'image',
+                'mp4': 'video',
+                'webm': 'video',
+                'mov': 'video',
+                'avi': 'video',
+                'mkv': 'video',
+                'mp3': 'audio',
+                'wav': 'audio',
+                'ogg': 'audio',
+                'm4a': 'audio',
+                'flac': 'audio',
+                'txt': 'text',
+                'md': 'text',
+                'log': 'text',
+                'js': 'text',
+                'html': 'text',
+                'css': 'text',
+                'json': 'text',
+                'xml': 'text',
+                'py': 'text',
+                'doc': 'word',
+                'docx': 'word',
+                'xls': 'excel',
+                'xlsx': 'excel',
+                'ppt': 'powerpoint',
+                'pptx': 'powerpoint'
+            };
+            return types[ext] || 'unknown';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         // ============================================================
@@ -2179,6 +3287,7 @@
                 closeModal('applyModal');
                 closeModal('authModal');
                 closeChat();
+                closeViewer();
             }
             if (e.key === 'Enter' && document.activeElement?.id === 'chatInput') {
                 sendMessage();
@@ -2195,6 +3304,7 @@
         console.log('Firebase Auth connected');
         console.log('GitHub token loaded for file uploads');
         console.log('Repository: cyberkiller2010/kasco-hub');
+        console.log('Viewer System: Ready');
     </script>
 
 </body>
