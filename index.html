@@ -351,6 +351,10 @@
             <div id="teacherLogin" class="login-box">
                 <h3><i class="fas fa-chalkboard-teacher" style="color:var(--purple);"></i> Teacher Login</h3>
                 <div class="form-group">
+                    <label style="color:var(--text-muted); font-size:13px;">School Name</label>
+                    <input type="text" id="teacherSchoolName" placeholder="Enter your school name" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                </div>
+                <div class="form-group">
                     <label style="color:var(--text-muted); font-size:13px;">Email</label>
                     <input type="email" id="teacherLoginEmail" placeholder="teacher@school.com" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
                 </div>
@@ -475,6 +479,10 @@
             <!-- School Admin Login -->
             <div id="adminLogin" class="login-box">
                 <h3><i class="fas fa-school" style="color:var(--purple);"></i> School Admin Login</h3>
+                <div class="form-group">
+                    <label style="color:var(--text-muted); font-size:13px;">School Name</label>
+                    <input type="text" id="adminSchoolName" placeholder="Enter your school name" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                </div>
                 <div class="form-group">
                     <label style="color:var(--text-muted); font-size:13px;">Email</label>
                     <input type="email" id="adminLoginEmail" placeholder="admin@school.com" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
@@ -740,6 +748,39 @@
         </div>
     </div>
 
+    <!-- ============================================================
+   FORCE PASSWORD CHANGE MODAL
+   ============================================================ -->
+    <div class="modal-overlay" id="forcePasswordModal">
+        <div class="modal-content">
+            <h2><i class="fas fa-key" style="color:var(--purple);"></i> Change Password</h2>
+            <p class="sub">You must change your temporary password before continuing.</p>
+
+            <div class="form-group">
+                <label style="color:var(--text-muted); font-size:13px;">New Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="newPassword" placeholder="Enter new password (min 6 characters)" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding-right:48px;" />
+                    <button class="password-toggle" onclick="togglePasswordVisibility('newPassword', this)"><i class="fas fa-eye"></i></button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label style="color:var(--text-muted); font-size:13px;">Confirm Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="confirmPassword" placeholder="Confirm new password" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding-right:48px;" />
+                    <button class="password-toggle" onclick="togglePasswordVisibility('confirmPassword', this)"><i class="fas fa-eye"></i></button>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="changePassword()">
+                <i class="fas fa-save"></i> Change Password
+            </button>
+            <button class="btn-secondary" onclick="skipPasswordChange()" style="margin-top:8px;">
+                <i class="fas fa-forward"></i> Skip (for testing)
+            </button>
+        </div>
+    </div>
+
     <!-- CHAT MODAL -->
     <div class="chat-modal" id="chatModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); backdrop-filter:blur(12px); z-index:3000; align-items:center; justify-content:center;">
         <div class="chat-modal-content" style="background:var(--bg-modal); border-radius:2rem; width:95%; max-width:500px; height:85vh; max-height:600px; display:flex; flex-direction:column; border:1px solid rgba(108,92,231,0.2); overflow:hidden;">
@@ -848,6 +889,7 @@
         let isDragging = false;
         let startX, startY, translateX = 0,
             translateY = 0;
+        let pendingPasswordChange = { role: '', email: '', school: '' };
 
         // ============================================================
         // THEME TOGGLE
@@ -947,9 +989,6 @@
             const users = JSON.parse(localStorage.getItem('schoolhub_users') || '{}');
             const userData = users[user.uid];
             if (userData) return userData.role;
-            const teachers = JSON.parse(localStorage.getItem('schoolhub_teachers') || '[]');
-            const teacher = teachers.find(t => t.email === user.email);
-            if (teacher) return 'teacher';
             return null;
         }
 
@@ -984,6 +1023,124 @@
         }
 
         // ============================================================
+        // PASSWORD TOGGLE
+        // ============================================================
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        // ============================================================
+        // FORCE PASSWORD CHANGE
+        // ============================================================
+        function showForcePasswordChange(role, email, school) {
+            pendingPasswordChange = { role, email, school };
+            document.getElementById('forcePasswordModal').classList.add('active');
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        }
+
+        function changePassword() {
+            const newPassword = document.getElementById('newPassword').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+            if (newPassword.length < 6) {
+                showToast('Password must be at least 6 characters');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showToast('Passwords do not match');
+                return;
+            }
+
+            const user = auth.currentUser;
+            if (!user) {
+                showToast('Please login first');
+                return;
+            }
+
+            user.updatePassword(newPassword)
+                .then(() => {
+                    // Mark as not first login
+                    const { role, email, school } = pendingPasswordChange;
+
+                    if (role === 'schooladmin') {
+                        const schools = JSON.parse(localStorage.getItem('schoolhub_schools') || '[]');
+                        const admin = schools.find(s => s.adminEmail === email && s.name === school);
+                        if (admin) {
+                            admin.firstLogin = false;
+                            localStorage.setItem('schoolhub_schools', JSON.stringify(schools));
+                        }
+                    } else if (role === 'teacher') {
+                        const teachers = JSON.parse(localStorage.getItem('schoolhub_teachers') || '[]');
+                        const teacher = teachers.find(t => t.email === email && t.school === school);
+                        if (teacher) {
+                            teacher.firstLogin = false;
+                            localStorage.setItem('schoolhub_teachers', JSON.stringify(teachers));
+                        }
+                    }
+
+                    document.getElementById('forcePasswordModal').classList.remove('active');
+                    showToast('✅ Password changed successfully!');
+
+                    // Show appropriate dashboard
+                    if (role === 'schooladmin') {
+                        document.getElementById('adminLogin').style.display = 'none';
+                        document.getElementById('adminDashboardContent').style.display = 'block';
+                        showToast('Welcome, School Admin at ' + school + '!');
+                        updateAdminStats();
+                    } else if (role === 'teacher') {
+                        document.getElementById('teacherLogin').style.display = 'none';
+                        document.getElementById('teacherDashboardContent').style.display = 'block';
+                        showToast('Welcome, Teacher at ' + school + '!');
+                        updateTeacherStats();
+                    }
+                })
+                .catch((error) => {
+                    showToast('❌ Failed to change password: ' + error.message);
+                });
+        }
+
+        function skipPasswordChange() {
+            const { role, email, school } = pendingPasswordChange;
+
+            if (role === 'schooladmin') {
+                const schools = JSON.parse(localStorage.getItem('schoolhub_schools') || '[]');
+                const admin = schools.find(s => s.adminEmail === email && s.name === school);
+                if (admin) {
+                    admin.firstLogin = false;
+                    localStorage.setItem('schoolhub_schools', JSON.stringify(schools));
+                }
+                document.getElementById('forcePasswordModal').classList.remove('active');
+                document.getElementById('adminLogin').style.display = 'none';
+                document.getElementById('adminDashboardContent').style.display = 'block';
+                showToast('Welcome, School Admin at ' + school + '!');
+                updateAdminStats();
+            } else if (role === 'teacher') {
+                const teachers = JSON.parse(localStorage.getItem('schoolhub_teachers') || '[]');
+                const teacher = teachers.find(t => t.email === email && t.school === school);
+                if (teacher) {
+                    teacher.firstLogin = false;
+                    localStorage.setItem('schoolhub_teachers', JSON.stringify(teachers));
+                }
+                document.getElementById('forcePasswordModal').classList.remove('active');
+                document.getElementById('teacherLogin').style.display = 'none';
+                document.getElementById('teacherDashboardContent').style.display = 'block';
+                showToast('Welcome, Teacher at ' + school + '!');
+                updateTeacherStats();
+            }
+        }
+
+        // ============================================================
         // LOGOUT
         // ============================================================
         function handleLogout() {
@@ -1006,6 +1163,7 @@
                 document.getElementById('superDashboard').style.display = 'none';
                 document.getElementById('parentLogin').style.display = 'block';
                 document.getElementById('parentDashboardContent').style.display = 'none';
+                document.getElementById('forcePasswordModal').classList.remove('active');
             });
         }
 
@@ -1013,36 +1171,58 @@
         // TEACHER LOGIN
         // ============================================================
         function teacherLogin() {
+            const schoolName = document.getElementById('teacherSchoolName').value.trim();
             const email = document.getElementById('teacherLoginEmail').value.trim();
             const password = document.getElementById('teacherLoginPassword').value.trim();
+
+            if (!schoolName) {
+                showToast('Please enter your school name');
+                return;
+            }
 
             if (!email || !password) {
                 showToast('Please enter email and password');
                 return;
             }
 
+            // Step 1: Find the school
+            const schools = JSON.parse(localStorage.getItem('schoolhub_schools') || '[]');
+            const school = schools.find(s => s.name.toLowerCase() === schoolName.toLowerCase());
+
+            if (!school) {
+                showToast('School not found. Please check the name.');
+                return;
+            }
+
+            // Step 2: Login with Firebase
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     const user = userCredential.user;
-                    
-                    // Check if user is a teacher
+
+                    // Step 3: Check if teacher exists in THIS school
                     const teachers = JSON.parse(localStorage.getItem('schoolhub_teachers') || '[]');
-                    const teacher = teachers.find(t => t.email === email);
+                    const teacher = teachers.find(t => t.email === email && t.school === school.name);
 
                     if (!teacher) {
-                        // Check if user has teacher role in users
                         const users = JSON.parse(localStorage.getItem('schoolhub_users') || '{}');
                         const userData = users[user.uid];
                         if (!userData || userData.role !== 'teacher') {
-                            showToast('You are not registered as a teacher');
+                            showToast('You are not registered as a teacher at ' + school.name);
                             auth.signOut();
                             return;
                         }
                     }
 
+                    // Step 4: Check if first login
+                    if (teacher && teacher.firstLogin !== false) {
+                        showForcePasswordChange('teacher', email, school.name);
+                        return;
+                    }
+
+                    // Show dashboard
                     document.getElementById('teacherLogin').style.display = 'none';
                     document.getElementById('teacherDashboardContent').style.display = 'block';
-                    showToast('Welcome, ' + (teacher ? teacher.name : 'Teacher') + '!');
+                    showToast('Welcome, ' + (teacher ? teacher.name : 'Teacher') + ' at ' + school.name + '!');
                     updateTeacherStats();
                 })
                 .catch((error) => {
@@ -1060,35 +1240,57 @@
         // SCHOOL ADMIN LOGIN
         // ============================================================
         function schoolAdminLogin() {
+            const schoolName = document.getElementById('adminSchoolName').value.trim();
             const email = document.getElementById('adminLoginEmail').value.trim();
             const password = document.getElementById('adminLoginPassword').value.trim();
+
+            if (!schoolName) {
+                showToast('Please enter your school name');
+                return;
+            }
 
             if (!email || !password) {
                 showToast('Please enter email and password');
                 return;
             }
 
+            // Step 1: Find the school
+            const schools = JSON.parse(localStorage.getItem('schoolhub_schools') || '[]');
+            const school = schools.find(s => s.name.toLowerCase() === schoolName.toLowerCase());
+
+            if (!school) {
+                showToast('School not found. Please check the name.');
+                return;
+            }
+
+            // Step 2: Login with Firebase
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     const user = userCredential.user;
-                    
-                    // Check if user is a school admin
-                    const schools = JSON.parse(localStorage.getItem('schoolhub_schools') || '[]');
-                    const admin = schools.find(s => s.adminEmail === email);
-                    
-                    if (!admin) {
+
+                    // Step 3: Check if admin for THIS school
+                    const admin = school;
+
+                    if (!admin || admin.adminEmail !== email) {
                         const users = JSON.parse(localStorage.getItem('schoolhub_users') || '{}');
                         const userData = users[user.uid];
                         if (!userData || userData.role !== 'schooladmin') {
-                            showToast('You are not registered as a school admin');
+                            showToast('You are not the admin of ' + schoolName);
                             auth.signOut();
                             return;
                         }
                     }
-                    
+
+                    // Step 4: Check if first login
+                    if (admin && admin.firstLogin !== false) {
+                        showForcePasswordChange('schooladmin', email, school.name);
+                        return;
+                    }
+
+                    // Show dashboard
                     document.getElementById('adminLogin').style.display = 'none';
                     document.getElementById('adminDashboardContent').style.display = 'block';
-                    showToast('Welcome, ' + (admin ? admin.adminName : 'School Admin') + '!');
+                    showToast('Welcome, ' + admin.adminName + ' at ' + school.name + '!');
                     updateAdminStats();
                 })
                 .catch((error) => {
@@ -1117,7 +1319,7 @@
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     const user = userCredential.user;
-                    
+
                     const users = JSON.parse(localStorage.getItem('schoolhub_users') || '{}');
                     const userData = users[user.uid];
 
@@ -1176,25 +1378,25 @@
             if (found) {
                 result.innerHTML =
                     `
-                    <div style="background:rgba(108,92,231,0.15); border:1px solid rgba(108,92,231,0.3); border-radius:1rem; padding:1.2rem; text-align:center;">
-                        <i class="fas fa-check-circle" style="color:var(--green); font-size:2rem;"></i>
-                        <h3 style="color:var(--text-primary); margin-top:8px;">Welcome back, ${name}!</h3>
-                        <p style="color:var(--text-muted);">${school} · Grade ${grade}</p>
-                    </div>
-                `;
+                        <div style="background:rgba(108,92,231,0.15); border:1px solid rgba(108,92,231,0.3); border-radius:1rem; padding:1.2rem; text-align:center;">
+                            <i class="fas fa-check-circle" style="color:var(--green); font-size:2rem;"></i>
+                            <h3 style="color:var(--text-primary); margin-top:8px;">Welcome back, ${name}!</h3>
+                            <p style="color:var(--text-muted);">${school} · Grade ${grade}</p>
+                        </div>
+                    `;
                 showToast('Welcome back, ' + name + '!');
             } else {
                 result.innerHTML =
                     `
-                    <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); border-radius:1rem; padding:1.2rem; text-align:center;">
-                        <i class="fas fa-user-plus" style="color:var(--purple); font-size:2rem;"></i>
-                        <h3 style="color:var(--text-primary); margin-top:8px;">Not found. Register now?</h3>
-                        <p style="color:var(--text-muted);">Create your account to access resources.</p>
-                        <button class="btn-primary" style="margin-top:8px; width:auto; padding:8px 24px;" onclick="registerStudent('${name}','${grade}','${school}')">
-                            <i class="fas fa-user-plus"></i> Register
-                        </button>
-                    </div>
-                `;
+                        <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); border-radius:1rem; padding:1.2rem; text-align:center;">
+                            <i class="fas fa-user-plus" style="color:var(--purple); font-size:2rem;"></i>
+                            <h3 style="color:var(--text-primary); margin-top:8px;">Not found. Register now?</h3>
+                            <p style="color:var(--text-muted);">Create your account to access resources.</p>
+                            <button class="btn-primary" style="margin-top:8px; width:auto; padding:8px 24px;" onclick="registerStudent('${name}','${grade}','${school}')">
+                                <i class="fas fa-user-plus"></i> Register
+                            </button>
+                        </div>
+                    `;
             }
         }
 
@@ -1209,12 +1411,12 @@
             showToast('Student ' + name + ' registered!');
             document.getElementById('findResult').innerHTML =
                 `
-                <div style="background:rgba(108,92,231,0.15); border:1px solid rgba(108,92,231,0.3); border-radius:1rem; padding:1.2rem; text-align:center;">
-                    <i class="fas fa-check-circle" style="color:var(--green); font-size:2rem;"></i>
-                    <h3 style="color:var(--text-primary); margin-top:8px;">Registered successfully!</h3>
-                    <p style="color:var(--text-muted);">Welcome to ${school}, ${name}!</p>
-                </div>
-            `;
+                    <div style="background:rgba(108,92,231,0.15); border:1px solid rgba(108,92,231,0.3); border-radius:1rem; padding:1.2rem; text-align:center;">
+                        <i class="fas fa-check-circle" style="color:var(--green); font-size:2rem;"></i>
+                        <h3 style="color:var(--text-primary); margin-top:8px;">Registered successfully!</h3>
+                        <p style="color:var(--text-muted);">Welcome to ${school}, ${name}!</p>
+                    </div>
+                `;
             updateTeacherStats();
         }
 
@@ -1253,11 +1455,11 @@
             if (resources.length === 0) {
                 container.innerHTML =
                     `
-                    <div class="empty-state">
-                        <i class="fas fa-folder-open"></i>
-                        <p>No resources found for ${currentSubject}. Teachers can upload resources from the Teacher Dashboard.</p>
-                    </div>
-                `;
+                        <div class="empty-state">
+                            <i class="fas fa-folder-open"></i>
+                            <p>No resources found for ${currentSubject}. Teachers can upload resources from the Teacher Dashboard.</p>
+                        </div>
+                    `;
                 return;
             }
             let html = '';
@@ -1265,20 +1467,20 @@
                 const icon = res.type === 'video' ? 'fa-video' : res.type === 'audio' ? 'fa-music' : 'fa-file-alt';
                 const label = res.type === 'video' ? 'Watch' : res.type === 'audio' ? 'Listen' : 'View';
                 html += `
-                    <div class="resource-card" data-type="${res.type}">
-                        <div class="resource-info">
-                            <div class="icon"><i class="fas ${icon}"></i></div>
-                            <div class="details">
-                                <h4>${res.name}</h4>
-                                <p>${res.description || ''} · ${res.uploadedBy || 'Teacher'} · ${new Date(res.uploadedAt || Date.now()).toLocaleDateString()}</p>
+                        <div class="resource-card" data-type="${res.type}">
+                            <div class="resource-info">
+                                <div class="icon"><i class="fas ${icon}"></i></div>
+                                <div class="details">
+                                    <h4>${res.name}</h4>
+                                    <p>${res.description || ''} · ${res.uploadedBy || 'Teacher'} · ${new Date(res.uploadedAt || Date.now()).toLocaleDateString()}</p>
+                                </div>
+                            </div>
+                            <div class="resource-actions">
+                                <button onclick="viewResource('${res.id}')"><i class="fas fa-eye"></i> ${label}</button>
+                                <button onclick="downloadResource('${res.id}')"><i class="fas fa-download"></i> Download</button>
                             </div>
                         </div>
-                        <div class="resource-actions">
-                            <button onclick="viewResource('${res.id}')"><i class="fas fa-eye"></i> ${label}</button>
-                            <button onclick="downloadResource('${res.id}')"><i class="fas fa-download"></i> Download</button>
-                        </div>
-                    </div>
-                `;
+                    `;
             });
             container.innerHTML = html;
         }
@@ -1401,29 +1603,29 @@
                 }
 
                 footer.innerHTML = `
-                    <button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button>
-                    <button onclick="viewerShare()"><i class="fas fa-share-alt"></i> Share</button>
-                    <button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>
-                `;
+                        <button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button>
+                        <button onclick="viewerShare()"><i class="fas fa-share-alt"></i> Share</button>
+                        <button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>
+                    `;
 
             } else if (isZoomable) {
                 body.innerHTML = `
-                    <div class="viewer-zoomable">
-                        <div class="viewer-content" id="viewerContent">
-                            <img src="${url}" alt="${file.name}" style="max-width:100%; max-height:80vh; object-fit:contain;" />
+                        <div class="viewer-zoomable">
+                            <div class="viewer-content" id="viewerContent">
+                                <img src="${url}" alt="${file.name}" style="max-width:100%; max-height:80vh; object-fit:contain;" />
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
 
                 footer.innerHTML = `
-                    <button onclick="zoomIn()"><i class="fas fa-plus-circle"></i> Zoom In</button>
-                    <button onclick="zoomOut()"><i class="fas fa-minus-circle"></i> Zoom Out</button>
-                    <button onclick="resetZoom()"><i class="fas fa-expand"></i> Reset</button>
-                    <span class="zoom-level" id="zoomLevelDisplay">100%</span>
-                    <button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button>
-                    <button onclick="viewerShare()"><i class="fas fa-share-alt"></i> Share</button>
-                    <button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>
-                `;
+                        <button onclick="zoomIn()"><i class="fas fa-plus-circle"></i> Zoom In</button>
+                        <button onclick="zoomOut()"><i class="fas fa-minus-circle"></i> Zoom Out</button>
+                        <button onclick="resetZoom()"><i class="fas fa-expand"></i> Reset</button>
+                        <span class="zoom-level" id="zoomLevelDisplay">100%</span>
+                        <button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button>
+                        <button onclick="viewerShare()"><i class="fas fa-share-alt"></i> Share</button>
+                        <button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>
+                    `;
 
                 setupZoomAndPan();
 
@@ -1440,27 +1642,27 @@
                 }
 
                 footer.innerHTML = `
-                    <button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button>
-                    <button onclick="viewerShare()"><i class="fas fa-share-alt"></i> Share</button>
-                    <button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>
-                `;
+                        <button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button>
+                        <button onclick="viewerShare()"><i class="fas fa-share-alt"></i> Share</button>
+                        <button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>
+                    `;
 
             } else {
                 body.innerHTML = `
-                    <div style="text-align:center; padding:40px; color:var(--text-muted);">
-                        <i class="fas fa-file" style="font-size:3rem; color:var(--purple);"></i>
-                        <p style="margin-top:12px;">This file type cannot be previewed.</p>
-                        <p style="font-size:13px; color:var(--text-dim);">${file.name}</p>
-                        <button onclick="viewerDownload()" class="btn-primary" style="margin-top:16px; max-width:200px; padding:10px 24px;">
-                            <i class="fas fa-download"></i> Download
-                        </button>
-                    </div>
-                `;
+                        <div style="text-align:center; padding:40px; color:var(--text-muted);">
+                            <i class="fas fa-file" style="font-size:3rem; color:var(--purple);"></i>
+                            <p style="margin-top:12px;">This file type cannot be previewed.</p>
+                            <p style="font-size:13px; color:var(--text-dim);">${file.name}</p>
+                            <button onclick="viewerDownload()" class="btn-primary" style="margin-top:16px; max-width:200px; padding:10px 24px;">
+                                <i class="fas fa-download"></i> Download
+                            </button>
+                        </div>
+                    `;
                 footer.innerHTML = `
-                    <button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button>
-                    <button onclick="viewerShare()"><i class="fas fa-share-alt"></i> Share</button>
-                    <button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>
-                `;
+                        <button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button>
+                        <button onclick="viewerShare()"><i class="fas fa-share-alt"></i> Share</button>
+                        <button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>
+                    `;
             }
         }
 
@@ -1640,72 +1842,72 @@
         function showCreateTable() {
             const area = document.getElementById('studentMethodArea');
             area.innerHTML = `
-                <div style="margin-bottom:12px;">
-                    <label style="color:var(--text-muted); font-size:13px; display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-                        <i class="fas fa-pencil-alt" style="color:var(--purple);"></i> Notes / Description
-                    </label>
-                    <div id="tableNotes" contenteditable="true" 
-                         style="padding:12px; border:2px dashed var(--border-color); border-radius:1rem; 
-                                min-height:60px; color:var(--text-secondary); cursor:text;
-                                transition:border-color 0.3s; line-height:1.6; background:#FFF;"
-                         onfocus="this.style.borderColor='var(--purple)'" 
-                         onblur="this.style.borderColor='var(--border-color)'">
-                        <span style="color:#999;">Click here to add notes...</span>
+                    <div style="margin-bottom:12px;">
+                        <label style="color:var(--text-muted); font-size:13px; display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                            <i class="fas fa-pencil-alt" style="color:var(--purple);"></i> Notes / Description
+                        </label>
+                        <div id="tableNotes" contenteditable="true" 
+                             style="padding:12px; border:2px dashed var(--border-color); border-radius:1rem; 
+                                    min-height:60px; color:var(--text-secondary); cursor:text;
+                                    transition:border-color 0.3s; line-height:1.6; background:#FFF;"
+                             onfocus="this.style.borderColor='var(--purple)'" 
+                             onblur="this.style.borderColor='var(--border-color)'">
+                            <span style="color:#999;">Click here to add notes...</span>
+                        </div>
                     </div>
-                </div>
 
-                <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
-                    <button onclick="addTableRow()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:6px 16px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
-                        <i class="fas fa-plus" style="color:var(--purple);"></i> Add Row
-                    </button>
-                    <button onclick="deleteTableRow()" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:6px 16px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
-                        <i class="fas fa-minus"></i> Delete Row
-                    </button>
-                    <button onclick="addTableColumn()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:6px 16px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
-                        <i class="fas fa-plus" style="color:var(--purple);"></i> Add Column
-                    </button>
-                    <button onclick="deleteTableColumn()" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:6px 16px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
-                        <i class="fas fa-minus"></i> Delete Column
-                    </button>
-                    <span style="margin-left:auto; background:var(--bg-input); padding:4px 16px; border-radius:2rem; border:1px solid var(--border-color);">
-                        <span style="color:var(--text-muted);">Rows:</span>
-                        <span id="rowCountDisplay" style="color:var(--text-primary); font-weight:600;">0</span>
-                        <span style="color:var(--text-muted); margin-left:8px;">Cols:</span>
-                        <span id="colCountDisplay" style="color:var(--text-primary); font-weight:600;">5</span>
-                    </span>
-                </div>
+                    <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+                        <button onclick="addTableRow()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:6px 16px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
+                            <i class="fas fa-plus" style="color:var(--purple);"></i> Add Row
+                        </button>
+                        <button onclick="deleteTableRow()" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:6px 16px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
+                            <i class="fas fa-minus"></i> Delete Row
+                        </button>
+                        <button onclick="addTableColumn()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:6px 16px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
+                            <i class="fas fa-plus" style="color:var(--purple);"></i> Add Column
+                        </button>
+                        <button onclick="deleteTableColumn()" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:6px 16px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
+                            <i class="fas fa-minus"></i> Delete Column
+                        </button>
+                        <span style="margin-left:auto; background:var(--bg-input); padding:4px 16px; border-radius:2rem; border:1px solid var(--border-color);">
+                            <span style="color:var(--text-muted);">Rows:</span>
+                            <span id="rowCountDisplay" style="color:var(--text-primary); font-weight:600;">0</span>
+                            <span style="color:var(--text-muted); margin-left:8px;">Cols:</span>
+                            <span id="colCountDisplay" style="color:var(--text-primary); font-weight:600;">5</span>
+                        </span>
+                    </div>
 
-                <div style="overflow-x:auto; border-radius:8px; border:2px solid #000;">
-                    <table class="schoolhub-table" id="dynamicTable">
-                        <thead id="tableHeader">
-                            <tr>
-                                <th style="width:50px; min-width:50px; text-align:center;">#</th>
-                                <th style="min-width:150px;">Name</th>
-                                <th style="min-width:80px;">Grade</th>
-                                <th style="min-width:120px;">Class</th>
-                                <th style="min-width:100px;">Subject</th>
-                                <th style="width:60px; text-align:center;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody">
-                            <!-- Rows added here -->
-                        </tbody>
-                    </table>
-                </div>
+                    <div style="overflow-x:auto; border-radius:8px; border:2px solid #000;">
+                        <table class="schoolhub-table" id="dynamicTable">
+                            <thead id="tableHeader">
+                                <tr>
+                                    <th style="width:50px; min-width:50px; text-align:center;">#</th>
+                                    <th style="min-width:150px;">Name</th>
+                                    <th style="min-width:80px;">Grade</th>
+                                    <th style="min-width:120px;">Class</th>
+                                    <th style="min-width:100px;">Subject</th>
+                                    <th style="width:60px; text-align:center;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                <!-- Rows added here -->
+                            </tbody>
+                        </table>
+                    </div>
 
-                <div style="display:flex; gap:12px; margin-top:12px; flex-wrap:wrap;">
-                    <button onclick="saveTableStudents()" class="btn-primary" style="width:auto; padding:8px 24px;">
-                        <i class="fas fa-save"></i> Save All
-                    </button>
-                    <button onclick="downloadTableExcel()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:8px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
-                        <i class="fas fa-download" style="color:var(--purple);"></i> Download Excel
-                    </button>
-                    <button onclick="closeTableCreator()" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:8px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
-                        <i class="fas fa-times"></i> Close
-                    </button>
-                </div>
-                <div id="tableResultMessage" style="margin-top:8px;"></div>
-            `;
+                    <div style="display:flex; gap:12px; margin-top:12px; flex-wrap:wrap;">
+                        <button onclick="saveTableStudents()" class="btn-primary" style="width:auto; padding:8px 24px;">
+                            <i class="fas fa-save"></i> Save All
+                        </button>
+                        <button onclick="downloadTableExcel()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:8px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
+                            <i class="fas fa-download" style="color:var(--purple);"></i> Download Excel
+                        </button>
+                        <button onclick="closeTableCreator()" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:8px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
+                            <i class="fas fa-times"></i> Close
+                        </button>
+                    </div>
+                    <div id="tableResultMessage" style="margin-top:8px;"></div>
+                `;
             setTimeout(() => {
                 addTableRow();
                 addTableRow();
@@ -1726,34 +1928,34 @@
             tr.style.border = '1px solid #000';
 
             let html = `
-                <td style="padding:8px 10px; text-align:center; font-weight:600; color:#000; border:1px solid #000;">${rowNum}</td>
-                <td style="padding:8px 10px; border:1px solid #000;">
-                    <input type="text" placeholder="Student name" class="table-name" 
-                           style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;" />
-                </td>
-                <td style="padding:8px 10px; border:1px solid #000;">
-                    <select class="table-grade" 
-                            style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;">
-                        <option value="12">12</option><option value="11">11</option><option value="10">10</option>
-                        <option value="9">9</option><option value="8">8</option><option value="7">7</option>
-                        <option value="6">6</option><option value="5">5</option><option value="4">4</option>
-                        <option value="3">3</option><option value="2">2</option><option value="1">1</option>
-                    </select>
-                </td>
-                <td style="padding:8px 10px; border:1px solid #000;">
-                    <input type="text" placeholder="Class" class="table-class" 
-                           style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;" />
-                </td>
-                <td style="padding:8px 10px; border:1px solid #000;">
-                    <input type="text" placeholder="Subject" class="table-subject" 
-                           style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;" />
-                </td>
-                <td style="padding:8px 10px; text-align:center; border:1px solid #000;">
-                    <button onclick="removeThisRow(this)" style="background:none; border:none; color:#EF4444; cursor:pointer; font-size:16px;">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            `;
+                    <td style="padding:8px 10px; text-align:center; font-weight:600; color:#000; border:1px solid #000;">${rowNum}</td>
+                    <td style="padding:8px 10px; border:1px solid #000;">
+                        <input type="text" placeholder="Student name" class="table-name" 
+                               style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;" />
+                    </td>
+                    <td style="padding:8px 10px; border:1px solid #000;">
+                        <select class="table-grade" 
+                                style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;">
+                            <option value="12">12</option><option value="11">11</option><option value="10">10</option>
+                            <option value="9">9</option><option value="8">8</option><option value="7">7</option>
+                            <option value="6">6</option><option value="5">5</option><option value="4">4</option>
+                            <option value="3">3</option><option value="2">2</option><option value="1">1</option>
+                        </select>
+                    </td>
+                    <td style="padding:8px 10px; border:1px solid #000;">
+                        <input type="text" placeholder="Class" class="table-class" 
+                               style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;" />
+                    </td>
+                    <td style="padding:8px 10px; border:1px solid #000;">
+                        <input type="text" placeholder="Subject" class="table-subject" 
+                               style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;" />
+                    </td>
+                    <td style="padding:8px 10px; text-align:center; border:1px solid #000;">
+                        <button onclick="removeThisRow(this)" style="background:none; border:none; color:#EF4444; cursor:pointer; font-size:16px;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
 
             tr.innerHTML = html;
             tbody.appendChild(tr);
@@ -1814,9 +2016,9 @@
                 td.style.border = '1px solid #000';
                 td.style.background = '#FFF';
                 td.innerHTML = `
-                    <input type="text" placeholder="Enter value" class="table-custom" 
-                           style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;" />
-                `;
+                        <input type="text" placeholder="Enter value" class="table-custom" 
+                               style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;" />
+                    `;
                 row.appendChild(td);
             });
 
@@ -1894,13 +2096,13 @@
                 if (added > 0) {
                     msgDiv.innerHTML =
                         `<div style="background:rgba(74,222,128,0.15); border:1px solid rgba(74,222,128,0.3); border-radius:1rem; padding:12px; text-align:center; color:var(--green);">
-                            <i class="fas fa-check-circle"></i> Added ${added} students! ${errors > 0 ? errors + ' duplicates skipped.' : ''}
-                        </div>`;
+                                <i class="fas fa-check-circle"></i> Added ${added} students! ${errors > 0 ? errors + ' duplicates skipped.' : ''}
+                            </div>`;
                 } else {
                     msgDiv.innerHTML =
                         `<div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); border-radius:1rem; padding:12px; text-align:center; color:var(--red);">
-                            <i class="fas fa-exclamation-circle"></i> No new students added. ${errors > 0 ? errors + ' duplicates found.' : 'Please enter student names and grades.'}
-                        </div>`;
+                                <i class="fas fa-exclamation-circle"></i> No new students added. ${errors > 0 ? errors + ' duplicates found.' : 'Please enter student names and grades.'}
+                            </div>`;
                 }
             }
 
@@ -1936,9 +2138,9 @@
 
         function closeTableCreator() {
             document.getElementById('studentMethodArea').innerHTML = `
-                <i class="fas fa-users" style="font-size:2rem; color:var(--purple);"></i>
-                <p style="margin-top:8px;">Select a method to add students</p>
-            `;
+                    <i class="fas fa-users" style="font-size:2rem; color:var(--purple);"></i>
+                    <p style="margin-top:8px;">Select a method to add students</p>
+                `;
         }
 
         // ============================================================
@@ -1947,24 +2149,24 @@
         function showManualEntry() {
             const area = document.getElementById('studentMethodArea');
             area.innerHTML = `
-                <i class="fas fa-pencil-alt" style="font-size:2rem; color:var(--purple);"></i>
-                <p style="color:var(--text-primary); margin-top:8px;">Manual Entry</p>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; text-align:left;">
-                    <div style="grid-column:span 2;">
-                        <input type="text" id="manualStudentName" placeholder="Student Name" style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                    <i class="fas fa-pencil-alt" style="font-size:2rem; color:var(--purple);"></i>
+                    <p style="color:var(--text-primary); margin-top:8px;">Manual Entry</p>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; text-align:left;">
+                        <div style="grid-column:span 2;">
+                            <input type="text" id="manualStudentName" placeholder="Student Name" style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                        </div>
+                        <div>
+                            <select id="manualStudentGrade" style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);">
+                                <option value="12">Grade 12</option><option value="11">Grade 11</option><option value="10">Grade 10</option>
+                                <option value="9">Grade 9</option><option value="8">Grade 8</option>
+                            </select>
+                        </div>
+                        <div>
+                            <input type="text" id="manualStudentClass" placeholder="Class" value="A" style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                        </div>
                     </div>
-                    <div>
-                        <select id="manualStudentGrade" style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);">
-                            <option value="12">Grade 12</option><option value="11">Grade 11</option><option value="10">Grade 10</option>
-                            <option value="9">Grade 9</option><option value="8">Grade 8</option>
-                        </select>
-                    </div>
-                    <div>
-                        <input type="text" id="manualStudentClass" placeholder="Class" value="A" style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
-                    </div>
-                </div>
-                <button class="btn-primary" style="margin-top:8px; width:auto; padding:8px 24px;" onclick="addManualStudent()"><i class="fas fa-plus"></i> Add Student</button>
-            `;
+                    <button class="btn-primary" style="margin-top:8px; width:auto; padding:8px 24px;" onclick="addManualStudent()"><i class="fas fa-plus"></i> Add Student</button>
+                `;
         }
 
         function addManualStudent() {
@@ -1991,13 +2193,13 @@
         function showOCRScan() {
             const area = document.getElementById('studentMethodArea');
             area.innerHTML = `
-                <i class="fas fa-camera" style="font-size:2rem; color:var(--purple);"></i>
-                <p style="color:var(--text-primary); margin-top:8px;">OCR Scan</p>
-                <p style="color:var(--text-muted); font-size:13px;">Upload a photo of the class list to extract student names</p>
-                <input type="file" id="ocrImageInput" accept="image/*" style="margin-top:8px; padding:8px; border:1px solid var(--border-color); border-radius:1rem; background:var(--bg-input); color:var(--text-secondary); width:100%;" />
-                <button class="btn-primary" style="margin-top:8px; width:auto; padding:8px 24px;" onclick="processOCRStudents()"><i class="fas fa-eye"></i> Scan & Extract</button>
-                <div id="ocrResult" style="margin-top:8px;"></div>
-            `;
+                    <i class="fas fa-camera" style="font-size:2rem; color:var(--purple);"></i>
+                    <p style="color:var(--text-primary); margin-top:8px;">OCR Scan</p>
+                    <p style="color:var(--text-muted); font-size:13px;">Upload a photo of the class list to extract student names</p>
+                    <input type="file" id="ocrImageInput" accept="image/*" style="margin-top:8px; padding:8px; border:1px solid var(--border-color); border-radius:1rem; background:var(--bg-input); color:var(--text-secondary); width:100%;" />
+                    <button class="btn-primary" style="margin-top:8px; width:auto; padding:8px 24px;" onclick="processOCRStudents()"><i class="fas fa-eye"></i> Scan & Extract</button>
+                    <div id="ocrResult" style="margin-top:8px;"></div>
+                `;
         }
 
         function processOCRStudents() {
@@ -2033,13 +2235,13 @@
                     if (added > 0) {
                         resultDiv.innerHTML =
                             `<div style="background:rgba(74,222,128,0.15); border:1px solid rgba(74,222,128,0.3); border-radius:1rem; padding:8px; text-align:center; color:var(--green);">
-                                <i class="fas fa-check-circle"></i> Added ${added} students from OCR scan!
-                            </div>`;
+                                    <i class="fas fa-check-circle"></i> Added ${added} students from OCR scan!
+                                </div>`;
                     } else {
                         resultDiv.innerHTML =
                             `<div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); border-radius:1rem; padding:8px; text-align:center; color:var(--red);">
-                                <i class="fas fa-exclamation-circle"></i> No students found. Try a clearer image.
-                            </div>`;
+                                    <i class="fas fa-exclamation-circle"></i> No students found. Try a clearer image.
+                                </div>`;
                     }
 
                     updateTeacherStats();
@@ -2068,11 +2270,28 @@
         function addTeacher() {
             const name = document.getElementById('teacherName').value.trim();
             const email = document.getElementById('teacherEmail').value.trim();
+
+            // Get school from admin (they are logged in)
+            const user = auth.currentUser;
+            if (!user) {
+                showToast('Please login as School Admin first');
+                return;
+            }
+
+            const schools = JSON.parse(localStorage.getItem('schoolhub_schools') || '[]');
+            const admin = schools.find(s => s.adminEmail === user.email);
+            if (!admin) {
+                showToast('School not found. Please contact Super Admin.');
+                return;
+            }
+
+            const schoolName = admin.name;
+
             if (!name || !email) { showToast('Please enter name and email'); return; }
 
             const teachers = JSON.parse(localStorage.getItem('schoolhub_teachers') || '[]');
-            if (teachers.find(t => t.email === email)) {
-                showToast('Teacher already exists');
+            if (teachers.find(t => t.email === email && t.school === schoolName)) {
+                showToast('Teacher already exists at this school');
                 return;
             }
 
@@ -2082,8 +2301,9 @@
                 email,
                 tempPass,
                 role: 'teacher',
+                school: schoolName,
                 firstLogin: true,
-                addedBy: auth.currentUser ? auth.currentUser.email : 'School Admin',
+                addedBy: user.email,
                 addedAt: new Date().toISOString()
             });
             localStorage.setItem('schoolhub_teachers', JSON.stringify(teachers));
@@ -2092,7 +2312,7 @@
             emailjs.send('service_46anpgz', 'template_z0bsy46', {
                 to_email: email,
                 admin_name: name,
-                school_name: 'Kasco',
+                school_name: schoolName,
                 school_code: 'TEACHER-' + Date.now().toString().slice(-6),
                 temp_password: tempPass,
                 login_url: 'https://schoolhub.com',
@@ -2101,7 +2321,7 @@
                 showToast('Invitation email sent to ' + email);
             }).catch(() => {
                 const body =
-                    `You have been added as a Teacher!\n\nSchool: Kasco\nTemporary Password: ${tempPass}\nLogin: https://schoolhub.com\n\nPlease change your password after first login.`;
+                    `You have been added as a Teacher at ${schoolName}!\n\nTemporary Password: ${tempPass}\nLogin: https://schoolhub.com\n\nPlease change your password after first login.`;
                 window.open(`mailto:${email}?subject=You have been added as a Teacher!&body=${encodeURIComponent(body)}`,
                     '_blank');
             });
@@ -2112,11 +2332,11 @@
             div.style.cssText =
                 'display:flex; justify-content:space-between; align-items:center; padding:10px; background:var(--bg-input); border-radius:0.8rem; margin-top:8px; border:1px solid var(--border-color);';
             div.innerHTML =
-                `<div><strong style="color:var(--text-primary);">${name}</strong><p style="color:var(--text-muted); font-size:12px;">${email} · Temp: ${tempPass}</p></div>
+                `<div><strong style="color:var(--text-primary);">${name}</strong><p style="color:var(--text-muted); font-size:12px;">${email} · ${schoolName} · Temp: ${tempPass}</p></div>
                 <button onclick="this.parentElement.remove(); updateAdminStats();" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:4px 12px; border-radius:1rem; cursor:pointer;"><i class="fas fa-trash"></i></button>`;
             list.appendChild(div);
 
-            showToast('Teacher ' + name + ' added!');
+            showToast('Teacher ' + name + ' added at ' + schoolName + '!');
             document.getElementById('teacherName').value = '';
             document.getElementById('teacherEmail').value = '';
             updateAdminStats();
@@ -2169,7 +2389,8 @@
                         code: code,
                         tempPassword: tempPass,
                         approvedAt: new Date().toISOString(),
-                        uid: user.uid
+                        uid: user.uid,
+                        firstLogin: true
                     });
 
                     pending.splice(index, 1);
@@ -2201,7 +2422,8 @@
                             phone: app.phone || '',
                             code: code,
                             tempPassword: tempPass,
-                            approvedAt: new Date().toISOString()
+                            approvedAt: new Date().toISOString(),
+                            firstLogin: true
                         });
 
                         pending.splice(index, 1);
@@ -2404,6 +2626,13 @@
             closeModal('applyModal');
             showToast('Application submitted to Abraham Chiputa!');
             updateSuperAdminStats();
+        }
+
+        // ============================================================
+        // CLOSE MODAL
+        // ============================================================
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
         }
 
         // ============================================================
@@ -2706,6 +2935,7 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeModal('applyModal');
+                closeModal('forcePasswordModal');
                 closeChat();
                 closeViewer();
             }
@@ -2726,16 +2956,10 @@
             console.log('All features ready!');
             console.log('Super Admin: admin / admin123');
             console.log('✅ School Admin accounts are created when Super Admin approves a school.');
+            console.log('✅ Teachers must be added by School Admin.');
         }
 
         document.addEventListener('DOMContentLoaded', init);
-
-        // ============================================================
-        // CLOSE MODAL (Apply Form)
-        // ============================================================
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
-        }
     </script>
 
 </body>
