@@ -774,7 +774,7 @@
         </div>
     </div>
 
-    <!-- APPLY FORM MODAL (Remove if not needed) -->
+    <!-- APPLY FORM MODAL -->
     <div class="modal-overlay" id="applyModal">
         <div class="modal-content">
             <h2><i class="fas fa-crown" style="color:#F59E0B;"></i> Apply as School Admin</h2>
@@ -878,18 +878,28 @@
             if (pageId === 'teacher') {
                 document.getElementById('teacherLogin').style.display = 'block';
                 document.getElementById('teacherDashboardContent').style.display = 'none';
-                if (isTeacher()) {
-                    document.getElementById('teacherLogin').style.display = 'none';
-                    document.getElementById('teacherDashboardContent').style.display = 'block';
+                const user = auth.currentUser;
+                if (user) {
+                    const users = JSON.parse(localStorage.getItem('schoolhub_users') || '{}');
+                    const userData = users[user.uid];
+                    if (userData && (userData.role === 'teacher' || userData.role === 'schooladmin')) {
+                        document.getElementById('teacherLogin').style.display = 'none';
+                        document.getElementById('teacherDashboardContent').style.display = 'block';
+                    }
                 }
             }
 
             if (pageId === 'schoolAdmin') {
                 document.getElementById('adminLogin').style.display = 'block';
                 document.getElementById('adminDashboardContent').style.display = 'none';
-                if (isSchoolAdmin()) {
-                    document.getElementById('adminLogin').style.display = 'none';
-                    document.getElementById('adminDashboardContent').style.display = 'block';
+                const user = auth.currentUser;
+                if (user) {
+                    const users = JSON.parse(localStorage.getItem('schoolhub_users') || '{}');
+                    const userData = users[user.uid];
+                    if (userData && userData.role === 'schooladmin') {
+                        document.getElementById('adminLogin').style.display = 'none';
+                        document.getElementById('adminDashboardContent').style.display = 'block';
+                    }
                 }
             }
 
@@ -905,9 +915,14 @@
             if (pageId === 'parent') {
                 document.getElementById('parentLogin').style.display = 'block';
                 document.getElementById('parentDashboardContent').style.display = 'none';
-                if (isParent()) {
-                    document.getElementById('parentLogin').style.display = 'none';
-                    document.getElementById('parentDashboardContent').style.display = 'block';
+                const user = auth.currentUser;
+                if (user) {
+                    const users = JSON.parse(localStorage.getItem('schoolhub_users') || '{}');
+                    const userData = users[user.uid];
+                    if (userData && userData.role === 'parent') {
+                        document.getElementById('parentLogin').style.display = 'none';
+                        document.getElementById('parentDashboardContent').style.display = 'block';
+                    }
                 }
             }
 
@@ -969,118 +984,6 @@
         }
 
         // ============================================================
-        // ROLE-SPECIFIC LOGIN FUNCTIONS
-        // ============================================================
-
-        // Teacher Login
-        function teacherLogin() {
-            const email = document.getElementById('teacherLoginEmail').value.trim();
-            const password = document.getElementById('teacherLoginPassword').value.trim();
-
-            if (!email || !password) {
-                showToast('Please enter email and password');
-                return;
-            }
-
-            auth.signInWithEmailAndPassword(email, password)
-                .then(() => {
-                    const teachers = JSON.parse(localStorage.getItem('schoolhub_teachers') || '[]');
-                    const teacher = teachers.find(t => t.email === email);
-
-                    if (!teacher) {
-                        showToast('You are not registered as a teacher');
-                        auth.signOut();
-                        return;
-                    }
-
-                    document.getElementById('teacherLogin').style.display = 'none';
-                    document.getElementById('teacherDashboardContent').style.display = 'block';
-                    showToast('Welcome, ' + teacher.name + '!');
-                    updateTeacherStats();
-                })
-                .catch((error) => {
-                    showToast('Login failed: ' + error.message);
-                });
-        }
-
-        // School Admin Login
-        function schoolAdminLogin() {
-            const email = document.getElementById('adminLoginEmail').value.trim();
-            const password = document.getElementById('adminLoginPassword').value.trim();
-
-            if (!email || !password) {
-                showToast('Please enter email and password');
-                return;
-            }
-
-            auth.signInWithEmailAndPassword(email, password)
-                .then(() => {
-                    const schools = JSON.parse(localStorage.getItem('schoolhub_schools') || '[]');
-                    const admin = schools.find(s => s.adminEmail === email);
-
-                    if (!admin) {
-                        showToast('You are not registered as a school admin');
-                        auth.signOut();
-                        return;
-                    }
-
-                    document.getElementById('adminLogin').style.display = 'none';
-                    document.getElementById('adminDashboardContent').style.display = 'block';
-                    showToast('Welcome, ' + admin.adminName + '!');
-                    updateAdminStats();
-                })
-                .catch((error) => {
-                    showToast('Login failed: ' + error.message);
-                });
-        }
-
-        // Parent Login
-        function parentLogin() {
-            const email = document.getElementById('parentLoginEmail').value.trim();
-            const password = document.getElementById('parentLoginPassword').value.trim();
-
-            if (!email || !password) {
-                showToast('Please enter email and password');
-                return;
-            }
-
-            auth.signInWithEmailAndPassword(email, password)
-                .then(() => {
-                    const users = JSON.parse(localStorage.getItem('schoolhub_users') || '{}');
-                    const userData = Object.values(users).find(u => u.email === email);
-
-                    if (!userData || userData.role !== 'parent') {
-                        showToast('You are not registered as a parent');
-                        auth.signOut();
-                        return;
-                    }
-
-                    document.getElementById('parentLogin').style.display = 'none';
-                    document.getElementById('parentDashboardContent').style.display = 'block';
-                    showToast('Welcome, ' + userData.name + '!');
-                })
-                .catch((error) => {
-                    showToast('Login failed: ' + error.message);
-                });
-        }
-
-        // Super Admin Login
-        function superAdminLogin() {
-            const u = document.getElementById('saUsername').value.trim();
-            const p = document.getElementById('saPassword').value.trim();
-
-            if (u === 'admin' && p === 'admin123') {
-                localStorage.setItem('superAdminLoggedIn', 'true');
-                document.getElementById('superLogin').style.display = 'none';
-                document.getElementById('superDashboard').style.display = 'block';
-                showToast('Welcome Super Admin!');
-                updateSuperAdminStats();
-            } else {
-                showToast('Invalid username or password');
-            }
-        }
-
-        // ============================================================
         // LOGOUT
         // ============================================================
         function handleLogout() {
@@ -1106,13 +1009,156 @@
             });
         }
 
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                console.log('Logged in:', user.email);
-            } else {
-                console.log('Logged out');
+        // ============================================================
+        // TEACHER LOGIN
+        // ============================================================
+        function teacherLogin() {
+            const email = document.getElementById('teacherLoginEmail').value.trim();
+            const password = document.getElementById('teacherLoginPassword').value.trim();
+
+            if (!email || !password) {
+                showToast('Please enter email and password');
+                return;
             }
-        });
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    
+                    // Check if user is a teacher
+                    const teachers = JSON.parse(localStorage.getItem('schoolhub_teachers') || '[]');
+                    const teacher = teachers.find(t => t.email === email);
+
+                    if (!teacher) {
+                        // Check if user has teacher role in users
+                        const users = JSON.parse(localStorage.getItem('schoolhub_users') || '{}');
+                        const userData = users[user.uid];
+                        if (!userData || userData.role !== 'teacher') {
+                            showToast('You are not registered as a teacher');
+                            auth.signOut();
+                            return;
+                        }
+                    }
+
+                    document.getElementById('teacherLogin').style.display = 'none';
+                    document.getElementById('teacherDashboardContent').style.display = 'block';
+                    showToast('Welcome, ' + (teacher ? teacher.name : 'Teacher') + '!');
+                    updateTeacherStats();
+                })
+                .catch((error) => {
+                    if (error.code === 'auth/user-not-found') {
+                        showToast('Account not found. Please contact your School Admin.');
+                    } else if (error.code === 'auth/wrong-password') {
+                        showToast('Incorrect password. Please try again.');
+                    } else {
+                        showToast('Login failed: ' + error.message);
+                    }
+                });
+        }
+
+        // ============================================================
+        // SCHOOL ADMIN LOGIN
+        // ============================================================
+        function schoolAdminLogin() {
+            const email = document.getElementById('adminLoginEmail').value.trim();
+            const password = document.getElementById('adminLoginPassword').value.trim();
+
+            if (!email || !password) {
+                showToast('Please enter email and password');
+                return;
+            }
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    
+                    // Check if user is a school admin
+                    const schools = JSON.parse(localStorage.getItem('schoolhub_schools') || '[]');
+                    const admin = schools.find(s => s.adminEmail === email);
+                    
+                    if (!admin) {
+                        const users = JSON.parse(localStorage.getItem('schoolhub_users') || '{}');
+                        const userData = users[user.uid];
+                        if (!userData || userData.role !== 'schooladmin') {
+                            showToast('You are not registered as a school admin');
+                            auth.signOut();
+                            return;
+                        }
+                    }
+                    
+                    document.getElementById('adminLogin').style.display = 'none';
+                    document.getElementById('adminDashboardContent').style.display = 'block';
+                    showToast('Welcome, ' + (admin ? admin.adminName : 'School Admin') + '!');
+                    updateAdminStats();
+                })
+                .catch((error) => {
+                    if (error.code === 'auth/user-not-found') {
+                        showToast('Account not found. Please contact Super Admin.');
+                    } else if (error.code === 'auth/wrong-password') {
+                        showToast('Incorrect password. Please try again.');
+                    } else {
+                        showToast('Login failed: ' + error.message);
+                    }
+                });
+        }
+
+        // ============================================================
+        // PARENT LOGIN
+        // ============================================================
+        function parentLogin() {
+            const email = document.getElementById('parentLoginEmail').value.trim();
+            const password = document.getElementById('parentLoginPassword').value.trim();
+
+            if (!email || !password) {
+                showToast('Please enter email and password');
+                return;
+            }
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    
+                    const users = JSON.parse(localStorage.getItem('schoolhub_users') || '{}');
+                    const userData = users[user.uid];
+
+                    if (!userData || userData.role !== 'parent') {
+                        showToast('You are not registered as a parent');
+                        auth.signOut();
+                        return;
+                    }
+
+                    document.getElementById('parentLogin').style.display = 'none';
+                    document.getElementById('parentDashboardContent').style.display = 'block';
+                    showToast('Welcome, ' + userData.name + '!');
+                })
+                .catch((error) => {
+                    if (error.code === 'auth/user-not-found') {
+                        showToast('Account not found. Please sign up.');
+                    } else if (error.code === 'auth/wrong-password') {
+                        showToast('Incorrect password. Please try again.');
+                    } else {
+                        showToast('Login failed: ' + error.message);
+                    }
+                });
+        }
+
+        // ============================================================
+        // SUPER ADMIN LOGIN
+        // ============================================================
+        function superAdminLogin() {
+            const u = document.getElementById('saUsername').value.trim();
+            const p = document.getElementById('saPassword').value.trim();
+
+            if (u === 'admin' && p === 'admin123') {
+                localStorage.setItem('superAdminLoggedIn', 'true');
+                document.getElementById('superLogin').style.display = 'none';
+                document.getElementById('superDashboard').style.display = 'block';
+                showToast('Welcome Super Admin!');
+                updateSuperAdminStats();
+            } else {
+                showToast('Invalid username or password');
+            }
+        }
 
         // ============================================================
         // FIND STUDENT
@@ -2083,91 +2129,7 @@
         }
 
         // ============================================================
-        // SUPER ADMIN STATS
-        // ============================================================
-        function updateSuperAdminStats() {
-            const schools = JSON.parse(localStorage.getItem('schoolhub_schools') || '[]');
-            const pending = JSON.parse(localStorage.getItem('schoolhub_pending') || '[]');
-            const teachers = JSON.parse(localStorage.getItem('schoolhub_teachers') || '[]');
-            document.getElementById('totalSchools').textContent = schools.length;
-            document.getElementById('pendingApps').textContent = pending.length;
-            document.getElementById('superTeacherCount').textContent = teachers.length;
-
-            const pendingList = document.getElementById('pendingList');
-            if (pending.length === 0) {
-                pendingList.innerHTML =
-                '<p style="color:var(--text-muted); text-align:center; padding:16px;">No pending applications</p>';
-            } else {
-                let html = '';
-                pending.forEach((app, i) => {
-                    html += `
-                        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--bg-input); border-radius:0.8rem; margin-bottom:8px;">
-                            <div>
-                                <strong style="color:var(--text-primary);">${app.schoolName}</strong>
-                                <p style="color:var(--text-muted); font-size:12px;">${app.adminName} · ${app.location}</p>
-                            </div>
-                            <div style="display:flex; gap:8px;">
-                                <button onclick="approveSchool(${i})" style="background:rgba(74,222,128,0.15); color:var(--green); border:1px solid rgba(74,222,128,0.2); padding:4px 16px; border-radius:1rem; cursor:pointer;"><i class="fas fa-check"></i> Approve</button>
-                                <button onclick="rejectSchool(${i})" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:4px 16px; border-radius:1rem; cursor:pointer;"><i class="fas fa-times"></i> Reject</button>
-                            </div>
-                        </div>
-                    `;
-                });
-                pendingList.innerHTML = html;
-            }
-
-            const schoolsList = document.getElementById('schoolsList');
-            if (schools.length === 0) {
-                schoolsList.innerHTML =
-                '<p style="color:var(--text-muted); text-align:center; padding:16px;">No schools registered</p>';
-            } else {
-                let html = '';
-                schools.forEach((school, i) => {
-                    html += `
-                        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--bg-input); border-radius:0.8rem; margin-bottom:8px;">
-                            <div>
-                                <strong style="color:var(--text-primary);">${school.name}</strong>
-                                <p style="color:var(--text-muted); font-size:12px;">Code: ${school.code || 'SCH-001'} · ${school.location}</p>
-                            </div>
-                            <button onclick="removeSchool(${i})" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:4px 12px; border-radius:1rem; cursor:pointer;"><i class="fas fa-trash"></i></button>
-                        </div>
-                    `;
-                });
-                schoolsList.innerHTML = html;
-            }
-        }
-
-        // ============================================================
-        // EMAILJS FUNCTIONS — REAL EMAIL NOTIFICATIONS
-        // ============================================================
-        function sendApprovalEmail(data) {
-            emailjs.send('service_46anpgz', 'template_z0bsy46', {
-                to_email: data.adminEmail,
-                admin_name: data.adminName,
-                school_name: data.schoolName,
-                school_code: data.schoolCode,
-                temp_password: data.tempPassword,
-                login_url: 'https://schoolhub.com'
-            }).then(() => {
-                showToast('Email sent to ' + data.adminEmail);
-            }).catch((error) => {
-                console.error('Email error:', error);
-                const body =
-                    `School: ${data.schoolName}\nCode: ${data.schoolCode}\nPassword: ${data.tempPassword}\nLogin: https://schoolhub.com`;
-                window.open(`mailto:${data.adminEmail}?subject=School Approved!&body=${encodeURIComponent(body)}`,
-                '_blank');
-            });
-        }
-
-        function sendWhatsAppNotification(phone, message) {
-            if (!phone) { return; }
-            const cleanPhone = phone.replace(/\D/g, '');
-            const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
-            window.open(url, '_blank');
-        }
-
-        // ============================================================
-        // APPROVE / REJECT SCHOOL
+        // SUPER ADMIN - APPROVE / REJECT SCHOOL
         // ============================================================
         function approveSchool(index) {
             const pending = JSON.parse(localStorage.getItem('schoolhub_pending') || '[]');
@@ -2177,38 +2139,89 @@
 
             const code = 'SCH-' + Date.now().toString().slice(-6);
             const tempPass = 'SCHOOL@' + Math.floor(1000 + Math.random() * 9000);
+            const email = app.adminEmail;
 
-            schools.push({
-                name: app.schoolName,
-                location: app.location,
-                adminName: app.adminName,
-                adminEmail: app.adminEmail,
-                phone: app.phone || '',
-                code: code,
-                tempPassword: tempPass,
-                approvedAt: new Date().toISOString()
-            });
+            // ============================================================
+            // CREATE FIREBASE ACCOUNT FOR SCHOOL ADMIN
+            // ============================================================
+            auth.createUserWithEmailAndPassword(email, tempPass)
+                .then((userCredential) => {
+                    const user = userCredential.user;
 
-            pending.splice(index, 1);
-            localStorage.setItem('schoolhub_schools', JSON.stringify(schools));
-            localStorage.setItem('schoolhub_pending', JSON.stringify(pending));
+                    // Save to localStorage
+                    const users = JSON.parse(localStorage.getItem('schoolhub_users') || '{}');
+                    users[user.uid] = {
+                        name: app.adminName,
+                        email: email,
+                        role: 'schooladmin',
+                        school: app.schoolName,
+                        created: new Date().toISOString()
+                    };
+                    localStorage.setItem('schoolhub_users', JSON.stringify(users));
 
-            sendApprovalEmail({
-                adminEmail: app.adminEmail,
-                adminName: app.adminName,
-                schoolName: app.schoolName,
-                schoolCode: code,
-                tempPassword: tempPass
-            });
+                    // Add to schools
+                    schools.push({
+                        name: app.schoolName,
+                        location: app.location,
+                        adminName: app.adminName,
+                        adminEmail: email,
+                        phone: app.phone || '',
+                        code: code,
+                        tempPassword: tempPass,
+                        approvedAt: new Date().toISOString(),
+                        uid: user.uid
+                    });
 
-            const waMessage =
-                `School Approved!\n\nSchool: ${app.schoolName}\nCode: ${code}\nPassword: ${tempPass}\nLogin: https://schoolhub.com`;
-            if (app.phone) {
-                sendWhatsAppNotification(app.phone, waMessage);
-            }
+                    pending.splice(index, 1);
+                    localStorage.setItem('schoolhub_schools', JSON.stringify(schools));
+                    localStorage.setItem('schoolhub_pending', JSON.stringify(pending));
 
-            showToast('School "' + app.schoolName + '" approved!');
-            updateSuperAdminStats();
+                    // Send email
+                    sendApprovalEmail({
+                        adminEmail: email,
+                        adminName: app.adminName,
+                        schoolName: app.schoolName,
+                        schoolCode: code,
+                        tempPassword: tempPass
+                    });
+
+                    showToast('✅ School "' + app.schoolName + '" approved! Account created.');
+                    updateSuperAdminStats();
+                })
+                .catch((error) => {
+                    console.error('❌ Account creation failed:', error);
+
+                    // If account already exists, still approve
+                    if (error.code === 'auth/email-already-in-use') {
+                        schools.push({
+                            name: app.schoolName,
+                            location: app.location,
+                            adminName: app.adminName,
+                            adminEmail: email,
+                            phone: app.phone || '',
+                            code: code,
+                            tempPassword: tempPass,
+                            approvedAt: new Date().toISOString()
+                        });
+
+                        pending.splice(index, 1);
+                        localStorage.setItem('schoolhub_schools', JSON.stringify(schools));
+                        localStorage.setItem('schoolhub_pending', JSON.stringify(pending));
+
+                        sendApprovalEmail({
+                            adminEmail: email,
+                            adminName: app.adminName,
+                            schoolName: app.schoolName,
+                            schoolCode: code,
+                            tempPassword: tempPass
+                        });
+
+                        showToast('⚠️ Email already registered. School approved.');
+                        updateSuperAdminStats();
+                    } else {
+                        showToast('❌ Failed to create account: ' + error.message);
+                    }
+                });
         }
 
         function rejectSchool(index) {
@@ -2227,6 +2240,103 @@
             localStorage.setItem('schoolhub_schools', JSON.stringify(schools));
             showToast('School removed');
             updateSuperAdminStats();
+        }
+
+        function sendApprovalEmail(data) {
+            // Try EmailJS first
+            emailjs.send('service_46anpgz', 'template_z0bsy46', {
+                to_email: data.adminEmail,
+                admin_name: data.adminName,
+                school_name: data.schoolName,
+                school_code: data.schoolCode,
+                temp_password: data.tempPassword,
+                login_url: 'https://schoolhub.com'
+            }).then(() => {
+                showToast('📧 Login details emailed to ' + data.adminEmail);
+            }).catch((error) => {
+                console.error('Email error:', error);
+                // Fallback: Open email client
+                const body =
+                    `
+        School Approved!
+
+        School: ${data.schoolName}
+        School Code: ${data.schoolCode}
+        Temporary Password: ${data.tempPassword}
+
+        Login Here: https://schoolhub.com
+
+        Please change your password after first login.
+
+        Regards,
+        Super Admin
+        SchoolHub
+                    `;
+                window.open(`mailto:${data.adminEmail}?subject=School Approved!&body=${encodeURIComponent(body)}`, '_blank');
+                showToast('📧 Email opened in your email client');
+            });
+        }
+
+        function sendWhatsAppNotification(phone, message) {
+            if (!phone) { return; }
+            const cleanPhone = phone.replace(/\D/g, '');
+            const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+
+        // ============================================================
+        // SUPER ADMIN STATS
+        // ============================================================
+        function updateSuperAdminStats() {
+            const schools = JSON.parse(localStorage.getItem('schoolhub_schools') || '[]');
+            const pending = JSON.parse(localStorage.getItem('schoolhub_pending') || '[]');
+            const teachers = JSON.parse(localStorage.getItem('schoolhub_teachers') || '[]');
+            document.getElementById('totalSchools').textContent = schools.length;
+            document.getElementById('pendingApps').textContent = pending.length;
+            document.getElementById('superTeacherCount').textContent = teachers.length;
+
+            const pendingList = document.getElementById('pendingList');
+            if (pending.length === 0) {
+                pendingList.innerHTML =
+                    '<p style="color:var(--text-muted); text-align:center; padding:16px;">No pending applications</p>';
+            } else {
+                let html = '';
+                pending.forEach((app, i) => {
+                    html += `
+                            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--bg-input); border-radius:0.8rem; margin-bottom:8px;">
+                                <div>
+                                    <strong style="color:var(--text-primary);">${app.schoolName}</strong>
+                                    <p style="color:var(--text-muted); font-size:12px;">${app.adminName} · ${app.location}</p>
+                                </div>
+                                <div style="display:flex; gap:8px;">
+                                    <button onclick="approveSchool(${i})" style="background:rgba(74,222,128,0.15); color:var(--green); border:1px solid rgba(74,222,128,0.2); padding:4px 16px; border-radius:1rem; cursor:pointer;"><i class="fas fa-check"></i> Approve</button>
+                                    <button onclick="rejectSchool(${i})" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:4px 16px; border-radius:1rem; cursor:pointer;"><i class="fas fa-times"></i> Reject</button>
+                                </div>
+                            </div>
+                        `;
+                });
+                pendingList.innerHTML = html;
+            }
+
+            const schoolsList = document.getElementById('schoolsList');
+            if (schools.length === 0) {
+                schoolsList.innerHTML =
+                    '<p style="color:var(--text-muted); text-align:center; padding:16px;">No schools registered</p>';
+            } else {
+                let html = '';
+                schools.forEach((school, i) => {
+                    html += `
+                            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--bg-input); border-radius:0.8rem; margin-bottom:8px;">
+                                <div>
+                                    <strong style="color:var(--text-primary);">${school.name}</strong>
+                                    <p style="color:var(--text-muted); font-size:12px;">Code: ${school.code || 'SCH-001'} · ${school.location}</p>
+                                </div>
+                                <button onclick="removeSchool(${i})" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:4px 12px; border-radius:1rem; cursor:pointer;"><i class="fas fa-trash"></i></button>
+                            </div>
+                        `;
+                });
+                schoolsList.innerHTML = html;
+            }
         }
 
         // ============================================================
@@ -2312,55 +2422,55 @@
             if (!student) {
                 container.innerHTML =
                     `
-                    <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); border-radius:1rem; padding:1.5rem; text-align:center;">
-                        <i class="fas fa-user-slash" style="font-size:2rem; color:var(--red);"></i>
-                        <p style="color:var(--text-primary); margin-top:8px;">Student not found</p>
-                        <p style="color:var(--text-muted);">Please check the name and school.</p>
-                    </div>
-                `;
+                        <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); border-radius:1rem; padding:1.5rem; text-align:center;">
+                            <i class="fas fa-user-slash" style="font-size:2rem; color:var(--red);"></i>
+                            <p style="color:var(--text-primary); margin-top:8px;">Student not found</p>
+                            <p style="color:var(--text-muted);">Please check the name and school.</p>
+                        </div>
+                    `;
                 return;
             }
 
             const subjects = ['Mathematics', 'English', 'Science', 'History', 'Geography'];
             const grades = ['A', 'B+', 'B', 'C+', 'C', 'D', 'F'];
             let html = `
-                <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color);">
-                    <div style="text-align:center; border-bottom:2px solid var(--purple); padding-bottom:12px; margin-bottom:12px;">
-                        <h2 style="color:var(--text-primary);"><i class="fas fa-school" style="color:var(--purple);"></i> ${school}</h2>
-                        <h3 style="color:var(--text-muted); font-weight:400;">REPORT CARD</h3>
-                    </div>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-bottom:12px;">
-                        <div><strong style="color:var(--text-primary);">Student:</strong> <span style="color:var(--text-muted);">${student.name}</span></div>
-                        <div><strong style="color:var(--text-primary);">Grade:</strong> <span style="color:var(--text-muted);">${student.grade}</span></div>
-                        <div><strong style="color:var(--text-primary);">Term:</strong> <span style="color:var(--text-muted);">1</span></div>
-                        <div><strong style="color:var(--text-primary);">Year:</strong> <span style="color:var(--text-muted);">2025</span></div>
-                    </div>
-                    <table class="report-card-table">
-                        <thead>
-                            <tr>
-                                <th>Subject</th>
-                                <th>Test</th>
-                                <th>Exam</th>
-                                <th>Total</th>
-                                <th>Grade</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
+                    <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color);">
+                        <div style="text-align:center; border-bottom:2px solid var(--purple); padding-bottom:12px; margin-bottom:12px;">
+                            <h2 style="color:var(--text-primary);"><i class="fas fa-school" style="color:var(--purple);"></i> ${school}</h2>
+                            <h3 style="color:var(--text-muted); font-weight:400;">REPORT CARD</h3>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-bottom:12px;">
+                            <div><strong style="color:var(--text-primary);">Student:</strong> <span style="color:var(--text-muted);">${student.name}</span></div>
+                            <div><strong style="color:var(--text-primary);">Grade:</strong> <span style="color:var(--text-muted);">${student.grade}</span></div>
+                            <div><strong style="color:var(--text-primary);">Term:</strong> <span style="color:var(--text-muted);">1</span></div>
+                            <div><strong style="color:var(--text-primary);">Year:</strong> <span style="color:var(--text-muted);">2025</span></div>
+                        </div>
+                        <table class="report-card-table">
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Test</th>
+                                    <th>Exam</th>
+                                    <th>Total</th>
+                                    <th>Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
 
             subjects.forEach((sub, i) => {
                 const scores = [60 + Math.floor(Math.random() * 40), 60 + Math.floor(Math.random() * 40)];
                 const total = scores[0] + scores[1];
                 const grade = grades[Math.floor(total / 20)];
                 html += `
-                    <tr>
-                        <td>${sub}</td>
-                        <td>${scores[0]}</td>
-                        <td>${scores[1]}</td>
-                        <td>${total}</td>
-                        <td style="color:#4ade80; font-weight:600;">${grade}</td>
-                    </tr>
-                `;
+                        <tr>
+                            <td>${sub}</td>
+                            <td>${scores[0]}</td>
+                            <td>${scores[1]}</td>
+                            <td>${total}</td>
+                            <td style="color:#4ade80; font-weight:600;">${grade}</td>
+                        </tr>
+                    `;
             });
 
             const avg = 70 + Math.floor(Math.random() * 20);
@@ -2368,22 +2478,22 @@
             const position = Math.floor(Math.random() * 20) + 1;
 
             html += `
-                        </tbody>
-                    </table>
-                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; background:var(--bg-input); padding:12px; border-radius:0.8rem; margin-bottom:12px;">
-                        <div><strong style="color:var(--text-primary);">Average:</strong> <span style="color:var(--purple-light);">${avg}</span></div>
-                        <div><strong style="color:var(--text-primary);">Grade:</strong> <span style="color:var(--green);">${overallGrade}</span></div>
-                        <div><strong style="color:var(--text-primary);">Position:</strong> <span style="color:var(--text-secondary);">${position}/25</span></div>
+                            </tbody>
+                        </table>
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; background:var(--bg-input); padding:12px; border-radius:0.8rem; margin-bottom:12px;">
+                            <div><strong style="color:var(--text-primary);">Average:</strong> <span style="color:var(--purple-light);">${avg}</span></div>
+                            <div><strong style="color:var(--text-primary);">Grade:</strong> <span style="color:var(--green);">${overallGrade}</span></div>
+                            <div><strong style="color:var(--text-primary);">Position:</strong> <span style="color:var(--text-secondary);">${position}/25</span></div>
+                        </div>
+                        <div style="padding:10px; background:rgba(108,92,231,0.1); border-radius:0.8rem; border-left:3px solid var(--purple); margin-bottom:12px;">
+                            <p style="color:var(--text-muted); font-size:13px;"><i class="fas fa-comment" style="color:var(--purple);"></i> Teacher's Comment: Good performance! Keep up the great work.</p>
+                        </div>
+                        <div style="display:flex; gap:8px; justify-content:center;">
+                            <button onclick="showToast('Printing report card...')" style="background:var(--purple); color:#FFF; border:none; padding:6px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-print"></i> Print</button>
+                            <button onclick="showToast('Downloading PDF...')" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:6px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-download"></i> PDF</button>
+                        </div>
                     </div>
-                    <div style="padding:10px; background:rgba(108,92,231,0.1); border-radius:0.8rem; border-left:3px solid var(--purple); margin-bottom:12px;">
-                        <p style="color:var(--text-muted); font-size:13px;"><i class="fas fa-comment" style="color:var(--purple);"></i> Teacher's Comment: Good performance! Keep up the great work.</p>
-                    </div>
-                    <div style="display:flex; gap:8px; justify-content:center;">
-                        <button onclick="showToast('Printing report card...')" style="background:var(--purple); color:#FFF; border:none; padding:6px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-print"></i> Print</button>
-                        <button onclick="showToast('Downloading PDF...')" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:6px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-download"></i> PDF</button>
-                    </div>
-                </div>
-            `;
+                `;
             container.innerHTML = html;
             showToast('Report card loaded for ' + name);
         }
@@ -2422,29 +2532,29 @@
             if (active.length === 0) {
                 container.innerHTML =
                     `
-                    <div style="background:var(--bg-card); border-radius:1.2rem; padding:1.5rem; border:1px solid var(--border-color); text-align:center; color:var(--text-muted);">
-                        <i class="fas fa-video" style="font-size:2rem; color:var(--purple);"></i>
-                        <p style="margin-top:8px;">No live classes right now.</p>
-                    </div>
-                `;
+                        <div style="background:var(--bg-card); border-radius:1.2rem; padding:1.5rem; border:1px solid var(--border-color); text-align:center; color:var(--text-muted);">
+                            <i class="fas fa-video" style="font-size:2rem; color:var(--purple);"></i>
+                            <p style="margin-top:8px;">No live classes right now.</p>
+                        </div>
+                    `;
             } else {
                 let html = '';
                 active.forEach(live => {
                     html += `
-                        <div style="background:var(--bg-card); border-radius:1.2rem; padding:1.2rem 1.5rem; border:1px solid var(--border-color); margin-bottom:10px; display:flex; align-items:center; gap:16px;">
-                            <span class="live-badge"><i class="fas fa-circle"></i> LIVE</span>
-                            <div style="flex:1;">
-                                <h4 style="font-size:16px; font-weight:600; color:var(--text-primary);">${live.title}</h4>
-                                <p style="font-size:13px; color:var(--text-muted);">${live.teacher} · ${live.type === 'public' ? 'Public' : 'Class'}</p>
+                            <div style="background:var(--bg-card); border-radius:1.2rem; padding:1.2rem 1.5rem; border:1px solid var(--border-color); margin-bottom:10px; display:flex; align-items:center; gap:16px;">
+                                <span class="live-badge"><i class="fas fa-circle"></i> LIVE</span>
+                                <div style="flex:1;">
+                                    <h4 style="font-size:16px; font-weight:600; color:var(--text-primary);">${live.title}</h4>
+                                    <p style="font-size:13px; color:var(--text-muted);">${live.teacher} · ${live.type === 'public' ? 'Public' : 'Class'}</p>
+                                </div>
+                                <button onclick="showToast('Joining ${live.title}...')" style="background:var(--purple); color:#FFF; border:none; padding:6px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
+                                    <i class="fas fa-play"></i> Join
+                                </button>
+                                <button onclick="endLive('${live.id}')" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:6px 12px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
+                                    <i class="fas fa-stop"></i>
+                                </button>
                             </div>
-                            <button onclick="showToast('Joining ${live.title}...')" style="background:var(--purple); color:#FFF; border:none; padding:6px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
-                                <i class="fas fa-play"></i> Join
-                            </button>
-                            <button onclick="endLive('${live.id}')" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:6px 12px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
-                                <i class="fas fa-stop"></i>
-                            </button>
-                        </div>
-                    `;
+                        `;
                 });
                 container.innerHTML = html;
             }
@@ -2615,9 +2725,17 @@
             console.log('EmailJS initialized with Service: service_46anpgz, Template: template_z0bsy46');
             console.log('All features ready!');
             console.log('Super Admin: admin / admin123');
+            console.log('✅ School Admin accounts are created when Super Admin approves a school.');
         }
 
         document.addEventListener('DOMContentLoaded', init);
+
+        // ============================================================
+        // CLOSE MODAL (Apply Form)
+        // ============================================================
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
     </script>
 
 </body>
