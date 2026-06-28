@@ -7,268 +7,199 @@
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/727/727245.png" type="image/png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
-        /* ====== ALL STYLES ====== */
-        :root {
-            --bg-primary: #0A0A0F; --bg-secondary: rgba(10,10,15,0.7); --bg-card: rgba(20,23,43,0.8);
-            --bg-card-hover: rgba(20,23,43,1); --bg-input: rgba(255,255,255,0.04); --bg-modal: #14172B;
-            --bg-nav: rgba(10,10,15,0.95); --bg-topnav: rgba(10,10,15,0.8); --bg-notif: rgba(20,23,43,0.8);
-            --text-primary: #FFFFFF; --text-secondary: #EDEEF2; --text-muted: #B6BDF0; --text-dim: #9CA3E0;
-            --border-color: rgba(255,255,255,0.06); --shadow: 0 4px 16px rgba(0,0,0,0.3); --toast-bg: #14172B;
-            --purple: #6C5CE7; --purple-light: #8B7CF7; --purple-dark: #4A42DB; --green: #4ade80; --red: #EF4444;
-            --orange: #f59e0b; --yellow: #fbbf24; --blue: #60a5fa;
-        }
-        [data-theme="light"] {
-            --bg-primary: #F4F6FB; --bg-secondary: rgba(255,255,255,0.85); --bg-card: #FFFFFF;
-            --bg-card-hover: #F1F5F9; --bg-input: rgba(0,0,0,0.04); --bg-modal: #FFFFFF;
-            --bg-nav: rgba(255,255,255,0.95); --bg-topnav: rgba(255,255,255,0.9); --bg-notif: #FFFFFF;
-            --text-primary: #1E293B; --text-secondary: #334155; --text-muted: #64748B; --text-dim: #94A3B8;
-            --border-color: rgba(0,0,0,0.06); --toast-bg: #1F2937;
-            --green: #16a34a; --red: #DC2626; --orange: #d97706; --yellow: #ca8a04; --blue: #2563eb;
-        }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        html { scroll-behavior:smooth; }
-        body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-secondary); min-height:100vh; padding:1rem; padding-bottom:90px; transition:background 0.3s,color 0.3s; }
-        .app { max-width:1400px; margin:0 auto; background:var(--bg-secondary); backdrop-filter:blur(18px); border-radius:2rem; border:1px solid var(--border-color); overflow:hidden; min-height:80vh; }
-
-        /* Top Nav */
-        .top-nav { padding:0.8rem 2rem; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); background:var(--bg-topnav); flex-wrap:wrap; gap:10px; position:sticky; top:0; z-index:100; }
-        .logo h1 { font-size:1.5rem; background:linear-gradient(135deg,var(--text-primary),var(--purple-light)); -webkit-background-clip:text; background-clip:text; color:transparent; display:flex; align-items:center; gap:10px; }
-        .logo h1 i { color:var(--purple); }
-        .logo span { font-size:0.65rem; color:var(--text-muted); display:block; margin-left:2px; }
-        .nav-actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-        .theme-toggle, .menu-btn, .login-btn { background:var(--bg-input); padding:0.35rem 1rem; border-radius:2rem; border:1px solid var(--border-color); color:var(--text-secondary); cursor:pointer; font-size:1rem; transition:0.3s; display:flex; align-items:center; gap:6px; font-family:'Inter',sans-serif; }
-        .theme-toggle:hover, .menu-btn:hover, .login-btn:hover { background:var(--purple); color:#FFF; border-color:var(--purple); }
-        .apply-btn { background:#6C5CE7; padding:0.35rem 1.2rem; border-radius:2rem; border:none; color:#FFF; cursor:pointer; font-size:0.85rem; font-weight:600; display:flex; align-items:center; gap:6px; transition:0.3s; font-family:'Inter',sans-serif; }
-        .apply-btn:hover { background:#4A42DB; transform:scale(1.02); }
-
-        /* Sidebar */
-        .sidebar-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1500; }
-        .sidebar-overlay.active { display:block; }
-        .sidebar { position:fixed; top:0; right:-320px; width:300px; height:100%; background:var(--bg-modal); z-index:1600; transition:right 0.3s ease; padding:2rem 1.5rem; border-left:1px solid var(--border-color); overflow-y:auto; will-change:transform; }
-        .sidebar.open { right:0; }
-        .sidebar .close-sidebar { background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer; float:right; }
-        .sidebar .close-sidebar:hover { color:var(--text-primary); }
-        .sidebar .sidebar-title { font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.5rem; margin-top:0.5rem; display:flex; align-items:center; gap:10px; }
-        .sidebar .sidebar-title i { color:var(--purple); }
-        .sidebar .sidebar-item { display:flex; align-items:center; gap:14px; padding:12px 16px; border-radius:1rem; color:var(--text-muted); cursor:pointer; transition:0.3s; margin-bottom:4px; border:none; background:none; width:100%; text-align:left; font-family:'Inter',sans-serif; font-size:15px; font-weight:500; }
-        .sidebar .sidebar-item:hover { background:rgba(108,92,231,0.15); color:var(--text-primary); }
-        .sidebar .sidebar-item.active-sidebar { background:var(--purple); color:#FFF; }
-        .sidebar .sidebar-item i { width:24px; font-size:1.1rem; color:var(--purple); }
-        .sidebar .sidebar-item:hover i { color:var(--purple-light); }
-        .sidebar .sidebar-divider { border-top:1px solid var(--border-color); margin:12px 0; }
-        .sidebar .sidebar-footer { padding:0 16px; margin-top:12px; }
-        .sidebar .sidebar-footer .name { color:var(--purple-light); font-size:13px; font-weight:600; }
-        .sidebar .sidebar-footer .school { color:var(--text-dim); font-size:11px; }
-
-        /* Pages */
-        .page { display:none; padding:1.5rem; animation:fadeIn 0.3s ease; }
-        .page.active { display:block; }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-        .page-title { font-size:24px; font-weight:700; margin-bottom:6px; display:flex; align-items:center; gap:10px; color:var(--text-primary); }
-        .page-title i { color:var(--purple); }
-        .page-subtitle { color:var(--text-muted); font-size:16px; margin-bottom:24px; }
-
-        /* Forms */
-        .form-group { margin-bottom:14px; }
-        .form-group label { display:block; color:var(--text-muted); font-size:14px; margin-bottom:4px; font-weight:500; }
-        .form-group input, .form-group select, .form-group textarea { width:100%; padding:12px 16px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); font-size:14px; outline:none; transition:0.3s; font-family:'Inter',sans-serif; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:var(--purple); }
-        .form-group input::placeholder, .form-group textarea::placeholder { color:var(--text-dim); }
-        .form-group select option { background:var(--bg-modal); color:var(--text-secondary); }
-
-        .password-wrapper { position:relative; width:100%; }
-        .password-wrapper input { padding-right:48px; }
-        .password-toggle { position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:1.1rem; padding:4px; transition:0.2s; }
-        .password-toggle:hover { color:var(--purple); }
-
-        .btn-primary { width:100%; padding:14px; border-radius:2rem; background:var(--purple); border:none; color:#FFF; font-size:16px; font-weight:600; cursor:pointer; transition:0.3s; display:flex; align-items:center; justify-content:center; gap:8px; font-family:'Inter',sans-serif; }
-        .btn-primary:hover { background:var(--purple-dark); transform:scale(1.01); }
-        .btn-secondary { width:100%; padding:14px; border-radius:2rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); font-size:16px; font-weight:600; cursor:pointer; transition:0.3s; margin-top:8px; display:flex; align-items:center; justify-content:center; gap:8px; font-family:'Inter',sans-serif; }
-        .btn-secondary:hover { background:var(--bg-card-hover); }
-
-        .auth-toggle { text-align:center; margin-top:12px; color:var(--text-muted); font-size:14px; cursor:pointer; }
-        .auth-toggle:hover { color:var(--purple-light); text-decoration:underline; }
-
-        /* Subject Grid */
-        .subject-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:1.2rem; }
-        .subject-card { background:var(--bg-card); border-radius:1.2rem; padding:1.5rem 1rem; text-align:center; border:1px solid var(--border-color); cursor:pointer; transition:0.3s; color:var(--text-secondary); }
-        .subject-card:hover { transform:translateY(-4px); background:var(--bg-card-hover); border-color:var(--purple); }
-        .subject-card .icon { font-size:2.5rem; margin-bottom:8px; color:var(--purple); }
-        .subject-card h4 { font-size:15px; font-weight:600; color:var(--text-primary); }
-        .subject-card p { font-size:12px; color:var(--text-muted); margin-top:4px; }
-
-        /* AI Grid */
-        .ai-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:1.2rem; margin-top:1.5rem; }
-        .ai-card { background:var(--bg-card); border-radius:1.2rem; padding:1.5rem 1rem; text-align:center; border:1px solid var(--border-color); cursor:pointer; transition:0.3s; }
-        .ai-card:hover { transform:translateY(-4px); background:var(--bg-card-hover); border-color:var(--purple); }
-        .ai-card .ai-logo { width:60px; height:60px; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; font-weight:700; background:rgba(108,92,231,0.15); color:var(--purple); border:2px solid rgba(108,92,231,0.2); }
-        .ai-card h4 { font-size:16px; font-weight:600; color:var(--text-primary); }
-        .ai-card p { font-size:12px; color:var(--text-muted); margin-top:4px; }
-
-        /* Groups */
-        .groups-tabs { display:flex; gap:8px; margin-bottom:24px; border-bottom:1px solid var(--border-color); padding-bottom:4px; flex-wrap:wrap; }
-        .groups-tabs button { background:none; border:none; color:var(--text-dim); padding:10px 20px; border-radius:2rem; font-size:14px; font-weight:600; cursor:pointer; transition:0.3s; display:flex; align-items:center; gap:8px; font-family:'Inter',sans-serif; }
-        .groups-tabs button:hover { color:var(--text-primary); background:var(--bg-input); }
-        .groups-tabs button.active-tab { background:var(--purple); color:#FFF; }
-        .groups-tabs button .tab-badge { background:var(--purple); color:#FFF; font-size:10px; font-weight:700; padding:1px 8px; border-radius:30px; }
-        .group-content { display:none; }
-        .group-content.active-content { display:block; }
-        .group-card { background:var(--bg-card); border-radius:1rem; padding:1.2rem 1.5rem; border:1px solid var(--border-color); margin-bottom:12px; cursor:pointer; transition:0.3s; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; box-shadow:var(--shadow); }
-        .group-card:hover { background:var(--bg-card-hover); border-color:var(--purple); }
-        .group-card .left { display:flex; align-items:center; gap:14px; flex:1; }
-        .group-card .left .icon { font-size:2rem; width:50px; height:50px; border-radius:50%; background:rgba(108,92,231,0.15); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--purple); }
-        .group-card .left .info h4 { font-size:16px; font-weight:600; color:var(--text-primary); }
-        .group-card .left .info p { font-size:13px; color:var(--text-muted); margin-top:2px; }
-        .group-card .right { text-align:right; flex-shrink:0; }
-        .group-card .right .meta { font-size:12px; color:var(--text-dim); }
-        .group-card .right .badge { background:var(--purple); color:#FFF; font-size:11px; font-weight:700; padding:2px 12px; border-radius:30px; display:inline-block; margin-top:4px; }
-
-        /* Notifications */
-        .notif-list { display:flex; flex-direction:column; gap:12px; }
-        .notif-item { background:var(--bg-notif); border-radius:1rem; padding:1rem 1.2rem; border:1px solid var(--border-color); display:flex; align-items:center; gap:14px; transition:0.2s; cursor:pointer; box-shadow:var(--shadow); }
-        .notif-item:hover { background:var(--bg-card-hover); }
-        .notif-item .icon { font-size:1.4rem; width:40px; height:40px; border-radius:50%; background:rgba(108,92,231,0.1); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--purple); }
-        .notif-item .info { flex:1; }
-        .notif-item .info p { font-size:14px; color:var(--text-secondary); }
-        .notif-item .info .time { font-size:11px; color:var(--text-dim); }
-        .notif-item .badge-new { background:var(--purple); color:#FFF; font-size:10px; padding:2px 12px; border-radius:30px; flex-shrink:0; }
-
-        /* Bottom Nav */
-        .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:var(--bg-nav); backdrop-filter:blur(20px); border-top:1px solid var(--border-color); display:flex; justify-content:space-around; padding:8px 0 12px; z-index:1000; }
-        .bottom-nav button { background:none; border:none; color:var(--text-dim); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:2px; font-size:10px; font-family:'Inter',sans-serif; transition:0.3s; padding:4px 12px; position:relative; }
-        .bottom-nav button i { font-size:1.4rem; transition:0.3s; color:var(--text-dim); }
-        .bottom-nav button span { font-weight:500; }
-        .bottom-nav button.active { color:var(--purple); }
-        .bottom-nav button.active i { color:var(--purple); transform:translateY(-2px); }
-        .bottom-nav button .nav-badge { position:absolute; top:0; right:4px; background:var(--purple); color:#FFF; font-size:9px; font-weight:700; padding:1px 7px; border-radius:30px; min-width:18px; text-align:center; }
-
-        /* Toast */
-        .toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:var(--toast-bg); backdrop-filter:blur(16px); padding:0.6rem 1.2rem; border-radius:40px; z-index:1100; font-size:0.8rem; color:var(--text-secondary); border:1px solid var(--border-color); max-width:90%; text-align:center; white-space:pre-line; box-shadow:var(--shadow); }
-
-        /* Modals */
-        .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); z-index:2000; align-items:center; justify-content:center; }
-        .modal-overlay.active { display:flex; }
-        .modal-content { background:var(--bg-modal); border-radius:2rem; padding:2rem; width:90%; max-width:500px; border:1px solid rgba(108,92,231,0.2); max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.5); }
-        .modal-content h2 { text-align:center; margin-bottom:4px; color:var(--text-primary); display:flex; align-items:center; justify-content:center; gap:10px; }
-        .modal-content h2 i { color:var(--purple); }
-        .modal-content .sub { text-align:center; color:var(--text-muted); font-size:14px; margin-bottom:1.2rem; }
-        .close-modal-btn { display:block; margin:1.2rem auto 0; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:10px 30px; border-radius:2rem; font-weight:600; cursor:pointer; font-size:0.9rem; transition:0.3s; font-family:'Inter',sans-serif; }
-        .close-modal-btn:hover { background:var(--bg-card-hover); }
-        .built-by { text-align:center; color:var(--text-dim); font-size:12px; margin-top:1.2rem; padding-top:1rem; border-top:1px solid var(--border-color); }
-        .built-by strong { color:var(--purple-light); }
-
-        /* Viewer */
-        .viewer-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:3000; flex-direction:column; }
-        .viewer-modal.active { display:flex; }
-        .viewer-header { padding:1rem 1.5rem; background:var(--bg-card); border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
-        .viewer-title { font-size:1.1rem; color:var(--text-primary); display:flex; align-items:center; gap:12px; }
-        .viewer-title i { color:var(--purple); }
-        .viewer-close { background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer; padding:4px 8px; transition:0.3s; }
-        .viewer-close:hover { color:var(--text-primary); }
-        .viewer-body { flex:1; overflow:auto; display:flex; align-items:center; justify-content:center; padding:20px; background:var(--bg-primary); }
-        .viewer-body iframe { width:100%; height:100%; min-height:500px; border:none; background:#FFF; }
-        .viewer-body video, .viewer-body audio { max-width:100%; max-height:80vh; }
-        .viewer-body img { max-width:100%; max-height:80vh; object-fit:contain; }
-        .viewer-body pre { white-space:pre-wrap; padding:20px; margin:0; font-family:'Inter',monospace; font-size:14px; line-height:1.6; color:var(--text-secondary); max-width:100%; overflow:auto; }
-        .viewer-footer { padding:0.8rem 1.5rem; background:var(--bg-card); border-top:1px solid var(--border-color); display:flex; gap:12px; justify-content:flex-end; flex-shrink:0; flex-wrap:wrap; }
-        .viewer-footer button { background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:8px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif; display:flex; align-items:center; gap:8px; transition:0.3s; font-size:14px; }
-        .viewer-footer button:hover { background:var(--purple); color:#FFF; border-color:var(--purple); }
-
-        /* Upload Progress */
-        .upload-progress { display:none; margin-top:12px; padding:12px; background:var(--bg-input); border-radius:1rem; text-align:center; }
-        .upload-progress.show { display:block; }
-        .upload-progress .spinner { display:inline-block; width:20px; height:20px; border:3px solid var(--purple); border-top:3px solid transparent; border-radius:50%; animation:spin 1s linear infinite; vertical-align:middle; margin-right:12px; }
-        @keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
-
-        /* Subject Library */
-        .library-header { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
-        .library-header .page-title { margin-bottom:0; }
-        .library-search { flex:1; min-width:200px; }
-        .library-search input { width:100%; padding:10px 16px; border-radius:2rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); font-size:14px; outline:none; transition:0.3s; }
-        .library-search input:focus { border-color:var(--purple); }
-        .library-tabs { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
-        .library-tabs button { background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:8px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif; font-weight:500; transition:0.3s; }
-        .library-tabs button.active-tab { background:var(--purple); color:#FFF; border-color:var(--purple); }
-        .library-tabs button:hover { background:var(--bg-card-hover); }
-
-        .resource-card { background:var(--bg-card); border-radius:1rem; padding:1rem 1.2rem; border:1px solid var(--border-color); margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; transition:0.3s; }
-        .resource-card:hover { border-color:var(--purple); transform:translateY(-2px); }
-        .resource-info { display:flex; align-items:center; gap:12px; flex:1; }
-        .resource-info .icon { font-size:1.8rem; width:45px; height:45px; border-radius:50%; background:rgba(108,92,231,0.1); display:flex; align-items:center; justify-content:center; color:var(--purple); flex-shrink:0; }
-        .resource-info .details h4 { font-size:15px; color:var(--text-primary); font-weight:600; }
-        .resource-info .details p { font-size:12px; color:var(--text-muted); margin-top:2px; }
-        .resource-actions { display:flex; gap:8px; flex-shrink:0; }
-        .resource-actions button { background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:6px 14px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif; font-size:13px; transition:0.3s; display:flex; align-items:center; gap:4px; }
-        .resource-actions button:hover { background:var(--purple); color:#FFF; border-color:var(--purple); }
-
-        .empty-state { text-align:center; padding:40px; color:var(--text-muted); background:var(--bg-card); border-radius:1rem; border:1px solid var(--border-color); }
-        .empty-state i { font-size:3rem; color:var(--purple); display:block; margin-bottom:12px; }
-
-        /* Live badge */
-        .live-badge { background:var(--red); color:#FFF; font-size:12px; font-weight:700; padding:4px 14px; border-radius:30px; display:inline-flex; align-items:center; gap:6px; flex-shrink:0; }
-
-        /* Responsive */
-        @media (max-width:768px) {
-            body { padding:0.5rem; padding-bottom:80px; }
-            .top-nav { padding:0.6rem 1rem; }
-            .page { padding:1rem; }
-            .sidebar { width:280px; right:-280px; }
-            .subject-grid { grid-template-columns:repeat(3,1fr); gap:10px; }
-            .subject-card { padding:1rem 0.5rem; }
-            .subject-card .icon { font-size:2rem; }
-            .subject-card h4 { font-size:13px; }
-            .subject-card p { font-size:10px; }
-            .ai-grid { grid-template-columns:repeat(2,1fr); }
-            .bottom-nav button { font-size:9px; padding:2px 8px; }
-            .bottom-nav button i { font-size:1.2rem; }
-            .groups-tabs button { font-size:12px; padding:8px 14px; }
-            .group-card { padding:1rem; }
-            .group-card .left .icon { width:40px; height:40px; font-size:1.4rem; }
-            .theme-toggle span { display:none; }
-            .viewer-body iframe { min-height:300px; }
-            .library-header { flex-direction:column; align-items:stretch; }
-        }
-        @media (max-width:450px) {
-            .subject-grid { grid-template-columns:repeat(2,1fr); }
-            .ai-grid { grid-template-columns:1fr 1fr; }
-        }
+        :root{--bg-primary:#0A0A0F;--bg-secondary:rgba(10,10,15,0.7);--bg-card:rgba(20,23,43,0.8);--bg-card-hover:rgba(20,23,43,1);--bg-input:rgba(255,255,255,0.04);--bg-modal:#14172B;--bg-nav:rgba(10,10,15,0.95);--bg-topnav:rgba(10,10,15,0.8);--bg-notif:rgba(20,23,43,0.8);--text-primary:#FFFFFF;--text-secondary:#EDEEF2;--text-muted:#B6BDF0;--text-dim:#9CA3E0;--border-color:rgba(255,255,255,0.06);--shadow:0 4px 16px rgba(0,0,0,0.3);--toast-bg:#14172B;--purple:#6C5CE7;--purple-light:#8B7CF7;--purple-dark:#4A42DB;--green:#4ade80;--red:#EF4444;--orange:#f59e0b;--yellow:#fbbf24;--blue:#60a5fa}
+        [data-theme="light"]{--bg-primary:#F4F6FB;--bg-secondary:rgba(255,255,255,0.85);--bg-card:#FFFFFF;--bg-card-hover:#F1F5F9;--bg-input:rgba(0,0,0,0.04);--bg-modal:#FFFFFF;--bg-nav:rgba(255,255,255,0.95);--bg-topnav:rgba(255,255,255,0.9);--bg-notif:#FFFFFF;--text-primary:#1E293B;--text-secondary:#334155;--text-muted:#64748B;--text-dim:#94A3B8;--border-color:rgba(0,0,0,0.06);--toast-bg:#1F2937;--green:#16a34a;--red:#DC2626;--orange:#d97706;--yellow:#ca8a04;--blue:#2563eb}
+        *{margin:0;padding:0;box-sizing:border-box}
+        html{scroll-behavior:smooth}
+        body{font-family:'Inter',sans-serif;background:var(--bg-primary);color:var(--text-secondary);min-height:100vh;padding:1rem;padding-bottom:90px;transition:background .3s,color .3s}
+        .app{max-width:1400px;margin:0 auto;background:var(--bg-secondary);backdrop-filter:blur(18px);border-radius:2rem;border:1px solid var(--border-color);overflow:hidden;min-height:80vh}
+        .top-nav{padding:.8rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border-color);background:var(--bg-topnav);flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:100}
+        .logo h1{font-size:1.5rem;background:linear-gradient(135deg,var(--text-primary),var(--purple-light));-webkit-background-clip:text;background-clip:text;color:transparent;display:flex;align-items:center;gap:10px}
+        .logo h1 i{color:var(--purple)}
+        .logo span{font-size:.65rem;color:var(--text-muted);display:block;margin-left:2px}
+        .nav-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+        .theme-toggle,.menu-btn,.login-btn{background:var(--bg-input);padding:.35rem 1rem;border-radius:2rem;border:1px solid var(--border-color);color:var(--text-secondary);cursor:pointer;font-size:1rem;transition:.3s;display:flex;align-items:center;gap:6px;font-family:'Inter',sans-serif}
+        .theme-toggle:hover,.menu-btn:hover,.login-btn:hover{background:var(--purple);color:#FFF;border-color:var(--purple)}
+        .apply-btn{background:#6C5CE7;padding:.35rem 1.2rem;border-radius:2rem;border:none;color:#FFF;cursor:pointer;font-size:.85rem;font-weight:600;display:flex;align-items:center;gap:6px;transition:.3s;font-family:'Inter',sans-serif}
+        .apply-btn:hover{background:#4A42DB;transform:scale(1.02)}
+        .sidebar-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:1500}
+        .sidebar-overlay.active{display:block}
+        .sidebar{position:fixed;top:0;right:-320px;width:300px;height:100%;background:var(--bg-modal);z-index:1600;transition:right .3s ease;padding:2rem 1.5rem;border-left:1px solid var(--border-color);overflow-y:auto;will-change:transform}
+        .sidebar.open{right:0}
+        .sidebar .close-sidebar{background:none;border:none;color:var(--text-muted);font-size:1.5rem;cursor:pointer;float:right}
+        .sidebar .close-sidebar:hover{color:var(--text-primary)}
+        .sidebar .sidebar-title{font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:1.5rem;margin-top:.5rem;display:flex;align-items:center;gap:10px}
+        .sidebar .sidebar-title i{color:var(--purple)}
+        .sidebar .sidebar-item{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:1rem;color:var(--text-muted);cursor:pointer;transition:.3s;margin-bottom:4px;border:none;background:none;width:100%;text-align:left;font-family:'Inter',sans-serif;font-size:15px;font-weight:500}
+        .sidebar .sidebar-item:hover{background:rgba(108,92,231,0.15);color:var(--text-primary)}
+        .sidebar .sidebar-item.active-sidebar{background:var(--purple);color:#FFF}
+        .sidebar .sidebar-item i{width:24px;font-size:1.1rem;color:var(--purple)}
+        .sidebar .sidebar-item:hover i{color:var(--purple-light)}
+        .sidebar .sidebar-divider{border-top:1px solid var(--border-color);margin:12px 0}
+        .sidebar .sidebar-footer{padding:0 16px;margin-top:12px}
+        .sidebar .sidebar-footer .name{color:var(--purple-light);font-size:13px;font-weight:600}
+        .sidebar .sidebar-footer .school{color:var(--text-dim);font-size:11px}
+        .page{display:none;padding:1.5rem;animation:fadeIn .3s ease}
+        .page.active{display:block}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+        .page-title{font-size:24px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:10px;color:var(--text-primary)}
+        .page-title i{color:var(--purple)}
+        .page-subtitle{color:var(--text-muted);font-size:16px;margin-bottom:24px}
+        .form-group{margin-bottom:14px}
+        .form-group label{display:block;color:var(--text-muted);font-size:14px;margin-bottom:4px;font-weight:500}
+        .form-group input,.form-group select,.form-group textarea{width:100%;padding:12px 16px;border-radius:1rem;background:var(--bg-input);border:1px solid var(--border-color);color:var(--text-secondary);font-size:14px;outline:none;transition:.3s;font-family:'Inter',sans-serif}
+        .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--purple)}
+        .form-group input::placeholder,.form-group textarea::placeholder{color:var(--text-dim)}
+        .form-group select option{background:var(--bg-modal);color:var(--text-secondary)}
+        .password-wrapper{position:relative;width:100%}
+        .password-wrapper input{padding-right:48px}
+        .password-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:1.1rem;padding:4px;transition:.2s}
+        .password-toggle:hover{color:var(--purple)}
+        .btn-primary{width:100%;padding:14px;border-radius:2rem;background:var(--purple);border:none;color:#FFF;font-size:16px;font-weight:600;cursor:pointer;transition:.3s;display:flex;align-items:center;justify-content:center;gap:8px;font-family:'Inter',sans-serif}
+        .btn-primary:hover{background:var(--purple-dark);transform:scale(1.01)}
+        .btn-secondary{width:100%;padding:14px;border-radius:2rem;background:var(--bg-input);border:1px solid var(--border-color);color:var(--text-secondary);font-size:16px;font-weight:600;cursor:pointer;transition:.3s;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;font-family:'Inter',sans-serif}
+        .btn-secondary:hover{background:var(--bg-card-hover)}
+        .auth-toggle{text-align:center;margin-top:12px;color:var(--text-muted);font-size:14px;cursor:pointer}
+        .auth-toggle:hover{color:var(--purple-light);text-decoration:underline}
+        .subject-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1.2rem}
+        .subject-card{background:var(--bg-card);border-radius:1.2rem;padding:1.5rem 1rem;text-align:center;border:1px solid var(--border-color);cursor:pointer;transition:.3s;color:var(--text-secondary)}
+        .subject-card:hover{transform:translateY(-4px);background:var(--bg-card-hover);border-color:var(--purple)}
+        .subject-card .icon{font-size:2.5rem;margin-bottom:8px;color:var(--purple)}
+        .subject-card h4{font-size:15px;font-weight:600;color:var(--text-primary)}
+        .subject-card p{font-size:12px;color:var(--text-muted);margin-top:4px}
+        .ai-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.2rem;margin-top:1.5rem}
+        .ai-card{background:var(--bg-card);border-radius:1.2rem;padding:1.5rem 1rem;text-align:center;border:1px solid var(--border-color);cursor:pointer;transition:.3s}
+        .ai-card:hover{transform:translateY(-4px);background:var(--bg-card-hover);border-color:var(--purple)}
+        .ai-card .ai-logo{width:60px;height:60px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:700;background:rgba(108,92,231,0.15);color:var(--purple);border:2px solid rgba(108,92,231,0.2)}
+        .ai-card h4{font-size:16px;font-weight:600;color:var(--text-primary)}
+        .ai-card p{font-size:12px;color:var(--text-muted);margin-top:4px}
+        .groups-tabs{display:flex;gap:8px;margin-bottom:24px;border-bottom:1px solid var(--border-color);padding-bottom:4px;flex-wrap:wrap}
+        .groups-tabs button{background:none;border:none;color:var(--text-dim);padding:10px 20px;border-radius:2rem;font-size:14px;font-weight:600;cursor:pointer;transition:.3s;display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif}
+        .groups-tabs button:hover{color:var(--text-primary);background:var(--bg-input)}
+        .groups-tabs button.active-tab{background:var(--purple);color:#FFF}
+        .groups-tabs button .tab-badge{background:var(--purple);color:#FFF;font-size:10px;font-weight:700;padding:1px 8px;border-radius:30px}
+        .group-content{display:none}
+        .group-content.active-content{display:block}
+        .group-card{background:var(--bg-card);border-radius:1rem;padding:1.2rem 1.5rem;border:1px solid var(--border-color);margin-bottom:12px;cursor:pointer;transition:.3s;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;box-shadow:var(--shadow)}
+        .group-card:hover{background:var(--bg-card-hover);border-color:var(--purple)}
+        .group-card .left{display:flex;align-items:center;gap:14px;flex:1}
+        .group-card .left .icon{font-size:2rem;width:50px;height:50px;border-radius:50%;background:rgba(108,92,231,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--purple)}
+        .group-card .left .info h4{font-size:16px;font-weight:600;color:var(--text-primary)}
+        .group-card .left .info p{font-size:13px;color:var(--text-muted);margin-top:2px}
+        .group-card .right{text-align:right;flex-shrink:0}
+        .group-card .right .meta{font-size:12px;color:var(--text-dim)}
+        .group-card .right .badge{background:var(--purple);color:#FFF;font-size:11px;font-weight:700;padding:2px 12px;border-radius:30px;display:inline-block;margin-top:4px}
+        .notif-list{display:flex;flex-direction:column;gap:12px}
+        .notif-item{background:var(--bg-notif);border-radius:1rem;padding:1rem 1.2rem;border:1px solid var(--border-color);display:flex;align-items:center;gap:14px;transition:.2s;cursor:pointer;box-shadow:var(--shadow)}
+        .notif-item:hover{background:var(--bg-card-hover)}
+        .notif-item .icon{font-size:1.4rem;width:40px;height:40px;border-radius:50%;background:rgba(108,92,231,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--purple)}
+        .notif-item .info{flex:1}
+        .notif-item .info p{font-size:14px;color:var(--text-secondary)}
+        .notif-item .info .time{font-size:11px;color:var(--text-dim)}
+        .notif-item .badge-new{background:var(--purple);color:#FFF;font-size:10px;padding:2px 12px;border-radius:30px;flex-shrink:0}
+        .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg-nav);backdrop-filter:blur(20px);border-top:1px solid var(--border-color);display:flex;justify-content:space-around;padding:8px 0 12px;z-index:1000}
+        .bottom-nav button{background:none;border:none;color:var(--text-dim);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-family:'Inter',sans-serif;transition:.3s;padding:4px 12px;position:relative}
+        .bottom-nav button i{font-size:1.4rem;transition:.3s;color:var(--text-dim)}
+        .bottom-nav button span{font-weight:500}
+        .bottom-nav button.active{color:var(--purple)}
+        .bottom-nav button.active i{color:var(--purple);transform:translateY(-2px)}
+        .bottom-nav button .nav-badge{position:absolute;top:0;right:4px;background:var(--purple);color:#FFF;font-size:9px;font-weight:700;padding:1px 7px;border-radius:30px;min-width:18px;text-align:center}
+        .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--toast-bg);backdrop-filter:blur(16px);padding:.6rem 1.2rem;border-radius:40px;z-index:1100;font-size:.8rem;color:var(--text-secondary);border:1px solid var(--border-color);max-width:90%;text-align:center;white-space:pre-line;box-shadow:var(--shadow)}
+        .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);z-index:2000;align-items:center;justify-content:center}
+        .modal-overlay.active{display:flex}
+        .modal-content{background:var(--bg-modal);border-radius:2rem;padding:2rem;width:90%;max-width:500px;border:1px solid rgba(108,92,231,0.2);max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+        .modal-content h2{text-align:center;margin-bottom:4px;color:var(--text-primary);display:flex;align-items:center;justify-content:center;gap:10px}
+        .modal-content h2 i{color:var(--purple)}
+        .modal-content .sub{text-align:center;color:var(--text-muted);font-size:14px;margin-bottom:1.2rem}
+        .close-modal-btn{display:block;margin:1.2rem auto 0;background:var(--bg-input);border:1px solid var(--border-color);color:var(--text-secondary);padding:10px 30px;border-radius:2rem;font-weight:600;cursor:pointer;font-size:.9rem;transition:.3s;font-family:'Inter',sans-serif}
+        .close-modal-btn:hover{background:var(--bg-card-hover)}
+        .built-by{text-align:center;color:var(--text-dim);font-size:12px;margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--border-color)}
+        .built-by strong{color:var(--purple-light)}
+        .viewer-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);z-index:3000;flex-direction:column}
+        .viewer-modal.active{display:flex}
+        .viewer-header{padding:.8rem 1.5rem;background:var(--bg-card);border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;z-index:10}
+        .viewer-title{font-size:1rem;color:var(--text-primary);display:flex;align-items:center;gap:12px}
+        .viewer-title i{color:var(--purple)}
+        .viewer-title span{max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .viewer-close{background:none;border:none;color:var(--text-muted);font-size:1.5rem;cursor:pointer;padding:4px 8px;transition:.3s}
+        .viewer-close:hover{color:var(--text-primary)}
+        .viewer-body{flex:1;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg-primary);position:relative}
+        .viewer-scrollable{width:100%;height:100%;overflow:auto !important;display:flex;align-items:flex-start;justify-content:center;padding:10px}
+        .viewer-scrollable iframe{width:100%;height:100%;min-height:500px;border:none;background:#FFF}
+        .viewer-scrollable pre{white-space:pre-wrap;padding:20px;margin:0;font-family:'Inter',monospace;font-size:14px;line-height:1.6;color:#000;max-width:100%;overflow:auto;background:#FFF}
+        .viewer-zoomable{width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;touch-action:none}
+        .viewer-zoomable .viewer-content{transform-origin:center center;transition:transform .1s ease;touch-action:none;cursor:grab;max-width:100%;max-height:100%;display:flex;align-items:center;justify-content:center}
+        .viewer-zoomable .viewer-content:active{cursor:grabbing}
+        .viewer-zoomable .viewer-content img{max-width:100%;max-height:80vh;object-fit:contain}
+        .viewer-media{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+        .viewer-media video{max-width:100%;max-height:80vh;background:#000}
+        .viewer-media audio{width:100%;max-width:600px}
+        .viewer-footer{padding:.6rem 1.5rem;background:var(--bg-card);border-top:1px solid var(--border-color);display:flex;gap:10px;justify-content:center;flex-shrink:0;flex-wrap:wrap;z-index:10}
+        .viewer-footer button{background:var(--bg-input);border:1px solid var(--border-color);color:var(--text-secondary);padding:6px 16px;border-radius:2rem;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px;transition:.3s;font-size:13px}
+        .viewer-footer button:hover{background:var(--purple);color:#FFF;border-color:var(--purple)}
+        .viewer-footer .zoom-level{background:var(--bg-input);border:1px solid var(--border-color);color:var(--text-secondary);padding:6px 14px;border-radius:2rem;font-size:13px;font-family:'Inter',sans-serif}
+        .upload-progress{display:none;margin-top:12px;padding:12px;background:var(--bg-input);border-radius:1rem;text-align:center}
+        .upload-progress.show{display:block}
+        .upload-progress .spinner{display:inline-block;width:20px;height:20px;border:3px solid var(--purple);border-top:3px solid transparent;border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;margin-right:12px}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        .library-header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+        .library-header .page-title{margin-bottom:0}
+        .library-search{flex:1;min-width:200px}
+        .library-search input{width:100%;padding:10px 16px;border-radius:2rem;background:var(--bg-input);border:1px solid var(--border-color);color:var(--text-secondary);font-size:14px;outline:none;transition:.3s}
+        .library-search input:focus{border-color:var(--purple)}
+        .library-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+        .library-tabs button{background:var(--bg-input);border:1px solid var(--border-color);color:var(--text-muted);padding:8px 20px;border-radius:2rem;cursor:pointer;font-family:'Inter',sans-serif;font-weight:500;transition:.3s}
+        .library-tabs button.active-tab{background:var(--purple);color:#FFF;border-color:var(--purple)}
+        .library-tabs button:hover{background:var(--bg-card-hover)}
+        .resource-card{background:var(--bg-card);border-radius:1rem;padding:1rem 1.2rem;border:1px solid var(--border-color);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;transition:.3s}
+        .resource-card:hover{border-color:var(--purple);transform:translateY(-2px)}
+        .resource-info{display:flex;align-items:center;gap:12px;flex:1}
+        .resource-info .icon{font-size:1.8rem;width:45px;height:45px;border-radius:50%;background:rgba(108,92,231,0.1);display:flex;align-items:center;justify-content:center;color:var(--purple);flex-shrink:0}
+        .resource-info .details h4{font-size:15px;color:var(--text-primary);font-weight:600}
+        .resource-info .details p{font-size:12px;color:var(--text-muted);margin-top:2px}
+        .resource-actions{display:flex;gap:8px;flex-shrink:0}
+        .resource-actions button{background:var(--bg-input);border:1px solid var(--border-color);color:var(--text-secondary);padding:6px 14px;border-radius:2rem;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;transition:.3s;display:flex;align-items:center;gap:4px}
+        .resource-actions button:hover{background:var(--purple);color:#FFF;border-color:var(--purple)}
+        .empty-state{text-align:center;padding:40px;color:var(--text-muted);background:var(--bg-card);border-radius:1rem;border:1px solid var(--border-color)}
+        .empty-state i{font-size:3rem;color:var(--purple);display:block;margin-bottom:12px}
+        .live-badge{background:var(--red);color:#FFF;font-size:12px;font-weight:700;padding:4px 14px;border-radius:30px;display:inline-flex;align-items:center;gap:6px;flex-shrink:0}
+        .schoolhub-table{width:100%;border-collapse:collapse;background:#FFF !important;border:2px solid #000 !important;border-radius:8px;overflow:hidden}
+        .schoolhub-table thead th{background:#6C5CE7 !important;color:#FFF !important;padding:12px 15px;text-align:left;font-weight:600;font-size:14px;border:1px solid #000 !important}
+        .schoolhub-table tbody td{padding:10px 15px;background:#FFF !important;color:#000 !important;border:1px solid #000 !important;font-size:14px}
+        .schoolhub-table tbody td input,.schoolhub-table tbody td select{background:#FFF !important;color:#000 !important;border:1px solid #000 !important;padding:6px 10px;border-radius:4px;width:100%;font-family:'Inter',sans-serif;font-size:14px}
+        .schoolhub-table tbody td input::placeholder{color:#999 !important}
+        .schoolhub-table tbody td input:focus,.schoolhub-table tbody td select:focus{outline:2px solid #6C5CE7;outline-offset:-1px}
+        .report-card-table{width:100%;border-collapse:collapse;background:#FFF !important;border:2px solid #000 !important}
+        .report-card-table thead th{background:#6C5CE7 !important;color:#FFF !important;padding:12px 15px;border:1px solid #000 !important;text-align:center}
+        .report-card-table tbody td{padding:10px 15px;background:#FFF !important;color:#000 !important;border:1px solid #000 !important;text-align:center}
+        @media(max-width:768px){body{padding:.5rem;padding-bottom:80px}.top-nav{padding:.6rem 1rem}.page{padding:1rem}.sidebar{width:280px;right:-280px}.subject-grid{grid-template-columns:repeat(3,1fr);gap:10px}.subject-card{padding:1rem .5rem}.subject-card .icon{font-size:2rem}.subject-card h4{font-size:13px}.subject-card p{font-size:10px}.ai-grid{grid-template-columns:repeat(2,1fr)}.bottom-nav button{font-size:9px;padding:2px 8px}.bottom-nav button i{font-size:1.2rem}.groups-tabs button{font-size:12px;padding:8px 14px}.group-card{padding:1rem}.group-card .left .icon{width:40px;height:40px;font-size:1.4rem}.theme-toggle span{display:none}.viewer-scrollable iframe{min-height:300px}.library-header{flex-direction:column;align-items:stretch}.viewer-body{padding:10px}.viewer-footer button{padding:4px 12px;font-size:11px}.viewer-title span{max-width:150px}}
+        @media(max-width:450px){.subject-grid{grid-template-columns:repeat(2,1fr)}.ai-grid{grid-template-columns:1fr 1fr}}
     </style>
 </head>
 <body>
 
-    <!-- ====== TOP NAV ====== -->
+    <!-- TOP NAV -->
     <div class="top-nav">
         <div class="logo">
             <h1><i class="fas fa-graduation-cap"></i> SchoolHub</h1>
             <span>Complete · Built by Abraham Chiputa</span>
         </div>
         <div class="nav-actions">
-            <button class="apply-btn" onclick="showApplyForm()">
-                <i class="fas fa-user-plus"></i> Apply as Admin
-            </button>
-            <button class="login-btn" id="authBtn" onclick="toggleAuth()">
-                <i class="fas fa-user"></i> Login
-            </button>
-            <button class="theme-toggle" onclick="toggleTheme()">
-                <i class="fas fa-moon" id="themeIcon"></i>
-                <span id="themeLabel">Dark</span>
-            </button>
-            <button class="menu-btn" onclick="toggleSidebar()">
-                <i class="fas fa-bars"></i>
-            </button>
+            <button class="apply-btn" onclick="showApplyForm()"><i class="fas fa-user-plus"></i> Apply as Admin</button>
+            <button class="login-btn" id="authBtn" onclick="toggleAuth()"><i class="fas fa-user"></i> Login</button>
+            <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i><span id="themeLabel">Dark</span></button>
+            <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
         </div>
     </div>
 
-    <!-- ====== SIDEBAR ====== -->
+    <!-- SIDEBAR -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     <div class="sidebar" id="sidebar">
         <button class="close-sidebar" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
@@ -292,16 +223,15 @@
         </div>
     </div>
 
-    <!-- ====== APP CONTENT ====== -->
+    <!-- APP CONTENT -->
     <div class="app">
 
-        <!-- ====== HOME PAGE ====== -->
+        <!-- HOME PAGE -->
         <div class="page active" id="home">
             <div style="text-align:center; padding:20px 0;">
                 <h2 style="color:var(--text-primary); font-size:28px;"><i class="fas fa-graduation-cap" style="color:var(--purple);"></i> Welcome to SchoolHub</h2>
                 <p style="color:var(--text-muted);">Click a subject to explore resources</p>
             </div>
-
             <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; margin-bottom:30px;">
                 <div onclick="switchPage('register')" style="background:var(--bg-card); border-radius:1rem; padding:1rem; text-align:center; cursor:pointer; border:1px solid var(--border-color);">
                     <i class="fas fa-plus-circle" style="font-size:2rem; color:var(--purple);"></i>
@@ -392,7 +322,7 @@
             </div>
         </div>
 
-        <!-- ====== SUBJECT LIBRARY PAGE ====== -->
+        <!-- SUBJECT LIBRARY -->
         <div class="page" id="subjectLibrary">
             <div class="library-header">
                 <div class="page-title"><i class="fas fa-book" id="librarySubjectIcon"></i> <span id="librarySubjectTitle">Subject</span></div>
@@ -417,11 +347,10 @@
             </div>
         </div>
 
-        <!-- ====== TEACHER PAGE ====== -->
+        <!-- TEACHER PAGE -->
         <div class="page" id="teacher">
             <div class="page-title"><i class="fas fa-chalkboard-teacher"></i> Teacher Dashboard</div>
             <p class="page-subtitle">Upload resources, start live classes, add students</p>
-
             <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; margin-bottom:20px;">
                 <div style="background:var(--bg-card); border-radius:1rem; padding:1rem; text-align:center; border:1px solid var(--border-color);">
                     <i class="fas fa-users" style="font-size:1.5rem; color:var(--purple);"></i>
@@ -505,17 +434,17 @@
                 <button class="btn-primary" onclick="startLive()" style="background:var(--red);"><i class="fas fa-circle"></i> Start Live</button>
             </div>
 
-            <!-- Add Students -->
+            <!-- Add Students - Create Table -->
             <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color);">
                 <h3 style="color:var(--text-primary); display:flex; align-items:center; gap:10px; margin-bottom:12px;"><i class="fas fa-user-plus" style="color:var(--purple);"></i> Add Students</h3>
                 <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:12px;">
-                    <button onclick="showStudentMethod('excel')" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:10px; border-radius:1rem; cursor:pointer; font-family:'Inter',sans-serif;">
-                        <i class="fas fa-file-excel" style="color:var(--purple);"></i> Excel
+                    <button onclick="showCreateTable()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:10px; border-radius:1rem; cursor:pointer; font-family:'Inter',sans-serif;">
+                        <i class="fas fa-table" style="color:var(--purple);"></i> Create Table
                     </button>
-                    <button onclick="showStudentMethod('manual')" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:10px; border-radius:1rem; cursor:pointer; font-family:'Inter',sans-serif;">
+                    <button onclick="showManualEntry()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:10px; border-radius:1rem; cursor:pointer; font-family:'Inter',sans-serif;">
                         <i class="fas fa-pencil-alt" style="color:var(--purple);"></i> Manual
                     </button>
-                    <button onclick="showStudentMethod('ocr')" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:10px; border-radius:1rem; cursor:pointer; font-family:'Inter',sans-serif;">
+                    <button onclick="showOCRScan()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:10px; border-radius:1rem; cursor:pointer; font-family:'Inter',sans-serif;">
                         <i class="fas fa-camera" style="color:var(--purple);"></i> OCR Scan
                     </button>
                 </div>
@@ -523,15 +452,13 @@
                     <i class="fas fa-users" style="font-size:2rem; color:var(--purple);"></i>
                     <p style="margin-top:8px;">Select a method to add students</p>
                 </div>
-                <div id="studentMethodResult" style="margin-top:12px;"></div>
             </div>
         </div>
 
-        <!-- ====== SCHOOL ADMIN PAGE ====== -->
+        <!-- SCHOOL ADMIN PAGE -->
         <div class="page" id="schoolAdmin">
             <div class="page-title"><i class="fas fa-school"></i> School Admin</div>
             <p class="page-subtitle">Manage your school and teachers</p>
-
             <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; margin-bottom:20px;">
                 <div style="background:var(--bg-card); border-radius:1rem; padding:1rem; text-align:center; border:1px solid var(--border-color);">
                     <i class="fas fa-users" style="font-size:1.5rem; color:var(--purple);"></i>
@@ -568,11 +495,10 @@
             </div>
         </div>
 
-        <!-- ====== SUPER ADMIN PAGE ====== -->
+        <!-- SUPER ADMIN PAGE -->
         <div class="page" id="superAdmin">
             <div class="page-title"><i class="fas fa-crown" style="color:var(--yellow);"></i> Super Admin</div>
             <p class="page-subtitle">Manage all schools, approve applications</p>
-
             <div id="superLogin" style="max-width:400px; margin:0 auto; background:var(--bg-card); border-radius:1rem; padding:2rem; border:1px solid var(--border-color);">
                 <h3 style="color:var(--text-primary); text-align:center; margin-bottom:16px;"><i class="fas fa-crown" style="color:var(--yellow);"></i> Super Admin Login</h3>
                 <div class="form-group">
@@ -585,7 +511,6 @@
                 </div>
                 <button class="btn-primary" onclick="superAdminLogin()"><i class="fas fa-sign-in-alt"></i> Login</button>
             </div>
-
             <div id="superDashboard" style="display:none;">
                 <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; margin-bottom:20px;">
                     <div style="background:var(--bg-card); border-radius:1rem; padding:1rem; text-align:center; border:1px solid var(--border-color);">
@@ -604,12 +529,10 @@
                         <p style="color:var(--text-muted); font-size:12px;">Teachers</p>
                     </div>
                 </div>
-
                 <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color); margin-bottom:16px;">
                     <h3 style="color:var(--text-primary); display:flex; align-items:center; gap:10px; margin-bottom:12px;"><i class="fas fa-clock" style="color:var(--orange);"></i> Pending Applications</h3>
                     <div id="pendingList"><p style="color:var(--text-muted); text-align:center; padding:16px;">No pending applications</p></div>
                 </div>
-
                 <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color);">
                     <h3 style="color:var(--text-primary); display:flex; align-items:center; gap:10px; margin-bottom:12px;"><i class="fas fa-school" style="color:var(--purple);"></i> All Schools</h3>
                     <div id="schoolsList"><p style="color:var(--text-muted); text-align:center; padding:16px;">No schools registered</p></div>
@@ -617,11 +540,10 @@
             </div>
         </div>
 
-        <!-- ====== PARENT PAGE ====== -->
+        <!-- PARENT PAGE -->
         <div class="page" id="parent">
             <div class="page-title"><i class="fas fa-users"></i> Parent Portal</div>
             <p class="page-subtitle">View your child's report card</p>
-
             <div style="max-width:500px; margin:0 auto;">
                 <div class="form-group">
                     <label style="color:var(--text-muted); font-size:13px;">Student Name</label>
@@ -636,11 +558,10 @@
             </div>
         </div>
 
-        <!-- ====== REGISTER SCHOOL PAGE ====== -->
+        <!-- REGISTER SCHOOL -->
         <div class="page" id="register">
             <div class="page-title"><i class="fas fa-plus-circle"></i> Register School</div>
             <p class="page-subtitle">Apply to join SchoolHub</p>
-
             <div style="max-width:500px; margin:0 auto; background:var(--bg-card); border-radius:1rem; padding:2rem; border:1px solid var(--border-color);">
                 <div class="form-group">
                     <label style="color:var(--text-muted); font-size:13px;">School Name</label>
@@ -678,11 +599,10 @@
             </div>
         </div>
 
-        <!-- ====== ABOUT PAGE ====== -->
+        <!-- ABOUT PAGE -->
         <div class="page" id="about">
             <div class="page-title"><i class="fas fa-info-circle"></i> About SchoolHub</div>
             <p class="page-subtitle">The complete school management system</p>
-
             <div style="background:var(--bg-card); border-radius:1rem; padding:2rem; border:1px solid var(--border-color);">
                 <h3 style="color:var(--text-primary);"><i class="fas fa-graduation-cap" style="color:var(--purple);"></i> About SchoolHub</h3>
                 <p style="color:var(--text-muted); margin-top:8px;">SchoolHub is a complete school management system. It allows schools to manage teachers, students, resources, live classes, and report cards.</p>
@@ -691,11 +611,11 @@
                 <p style="color:var(--text-muted);">Abraham Chiputa · Kasco · JETS Project 2025</p>
                 <br>
                 <h4 style="color:var(--text-primary);"><i class="fas fa-check-circle" style="color:var(--green);"></i> Features</h4>
-                <p style="color:var(--text-muted);">Subject Libraries · Search · OCR · Excel Upload · Live Classes · Report Cards · Groups · Chat · AI Assistants · Super Admin · School Admin · Teacher Dashboard · Parent Portal</p>
+                <p style="color:var(--text-muted);">Subject Libraries · Search · OCR · Create Table · Live Classes · Report Cards · Groups · Chat · AI Assistants · Super Admin · School Admin · Teacher Dashboard · Parent Portal</p>
             </div>
         </div>
 
-        <!-- ====== AI PAGE ====== -->
+        <!-- AI PAGE -->
         <div class="page" id="ai">
             <div class="page-title"><i class="fas fa-robot"></i> AI Assistants</div>
             <p class="page-subtitle">Choose your AI tutor</p>
@@ -707,17 +627,15 @@
             </div>
         </div>
 
-        <!-- ====== GROUPS PAGE ====== -->
+        <!-- GROUPS PAGE -->
         <div class="page" id="groups">
             <div class="page-title"><i class="fas fa-users"></i> Groups</div>
             <p class="page-subtitle">Connect with classmates</p>
-
             <div class="groups-tabs">
                 <button class="active-tab" onclick="switchGroupTab('school', this)"><i class="fas fa-school"></i> School</button>
                 <button onclick="switchGroupTab('class', this)"><i class="fas fa-chalkboard"></i> Class</button>
                 <button onclick="switchGroupTab('social', this)"><i class="fas fa-globe"></i> Social</button>
             </div>
-
             <div class="group-content active-content" id="groupSchool">
                 <div style="text-align:center; padding:20px; color:var(--text-muted);">
                     <i class="fas fa-bullhorn" style="font-size:2rem; color:var(--purple);"></i>
@@ -738,7 +656,7 @@
             </div>
         </div>
 
-        <!-- ====== ALERTS PAGE ====== -->
+        <!-- ALERTS PAGE -->
         <div class="page" id="alerts">
             <div class="page-title"><i class="fas fa-bell"></i> Alerts</div>
             <p class="page-subtitle">Stay updated</p>
@@ -752,23 +670,23 @@
 
     </div>
 
-    <!-- ====== VIEWER MODAL ====== -->
+    <!-- VIEWER MODAL -->
     <div class="viewer-modal" id="viewerModal">
         <div class="viewer-header">
-            <div class="viewer-title"><i class="fas fa-file" id="viewerIcon"></i><span id="viewerName">File</span></div>
+            <div class="viewer-title"><i class="fas fa-file" id="viewerFileIcon"></i><span id="viewerFileName">File Name</span></div>
             <button class="viewer-close" onclick="closeViewer()"><i class="fas fa-times"></i></button>
         </div>
         <div class="viewer-body" id="viewerBody">
             <div style="text-align:center; padding:40px; color:var(--text-muted);"><i class="fas fa-spinner fa-spin" style="font-size:3rem;"></i><p>Loading...</p></div>
         </div>
-        <div class="viewer-footer">
+        <div class="viewer-footer" id="viewerFooter">
             <button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button>
-            <button onclick="viewerShare()"><i class="fas fa-share"></i> Share</button>
+            <button onclick="viewerShare()"><i class="fas fa-share-alt"></i> Share</button>
             <button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>
         </div>
     </div>
 
-    <!-- ====== AUTH MODAL ====== -->
+    <!-- AUTH MODAL -->
     <div class="modal-overlay" id="authModal">
         <div class="modal-content">
             <div id="authLogin">
@@ -790,7 +708,6 @@
                 <div class="auth-toggle" onclick="showResetPassword()" style="font-size:13px; color:var(--text-dim);">Forgot password?</div>
                 <div class="built-by">Built by <strong>Abraham Chiputa</strong> · Kasco · JETS 2025</div>
             </div>
-
             <div id="authSignup" style="display:none;">
                 <h2><i class="fas fa-user-plus"></i> Sign Up</h2>
                 <p class="sub">Create your account</p>
@@ -812,15 +729,14 @@
                 <div class="form-group">
                     <label style="color:var(--text-muted); font-size:13px;">Role</label>
                     <select id="signupRole" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);">
-                        <option value="student">Student</option><option value="teacher">Teacher</option>
-                        <option value="parent">Parent</option><option value="schooladmin">School Admin</option>
+                        <option value="student">Student</option>
+                        <option value="parent">Parent</option>
                     </select>
                 </div>
                 <button class="btn-primary" onclick="handleSignup()"><i class="fas fa-user-plus"></i> Sign Up</button>
                 <div class="auth-toggle" onclick="showLogin()">Already have an account? Login</div>
                 <div class="built-by">Built by <strong>Abraham Chiputa</strong> · Kasco · JETS 2025</div>
             </div>
-
             <div id="authReset" style="display:none;">
                 <h2><i class="fas fa-key"></i> Reset Password</h2>
                 <p class="sub">Enter your email</p>
@@ -835,7 +751,7 @@
         </div>
     </div>
 
-    <!-- ====== CHAT MODAL ====== -->
+    <!-- CHAT MODAL -->
     <div class="chat-modal" id="chatModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); backdrop-filter:blur(12px); z-index:3000; align-items:center; justify-content:center;">
         <div class="chat-modal-content" style="background:var(--bg-modal); border-radius:2rem; width:95%; max-width:500px; height:85vh; max-height:600px; display:flex; flex-direction:column; border:1px solid rgba(108,92,231,0.2); overflow:hidden;">
             <div class="chat-header" style="padding:1rem 1.5rem; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; flex-wrap:wrap; gap:8px;">
@@ -869,7 +785,7 @@
         </div>
     </div>
 
-    <!-- ====== APPLY FORM MODAL ====== -->
+    <!-- APPLY FORM MODAL -->
     <div class="modal-overlay" id="applyModal">
         <div class="modal-content">
             <h2><i class="fas fa-crown" style="color:#F59E0B;"></i> Apply as School Admin</h2>
@@ -900,7 +816,7 @@
         </div>
     </div>
 
-    <!-- ====== BOTTOM NAV ====== -->
+    <!-- BOTTOM NAV -->
     <nav class="bottom-nav">
         <button class="active" onclick="switchPage('home', this)"><i class="fas fa-home"></i><span>Home</span></button>
         <button onclick="switchPage('ai', this)"><i class="fas fa-robot"></i><span>AI</span></button>
@@ -908,7 +824,6 @@
         <button onclick="switchPage('alerts', this)"><i class="fas fa-bell"></i><span>Alerts</span></button>
     </nav>
 
-    <!-- ====== JAVASCRIPT ====== -->
     <script>
         // ============================================================
         // FIREBASE CONFIG
@@ -925,7 +840,7 @@
         const auth = firebase.auth();
 
         // ============================================================
-        // EMAILJS SETUP — REAL EMAIL NOTIFICATIONS
+        // EMAILJS SETUP
         // ============================================================
         emailjs.init('D3z7b7LPtwjlQbLyO');
 
@@ -940,7 +855,10 @@
         let mediaRecorder = null;
         let audioChunks = [];
         let currentViewerFile = null;
-        let teacherCount = 0;
+        let currentZoom = 1;
+        let isDragging = false;
+        let startX, startY, translateX = 0,
+            translateY = 0;
 
         // ============================================================
         // THEME TOGGLE
@@ -963,6 +881,25 @@
         }
 
         function switchPage(pageId, btn) {
+            // Role check for protected pages
+            if (pageId === 'teacher' && !isTeacher() && !isSchoolAdmin() && !isSuperAdmin()) {
+                showToast('Only teachers can access this page');
+                return;
+            }
+            if (pageId === 'schoolAdmin' && !isSchoolAdmin() && !isSuperAdmin()) {
+                showToast('Only School Admins can access this page');
+                return;
+            }
+            if (pageId === 'superAdmin' && !isSuperAdmin()) {
+                document.getElementById('superLogin').style.display = 'block';
+                document.getElementById('superDashboard').style.display = 'none';
+                return;
+            }
+            if (pageId === 'parent' && !isParent() && !isSuperAdmin()) {
+                showToast('Only parents can access this page');
+                return;
+            }
+
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             document.querySelectorAll('.bottom-nav button').forEach(b => b.classList.remove('active'));
@@ -972,6 +909,38 @@
             if (pageId === 'teacher') updateTeacherStats();
             if (pageId === 'schoolAdmin') updateAdminStats();
             if (pageId === 'superAdmin') updateSuperAdminStats();
+        }
+
+        // ============================================================
+        // ROLE CHECKS
+        // ============================================================
+        function getUserRole() {
+            const user = auth.currentUser;
+            if (!user) return null;
+            const users = JSON.parse(localStorage.getItem('schoolhub_users') || '{}');
+            const userData = users[user.uid];
+            if (userData) return userData.role;
+            const teachers = JSON.parse(localStorage.getItem('schoolhub_teachers') || '[]');
+            const teacher = teachers.find(t => t.email === user.email);
+            if (teacher) return 'teacher';
+            return null;
+        }
+
+        function isTeacher() {
+            const role = getUserRole();
+            return role === 'teacher' || role === 'schooladmin';
+        }
+
+        function isSchoolAdmin() {
+            return getUserRole() === 'schooladmin';
+        }
+
+        function isSuperAdmin() {
+            return localStorage.getItem('superAdminLoggedIn') === 'true';
+        }
+
+        function isParent() {
+            return getUserRole() === 'parent';
         }
 
         // ============================================================
@@ -1065,6 +1034,7 @@
                 document.getElementById('authBtn').innerHTML = '<i class="fas fa-user"></i> Login';
                 document.getElementById('authBtn').style.background = '';
                 document.getElementById('authBtn').style.color = '';
+                localStorage.setItem('superAdminLoggedIn', 'false');
             });
         }
 
@@ -1088,14 +1058,11 @@
             const grade = document.getElementById('findGrade').value;
             const school = document.getElementById('findSchool').value.trim();
             if (!name || !grade || !school) { showToast('Please fill all fields'); return; }
-
             const students = JSON.parse(localStorage.getItem('schoolhub_students') || '[]');
             const found = students.find(s => s.name.toLowerCase() === name.toLowerCase() && s.grade === grade && s.school ===
                 school);
-
             const result = document.getElementById('findResult');
             result.style.display = 'block';
-
             if (found) {
                 result.innerHTML =
                     `
@@ -1276,71 +1243,265 @@
         // ============================================================
         // VIEWER SYSTEM
         // ============================================================
-        function viewResource(id) {
-            const resources = JSON.parse(localStorage.getItem('schoolhub_resources') || '[]');
-            const res = resources.find(r => r.id === id);
-            if (!res) { showToast('Resource not found'); return; }
-            currentViewerFile = res;
-            document.getElementById('viewerName').textContent = res.name;
-            document.getElementById('viewerModal').classList.add('active');
-            const body = document.getElementById('viewerBody');
+        function openViewer(file) {
+            currentViewerFile = file;
+            currentZoom = 1;
+            translateX = 0;
+            translateY = 0;
 
-            if (res.fileData) {
-                if (res.type === 'video') {
-                    body.innerHTML =
-                        `<video controls autoplay style="max-width:100%; max-height:80vh;"><source src="${res.fileData}"></video>`;
-                } else if (res.type === 'audio') {
-                    body.innerHTML =
-                        `<audio controls autoplay style="width:100%;"><source src="${res.fileData}"></audio>`;
-                } else if (res.fileData.startsWith('data:application/pdf')) {
-                    body.innerHTML =
-                        `<iframe src="${res.fileData}" width="100%" height="100%" style="min-height:500px;"></iframe>`;
-                } else if (res.fileData.startsWith('data:image')) {
-                    body.innerHTML =
-                        `<img src="${res.fileData}" style="max-width:100%; max-height:80vh; object-fit:contain;" />`;
-                } else if (res.fileData.startsWith('data:text')) {
-                    fetch(res.fileData).then(r => r.text()).then(t => {
-                        body.innerHTML =
-                            `<pre style="white-space:pre-wrap; padding:20px; margin:0; font-family:'Inter',monospace; font-size:14px; line-height:1.6; color:var(--text-secondary); max-width:100%; overflow:auto;">${t}</pre>`;
-                    });
-                } else {
-                    body.innerHTML =
-                        `<iframe src="${res.fileData}" width="100%" height="100%" style="min-height:500px;"></iframe>`;
+            document.getElementById('viewerFileName').textContent = file.name || 'File';
+            document.getElementById('viewerModal').classList.add('active');
+
+            const body = document.getElementById('viewerBody');
+            const footer = document.getElementById('viewerFooter');
+            const ext = (file.name || '').split('.').pop().toLowerCase();
+            const url = file.fileData || file.url || file.downloadURL || '';
+
+            body.innerHTML = '';
+            footer.innerHTML = '';
+
+            const isScrollable = ['pdf', 'txt', 'md', 'log', 'js', 'html', 'css', 'json', 'xml', 'py',
+                'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'
+            ].includes(ext);
+            const isZoomable = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'bmp', 'tiff'].includes(ext);
+            const isMedia = ['mp4', 'webm', 'mov', 'avi', 'mkv', 'mp3', 'wav', 'ogg', 'm4a', 'flac'].includes(ext);
+
+            if (isScrollable) {
+                body.innerHTML = `<div class="viewer-scrollable" id="scrollableContent"></div>`;
+                const container = document.getElementById('scrollableContent');
+
+                if (ext === 'pdf') {
+                    container.innerHTML =
+                        `<iframe src="${url}#toolbar=1" style="width:100%; height:100%; min-height:500px; border:none;"></iframe>`;
+                } else if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(ext)) {
+                    const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
+                    container.innerHTML =
+                        `<iframe src="${viewerUrl}" style="width:100%; height:100%; min-height:500px; border:none;"></iframe>`;
+                } else if (['txt', 'md', 'log', 'js', 'html', 'css', 'json', 'xml', 'py'].includes(ext)) {
+                    fetch(url)
+                        .then(r => r.text())
+                        .then(text => {
+                            container.innerHTML =
+                                `<pre style="white-space:pre-wrap; padding:20px; margin:0; font-family:'Inter',monospace; font-size:14px; line-height:1.6; color:#000; max-width:100%; overflow:auto; background:#FFF;">${escapeHtml(text)}</pre>`;
+                        })
+                        .catch(() => {
+                            container.innerHTML =
+                                `<div style="text-align:center; padding:40px; color:var(--text-muted);"><i class="fas fa-file" style="font-size:3rem; color:var(--purple);"></i><p style="margin-top:12px;">Could not load content</p></div>`;
+                        });
                 }
+
+                footer.innerHTML = `
+                    <button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button>
+                    <button onclick="viewerShare()"><i class="fas fa-share-alt"></i> Share</button>
+                    <button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>
+                `;
+
+            } else if (isZoomable) {
+                body.innerHTML = `
+                    <div class="viewer-zoomable">
+                        <div class="viewer-content" id="viewerContent">
+                            <img src="${url}" alt="${file.name}" style="max-width:100%; max-height:80vh; object-fit:contain;" />
+                        </div>
+                    </div>
+                `;
+
+                footer.innerHTML = `
+                    <button onclick="zoomIn()"><i class="fas fa-plus-circle"></i> Zoom In</button>
+                    <button onclick="zoomOut()"><i class="fas fa-minus-circle"></i> Zoom Out</button>
+                    <button onclick="resetZoom()"><i class="fas fa-expand"></i> Reset</button>
+                    <span class="zoom-level" id="zoomLevelDisplay">100%</span>
+                    <button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button>
+                    <button onclick="viewerShare()"><i class="fas fa-share-alt"></i> Share</button>
+                    <button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>
+                `;
+
+                setupZoomAndPan();
+
+            } else if (isMedia) {
+                body.innerHTML = `<div class="viewer-media" id="mediaContent"></div>`;
+                const container = document.getElementById('mediaContent');
+
+                if (['mp4', 'webm', 'mov', 'avi', 'mkv'].includes(ext)) {
+                    container.innerHTML =
+                        `<video controls autoplay style="max-width:100%; max-height:80vh; background:#000;"><source src="${url}"></video>`;
+                } else if (['mp3', 'wav', 'ogg', 'm4a', 'flac'].includes(ext)) {
+                    container.innerHTML =
+                        `<audio controls autoplay style="width:100%; max-width:600px;"><source src="${url}"></audio>`;
+                }
+
+                footer.innerHTML = `
+                    <button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button>
+                    <button onclick="viewerShare()"><i class="fas fa-share-alt"></i> Share</button>
+                    <button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>
+                `;
+
             } else {
-                body.innerHTML =
-                    `<div style="text-align:center; padding:40px;"><i class="fas fa-file" style="font-size:3rem; color:var(--purple);"></i><p>No content available</p></div>`;
+                body.innerHTML = `
+                    <div style="text-align:center; padding:40px; color:var(--text-muted);">
+                        <i class="fas fa-file" style="font-size:3rem; color:var(--purple);"></i>
+                        <p style="margin-top:12px;">This file type cannot be previewed.</p>
+                        <p style="font-size:13px; color:var(--text-dim);">${file.name}</p>
+                        <button onclick="viewerDownload()" class="btn-primary" style="margin-top:16px; max-width:200px; padding:10px 24px;">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </div>
+                `;
+                footer.innerHTML = `
+                    <button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button>
+                    <button onclick="viewerShare()"><i class="fas fa-share-alt"></i> Share</button>
+                    <button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>
+                `;
             }
         }
 
         function closeViewer() {
             document.getElementById('viewerModal').classList.remove('active');
-            document.getElementById('viewerBody').innerHTML =
-                '<div style="text-align:center; padding:40px; color:var(--text-muted);"><i class="fas fa-spinner fa-spin" style="font-size:3rem;"></i><p>Loading...</p></div>';
+            document.getElementById('viewerBody').innerHTML = '';
+            document.getElementById('viewerFooter').innerHTML = '';
             currentViewerFile = null;
+            currentZoom = 1;
+            translateX = 0;
+            translateY = 0;
         }
 
+        // ============================================================
+        // ZOOM & PAN (Images only)
+        // ============================================================
+        function setupZoomAndPan() {
+            const container = document.getElementById('zoomContainer') || document.querySelector('.viewer-zoomable');
+            const content = document.getElementById('viewerContent');
+            if (!container || !content) return;
+
+            container.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                if (e.deltaY < 0) zoomIn();
+                else zoomOut();
+            }, { passive: false });
+
+            container.addEventListener('mousedown', function(e) {
+                if (currentZoom > 1) {
+                    isDragging = true;
+                    startX = e.clientX - translateX;
+                    startY = e.clientY - translateY;
+                    content.style.cursor = 'grabbing';
+                }
+            });
+
+            window.addEventListener('mousemove', function(e) {
+                if (isDragging) {
+                    translateX = e.clientX - startX;
+                    translateY = e.clientY - startY;
+                    updateTransform();
+                }
+            });
+
+            window.addEventListener('mouseup', function() {
+                isDragging = false;
+                content.style.cursor = currentZoom > 1 ? 'grab' : 'default';
+            });
+
+            let lastTouchDistance = 0;
+            container.addEventListener('touchstart', function(e) {
+                if (e.touches.length === 2) {
+                    const touch1 = e.touches[0];
+                    const touch2 = e.touches[1];
+                    lastTouchDistance = getTouchDistance(touch1, touch2);
+                }
+            }, { passive: true });
+
+            container.addEventListener('touchmove', function(e) {
+                if (e.touches.length === 2) {
+                    e.preventDefault();
+                    const touch1 = e.touches[0];
+                    const touch2 = e.touches[1];
+                    const distance = getTouchDistance(touch1, touch2);
+                    if (lastTouchDistance > 0) {
+                        const delta = distance / lastTouchDistance;
+                        currentZoom = Math.min(Math.max(currentZoom * delta, 0.5), 5);
+                        updateTransform();
+                        const display = document.getElementById('zoomLevelDisplay');
+                        if (display) display.textContent = Math.round(currentZoom * 100) + '%';
+                    }
+                    lastTouchDistance = distance;
+                }
+            }, { passive: false });
+
+            container.addEventListener('touchend', function() {
+                lastTouchDistance = 0;
+            }, { passive: true });
+        }
+
+        function getTouchDistance(touch1, touch2) {
+            const dx = touch1.clientX - touch2.clientX;
+            const dy = touch1.clientY - touch2.clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        function updateTransform() {
+            const content = document.getElementById('viewerContent');
+            if (content) {
+                content.style.transform = `scale(${currentZoom}) translate(${translateX / currentZoom}px, ${translateY / currentZoom}px)`;
+            }
+        }
+
+        function zoomIn() {
+            currentZoom = Math.min(currentZoom + 0.1, 5);
+            updateTransform();
+            const display = document.getElementById('zoomLevelDisplay');
+            if (display) display.textContent = Math.round(currentZoom * 100) + '%';
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(currentZoom - 0.1, 0.5);
+            updateTransform();
+            const display = document.getElementById('zoomLevelDisplay');
+            if (display) display.textContent = Math.round(currentZoom * 100) + '%';
+        }
+
+        function resetZoom() {
+            currentZoom = 1;
+            translateX = 0;
+            translateY = 0;
+            updateTransform();
+            const display = document.getElementById('zoomLevelDisplay');
+            if (display) display.textContent = '100%';
+            const content = document.getElementById('viewerContent');
+            if (content) content.style.cursor = 'default';
+        }
+
+        // ============================================================
+        // VIEWER UTILITIES
+        // ============================================================
         function viewerDownload() {
-            if (currentViewerFile && currentViewerFile.fileData) {
-                const link = document.createElement('a');
-                link.href = currentViewerFile.fileData;
-                link.download = currentViewerFile.fileName || 'resource';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                showToast('Downloading ' + currentViewerFile.name);
-            } else {
-                showToast('No file to download');
+            if (currentViewerFile) {
+                const url = currentViewerFile.fileData || currentViewerFile.url || currentViewerFile.downloadURL;
+                if (url) {
+                    window.open(url, '_blank');
+                    showToast('Downloading ' + currentViewerFile.name);
+                } else {
+                    showToast('No download URL available');
+                }
             }
         }
 
         function viewerShare() {
-            if (currentViewerFile && currentViewerFile.fileData) {
-                navigator.clipboard.writeText(currentViewerFile.fileData).then(() => {
-                    showToast('Link copied to clipboard');
-                }).catch(() => {
-                    showToast('Share: Resource link');
-                });
+            if (currentViewerFile) {
+                const url = currentViewerFile.fileData || currentViewerFile.url || currentViewerFile.downloadURL;
+                if (navigator.share) {
+                    navigator.share({
+                        title: currentViewerFile.name,
+                        text: 'Check out this resource from SchoolHub!',
+                        url: url
+                    }).catch(() => {});
+                } else if (navigator.clipboard) {
+                    navigator.clipboard.writeText(url).then(() => {
+                        showToast('Link copied to clipboard');
+                    }).catch(() => {
+                        showToast('Share: ' + url);
+                    });
+                } else {
+                    showToast('Share: ' + url);
+                }
             }
         }
 
@@ -1357,96 +1518,344 @@
             showToast('Downloading ' + res.name);
         }
 
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         // ============================================================
-        // TEACHER - STUDENT METHODS (Excel, Manual, OCR)
+        // CREATE TABLE (Teacher adds students)
         // ============================================================
-        function showStudentMethod(method) {
+        function showCreateTable() {
             const area = document.getElementById('studentMethodArea');
-            const methods = {
-                'excel': `
-                    <i class="fas fa-file-excel" style="font-size:2rem; color:var(--purple);"></i>
-                    <p style="color:var(--text-primary); margin-top:8px;">Upload Excel File</p>
-                    <p style="color:var(--text-muted); font-size:13px;">Upload an Excel file with student names, grades, and classes</p>
-                    <input type="file" id="excelFileInput" accept=".xlsx,.xls,.csv" style="margin-top:8px; padding:8px; border:1px solid var(--border-color); border-radius:1rem; background:var(--bg-input); color:var(--text-secondary); width:100%;" />
-                    <button class="btn-primary" style="margin-top:8px; width:auto; padding:8px 24px;" onclick="processExcelStudents()"><i class="fas fa-upload"></i> Upload</button>
-                    <button class="btn-secondary" style="margin-top:8px; width:auto; padding:8px 24px;" onclick="downloadExcelTemplate()"><i class="fas fa-download"></i> Template</button>
-                `,
-                'manual': `
-                    <i class="fas fa-pencil-alt" style="font-size:2rem; color:var(--purple);"></i>
-                    <p style="color:var(--text-primary); margin-top:8px;">Manual Entry</p>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; text-align:left;">
-                        <div style="grid-column:span 2;">
-                            <input type="text" id="manualStudentName" placeholder="Student Name" style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
-                        </div>
-                        <div>
-                            <select id="manualStudentGrade" style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);">
-                                <option value="12">Grade 12</option><option value="11">Grade 11</option><option value="10">Grade 10</option>
-                                <option value="9">Grade 9</option><option value="8">Grade 8</option>
-                            </select>
-                        </div>
-                        <div>
-                            <input type="text" id="manualStudentClass" placeholder="Class" value="A" style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
-                        </div>
+            area.innerHTML = `
+                <div style="margin-bottom:12px;">
+                    <label style="color:var(--text-muted); font-size:13px; display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                        <i class="fas fa-pencil-alt" style="color:var(--purple);"></i> Notes / Description
+                    </label>
+                    <div id="tableNotes" contenteditable="true" 
+                         style="padding:12px; border:2px dashed var(--border-color); border-radius:1rem; 
+                                min-height:60px; color:var(--text-secondary); cursor:text;
+                                transition:border-color 0.3s; line-height:1.6; background:#FFF;"
+                         onfocus="this.style.borderColor='var(--purple)'" 
+                         onblur="this.style.borderColor='var(--border-color)'">
+                        <span style="color:#999;">Click here to add notes...</span>
                     </div>
-                    <button class="btn-primary" style="margin-top:8px; width:auto; padding:8px 24px;" onclick="addManualStudent()"><i class="fas fa-plus"></i> Add Student</button>
-                `,
-                'ocr': `
-                    <i class="fas fa-camera" style="font-size:2rem; color:var(--purple);"></i>
-                    <p style="color:var(--text-primary); margin-top:8px;">OCR Scan</p>
-                    <p style="color:var(--text-muted); font-size:13px;">Upload a photo of the class list to extract student names</p>
-                    <input type="file" id="ocrImageInput" accept="image/*" style="margin-top:8px; padding:8px; border:1px solid var(--border-color); border-radius:1rem; background:var(--bg-input); color:var(--text-secondary); width:100%;" />
-                    <button class="btn-primary" style="margin-top:8px; width:auto; padding:8px 24px;" onclick="processOCRStudents()"><i class="fas fa-eye"></i> Scan & Extract</button>
-                `
-            };
-            area.innerHTML = methods[method] || '<p style="color:var(--text-muted);">Select a method</p>';
+                </div>
+
+                <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+                    <button onclick="addTableRow()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:6px 16px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
+                        <i class="fas fa-plus" style="color:var(--purple);"></i> Add Row
+                    </button>
+                    <button onclick="deleteTableRow()" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:6px 16px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
+                        <i class="fas fa-minus"></i> Delete Row
+                    </button>
+                    <button onclick="addTableColumn()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:6px 16px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
+                        <i class="fas fa-plus" style="color:var(--purple);"></i> Add Column
+                    </button>
+                    <button onclick="deleteTableColumn()" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:6px 16px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
+                        <i class="fas fa-minus"></i> Delete Column
+                    </button>
+                    <span style="margin-left:auto; background:var(--bg-input); padding:4px 16px; border-radius:2rem; border:1px solid var(--border-color);">
+                        <span style="color:var(--text-muted);">Rows:</span>
+                        <span id="rowCountDisplay" style="color:var(--text-primary); font-weight:600;">0</span>
+                        <span style="color:var(--text-muted); margin-left:8px;">Cols:</span>
+                        <span id="colCountDisplay" style="color:var(--text-primary); font-weight:600;">5</span>
+                    </span>
+                </div>
+
+                <div style="overflow-x:auto; border-radius:8px; border:2px solid #000;">
+                    <table class="schoolhub-table" id="dynamicTable">
+                        <thead id="tableHeader">
+                            <tr>
+                                <th style="width:50px; min-width:50px; text-align:center;">#</th>
+                                <th style="min-width:150px;">Name</th>
+                                <th style="min-width:80px;">Grade</th>
+                                <th style="min-width:120px;">Class</th>
+                                <th style="min-width:100px;">Subject</th>
+                                <th style="width:60px; text-align:center;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Rows added here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="display:flex; gap:12px; margin-top:12px; flex-wrap:wrap;">
+                    <button onclick="saveTableStudents()" class="btn-primary" style="width:auto; padding:8px 24px;">
+                        <i class="fas fa-save"></i> Save All
+                    </button>
+                    <button onclick="downloadTableExcel()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:8px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
+                        <i class="fas fa-download" style="color:var(--purple);"></i> Download Excel
+                    </button>
+                    <button onclick="closeTableCreator()" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:8px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+                <div id="tableResultMessage" style="margin-top:8px;"></div>
+            `;
+            // Add default rows
+            setTimeout(() => {
+                addTableRow();
+                addTableRow();
+                addTableRow();
+                updateTableCounters();
+            }, 50);
         }
 
-        function processExcelStudents() {
-            const fileInput = document.getElementById('excelFileInput');
-            if (!fileInput.files || fileInput.files.length === 0) { showToast('Please select an Excel file'); return; }
-            const file = fileInput.files[0];
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const json = XLSX.utils.sheet_to_json(sheet);
-                    const students = JSON.parse(localStorage.getItem('schoolhub_students') || '[]');
-                    let added = 0;
-                    json.forEach(row => {
-                        const name = row['Name'] || row['Student Name'] || row['name'] || '';
-                        const grade = String(row['Grade'] || row['grade'] || '');
-                        const school = row['School'] || row['school'] || 'Kasco';
-                        if (name && grade) {
-                            if (!students.find(s => s.name === name && s.grade === grade && s.school === school)) {
-                                students.push({ name, grade, school, registeredAt: new Date().toISOString() });
-                                added++;
-                            }
-                        }
-                    });
-                    localStorage.setItem('schoolhub_students', JSON.stringify(students));
-                    showToast('Added ' + added + ' students from Excel!');
-                    updateTeacherStats();
-                    document.getElementById('excelFileInput').value = '';
-                } catch (err) {
-                    showToast('Error reading Excel file: ' + err.message);
+        // ============================================================
+        // TABLE FUNCTIONS
+        // ============================================================
+        function addTableRow() {
+            const tbody = document.getElementById('tableBody');
+            if (!tbody) return;
+            const rowNum = tbody.children.length + 1;
+
+            const tr = document.createElement('tr');
+            tr.style.border = '1px solid #000';
+
+            let html = `
+                <td style="padding:8px 10px; text-align:center; font-weight:600; color:#000; border:1px solid #000;">${rowNum}</td>
+                <td style="padding:8px 10px; border:1px solid #000;">
+                    <input type="text" placeholder="Student name" class="table-name" 
+                           style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;" />
+                </td>
+                <td style="padding:8px 10px; border:1px solid #000;">
+                    <select class="table-grade" 
+                            style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;">
+                        <option value="12">12</option><option value="11">11</option><option value="10">10</option>
+                        <option value="9">9</option><option value="8">8</option><option value="7">7</option>
+                        <option value="6">6</option><option value="5">5</option><option value="4">4</option>
+                        <option value="3">3</option><option value="2">2</option><option value="1">1</option>
+                    </select>
+                </td>
+                <td style="padding:8px 10px; border:1px solid #000;">
+                    <input type="text" placeholder="Class" class="table-class" 
+                           style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;" />
+                </td>
+                <td style="padding:8px 10px; border:1px solid #000;">
+                    <input type="text" placeholder="Subject" class="table-subject" 
+                           style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;" />
+                </td>
+                <td style="padding:8px 10px; text-align:center; border:1px solid #000;">
+                    <button onclick="removeThisRow(this)" style="background:none; border:none; color:#EF4444; cursor:pointer; font-size:16px;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+
+            tr.innerHTML = html;
+            tbody.appendChild(tr);
+            updateTableCounters();
+        }
+
+        function removeThisRow(btn) {
+            const tbody = document.getElementById('tableBody');
+            if (!tbody) return;
+            const row = btn.closest('tr');
+            if (tbody.children.length > 1) {
+                row.remove();
+                renumberRows();
+                updateTableCounters();
+            } else {
+                showToast('You need at least one row');
+            }
+        }
+
+        function deleteTableRow() {
+            const tbody = document.getElementById('tableBody');
+            if (!tbody) return;
+            if (tbody.children.length > 1) {
+                tbody.lastChild.remove();
+                renumberRows();
+                updateTableCounters();
+            } else {
+                showToast('You need at least one row');
+            }
+        }
+
+        function renumberRows() {
+            document.querySelectorAll('#tableBody tr').forEach((tr, index) => {
+                tr.querySelector('td:first-child').textContent = index + 1;
+            });
+        }
+
+        function addTableColumn() {
+            const headerRow = document.querySelector('#tableHeader tr');
+            if (!headerRow) return;
+            const colIndex = headerRow.children.length;
+            const th = document.createElement('th');
+            th.style.padding = '10px';
+            th.style.textAlign = 'left';
+            th.style.minWidth = '100px';
+            th.style.border = '1px solid #000';
+            th.style.background = '#6C5CE7';
+            th.style.color = '#FFF';
+            th.contentEditable = true;
+            th.textContent = 'New Column';
+            th.onfocus = function() { if (this.textContent === 'New Column') this.textContent = ''; };
+            th.onblur = function() { if (this.textContent.trim() === '') this.textContent = 'New Column'; };
+            headerRow.appendChild(th);
+
+            document.querySelectorAll('#tableBody tr').forEach(row => {
+                const td = document.createElement('td');
+                td.style.padding = '8px 10px';
+                td.style.border = '1px solid #000';
+                td.style.background = '#FFF';
+                td.innerHTML = `
+                    <input type="text" placeholder="Enter value" class="table-custom" 
+                           style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;" />
+                `;
+                row.appendChild(td);
+            });
+
+            updateTableCounters();
+            showToast('New column added! Click the header to rename it.');
+        }
+
+        function deleteTableColumn() {
+            const headerRow = document.querySelector('#tableHeader tr');
+            if (!headerRow) return;
+            if (headerRow.children.length <= 3) {
+                showToast('You need at least 3 columns');
+                return;
+            }
+
+            const lastColIndex = headerRow.children.length - 1;
+            headerRow.removeChild(headerRow.children[lastColIndex]);
+
+            document.querySelectorAll('#tableBody tr').forEach(row => {
+                const lastTd = row.children[row.children.length - 1];
+                row.removeChild(lastTd);
+            });
+
+            updateTableCounters();
+            showToast('Last column deleted');
+        }
+
+        function updateTableCounters() {
+            const rows = document.querySelectorAll('#tableBody tr').length;
+            const cols = document.querySelectorAll('#tableHeader th').length;
+            const rowDisplay = document.getElementById('rowCountDisplay');
+            const colDisplay = document.getElementById('colCountDisplay');
+            if (rowDisplay) rowDisplay.textContent = rows;
+            if (colDisplay) colDisplay.textContent = cols;
+        }
+
+        function saveTableStudents() {
+            const notesElement = document.getElementById('tableNotes');
+            const notes = notesElement ? notesElement.innerText.trim() : '';
+            const cleanNotes = notes === 'Click here to add notes...' ? '' : notes;
+
+            const rows = document.querySelectorAll('#tableBody tr');
+            const students = JSON.parse(localStorage.getItem('schoolhub_students') || '[]');
+            let added = 0;
+            let errors = 0;
+
+            rows.forEach(row => {
+                const name = row.querySelector('.table-name')?.value.trim();
+                const grade = row.querySelector('.table-grade')?.value;
+                const cls = row.querySelector('.table-class')?.value.trim();
+                const subject = row.querySelector('.table-subject')?.value.trim();
+
+                if (name && grade) {
+                    if (!students.find(s => s.name === name && s.grade === grade && s.school === 'Kasco')) {
+                        students.push({
+                            name: name,
+                            grade: grade,
+                            class: cls || 'A',
+                            subject: subject || '',
+                            school: 'Kasco',
+                            notes: cleanNotes,
+                            registeredAt: new Date().toISOString()
+                        });
+                        added++;
+                    } else {
+                        errors++;
+                    }
                 }
-            };
-            reader.readAsArrayBuffer(file);
+            });
+
+            localStorage.setItem('schoolhub_students', JSON.stringify(students));
+
+            const msgDiv = document.getElementById('tableResultMessage');
+            if (msgDiv) {
+                if (added > 0) {
+                    msgDiv.innerHTML =
+                        `<div style="background:rgba(74,222,128,0.15); border:1px solid rgba(74,222,128,0.3); border-radius:1rem; padding:12px; text-align:center; color:var(--green);">
+                            <i class="fas fa-check-circle"></i> Added ${added} students! ${errors > 0 ? errors + ' duplicates skipped.' : ''}
+                        </div>`;
+                } else {
+                    msgDiv.innerHTML =
+                        `<div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); border-radius:1rem; padding:12px; text-align:center; color:var(--red);">
+                            <i class="fas fa-exclamation-circle"></i> No new students added. ${errors > 0 ? errors + ' duplicates found.' : 'Please enter student names and grades.'}
+                        </div>`;
+                }
+            }
+
+            updateTeacherStats();
+            if (added > 0) showToast('Added ' + added + ' students!');
         }
 
-        function downloadExcelTemplate() {
+        function downloadTableExcel() {
+            const headers = [];
+            document.querySelectorAll('#tableHeader th').forEach(th => {
+                headers.push(th.textContent.trim());
+            });
+
+            const data = [headers];
+            document.querySelectorAll('#tableBody tr').forEach(row => {
+                const rowData = [];
+                row.querySelectorAll('td').forEach(td => {
+                    const input = td.querySelector('input');
+                    const select = td.querySelector('select');
+                    if (input) rowData.push(input.value.trim());
+                    else if (select) rowData.push(select.value);
+                    else rowData.push(td.textContent.trim());
+                });
+                data.push(rowData);
+            });
+
             const wb = XLSX.utils.book_new();
-            const data = [
-                ['Name', 'Grade', 'School'],
-                ['John Banda', '12', 'Kasco'],
-                ['Mary Zulu', '11', 'Kasco']
-            ];
             const ws = XLSX.utils.aoa_to_sheet(data);
             XLSX.utils.book_append_sheet(wb, ws, 'Students');
-            XLSX.writeFile(wb, 'student_template.xlsx');
-            showToast('Template downloaded!');
+            XLSX.writeFile(wb, 'students_from_table.xlsx');
+            showToast('Excel file downloaded!');
+        }
+
+        function closeTableCreator() {
+            document.getElementById('studentMethodArea').innerHTML = `
+                <i class="fas fa-users" style="font-size:2rem; color:var(--purple);"></i>
+                <p style="margin-top:8px;">Select a method to add students</p>
+            `;
+        }
+
+        // ============================================================
+        // MANUAL ENTRY
+        // ============================================================
+        function showManualEntry() {
+            const area = document.getElementById('studentMethodArea');
+            area.innerHTML = `
+                <i class="fas fa-pencil-alt" style="font-size:2rem; color:var(--purple);"></i>
+                <p style="color:var(--text-primary); margin-top:8px;">Manual Entry</p>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; text-align:left;">
+                    <div style="grid-column:span 2;">
+                        <input type="text" id="manualStudentName" placeholder="Student Name" style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                    </div>
+                    <div>
+                        <select id="manualStudentGrade" style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);">
+                            <option value="12">Grade 12</option><option value="11">Grade 11</option><option value="10">Grade 10</option>
+                            <option value="9">Grade 9</option><option value="8">Grade 8</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input type="text" id="manualStudentClass" placeholder="Class" value="A" style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                    </div>
+                </div>
+                <button class="btn-primary" style="margin-top:8px; width:auto; padding:8px 24px;" onclick="addManualStudent()"><i class="fas fa-plus"></i> Add Student</button>
+            `;
         }
 
         function addManualStudent() {
@@ -1467,6 +1876,21 @@
             updateTeacherStats();
         }
 
+        // ============================================================
+        // OCR SCAN
+        // ============================================================
+        function showOCRScan() {
+            const area = document.getElementById('studentMethodArea');
+            area.innerHTML = `
+                <i class="fas fa-camera" style="font-size:2rem; color:var(--purple);"></i>
+                <p style="color:var(--text-primary); margin-top:8px;">OCR Scan</p>
+                <p style="color:var(--text-muted); font-size:13px;">Upload a photo of the class list to extract student names</p>
+                <input type="file" id="ocrImageInput" accept="image/*" style="margin-top:8px; padding:8px; border:1px solid var(--border-color); border-radius:1rem; background:var(--bg-input); color:var(--text-secondary); width:100%;" />
+                <button class="btn-primary" style="margin-top:8px; width:auto; padding:8px 24px;" onclick="processOCRStudents()"><i class="fas fa-eye"></i> Scan & Extract</button>
+                <div id="ocrResult" style="margin-top:8px;"></div>
+            `;
+        }
+
         function processOCRStudents() {
             const fileInput = document.getElementById('ocrImageInput');
             if (!fileInput.files || fileInput.files.length === 0) { showToast('Please select an image'); return; }
@@ -1478,6 +1902,8 @@
                     const lines = text.split('\n').filter(line => line.trim());
                     const students = JSON.parse(localStorage.getItem('schoolhub_students') || '[]');
                     let added = 0;
+                    const resultDiv = document.getElementById('ocrResult');
+
                     lines.forEach(line => {
                         const parts = line.split(/\s+/);
                         if (parts.length >= 2) {
@@ -1492,8 +1918,21 @@
                             }
                         }
                     });
+
                     localStorage.setItem('schoolhub_students', JSON.stringify(students));
-                    showToast('Added ' + added + ' students from OCR scan!');
+
+                    if (added > 0) {
+                        resultDiv.innerHTML =
+                            `<div style="background:rgba(74,222,128,0.15); border:1px solid rgba(74,222,128,0.3); border-radius:1rem; padding:8px; text-align:center; color:var(--green);">
+                                <i class="fas fa-check-circle"></i> Added ${added} students from OCR scan!
+                            </div>`;
+                    } else {
+                        resultDiv.innerHTML =
+                            `<div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); border-radius:1rem; padding:8px; text-align:center; color:var(--red);">
+                                <i class="fas fa-exclamation-circle"></i> No students found. Try a clearer image.
+                            </div>`;
+                    }
+
                     updateTeacherStats();
                     document.getElementById('ocrImageInput').value = '';
                 })
@@ -1521,10 +1960,42 @@
             const name = document.getElementById('teacherName').value.trim();
             const email = document.getElementById('teacherEmail').value.trim();
             if (!name || !email) { showToast('Please enter name and email'); return; }
+
             const teachers = JSON.parse(localStorage.getItem('schoolhub_teachers') || '[]');
+            if (teachers.find(t => t.email === email)) {
+                showToast('Teacher already exists');
+                return;
+            }
+
             const tempPass = 'TEACHER@' + Math.floor(1000 + Math.random() * 9000);
-            teachers.push({ name, email, tempPass, school: 'Kasco', addedAt: new Date().toISOString() });
+            teachers.push({
+                name,
+                email,
+                tempPass,
+                role: 'teacher',
+                firstLogin: true,
+                addedBy: auth.currentUser ? auth.currentUser.email : 'School Admin',
+                addedAt: new Date().toISOString()
+            });
             localStorage.setItem('schoolhub_teachers', JSON.stringify(teachers));
+
+            // Send email via EmailJS
+            emailjs.send('service_46anpgz', 'template_z0bsy46', {
+                to_email: email,
+                admin_name: name,
+                school_name: 'Kasco',
+                school_code: 'TEACHER-' + Date.now().toString().slice(-6),
+                temp_password: tempPass,
+                login_url: 'https://schoolhub.com',
+                subject: 'You have been added as a Teacher!'
+            }).then(() => {
+                showToast('✅ Invitation email sent to ' + email);
+            }).catch(() => {
+                const body =
+                    `You have been added as a Teacher!\n\nSchool: Kasco\nTemporary Password: ${tempPass}\nLogin: https://schoolhub.com\n\nPlease change your password after first login.`;
+                window.open(`mailto:${email}?subject=You have been added as a Teacher!&body=${encodeURIComponent(body)}`,
+                    '_blank');
+            });
 
             const list = document.getElementById('teacherList');
             if (list.querySelector('p')) list.innerHTML = '';
@@ -1535,7 +2006,8 @@
                 `<div><strong style="color:var(--text-primary);">${name}</strong><p style="color:var(--text-muted); font-size:12px;">${email} · Temp: ${tempPass}</p></div>
                 <button onclick="this.parentElement.remove(); updateAdminStats();" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:4px 12px; border-radius:1rem; cursor:pointer;"><i class="fas fa-trash"></i></button>`;
             list.appendChild(div);
-            showToast('Teacher ' + name + ' added! Temp password: ' + tempPass);
+
+            showToast('Teacher ' + name + ' added!');
             document.getElementById('teacherName').value = '';
             document.getElementById('teacherEmail').value = '';
             updateAdminStats();
@@ -1554,6 +2026,7 @@
             const u = document.getElementById('saUsername').value.trim();
             const p = document.getElementById('saPassword').value.trim();
             if (u === 'admin' && p === 'admin123') {
+                localStorage.setItem('superAdminLoggedIn', 'true');
                 document.getElementById('superLogin').style.display = 'none';
                 document.getElementById('superDashboard').style.display = 'block';
                 showToast('Welcome Super Admin!');
@@ -1626,34 +2099,26 @@
                 school_code: data.schoolCode,
                 temp_password: data.tempPassword,
                 login_url: 'https://schoolhub.com'
-            })
-            .then(() => {
-                showToast('✅ Email sent to ' + data.adminEmail);
-                console.log('Email sent successfully!');
-            })
-            .catch((error) => {
+            }).then(() => {
+                showToast('Email sent to ' + data.adminEmail);
+            }).catch((error) => {
                 console.error('Email error:', error);
                 const body =
                     `School: ${data.schoolName}\nCode: ${data.schoolCode}\nPassword: ${data.tempPassword}\nLogin: https://schoolhub.com`;
                 window.open(`mailto:${data.adminEmail}?subject=School Approved!&body=${encodeURIComponent(body)}`,
                 '_blank');
-                showToast('⚠️ Email opened in your email client');
             });
         }
 
         function sendWhatsAppNotification(phone, message) {
-            if (!phone) {
-                showToast('⚠️ No phone number provided for WhatsApp');
-                return;
-            }
+            if (!phone) { return; }
             const cleanPhone = phone.replace(/\D/g, '');
             const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
             window.open(url, '_blank');
-            showToast('💬 Opening WhatsApp...');
         }
 
         // ============================================================
-        // APPROVE SCHOOL (UPDATED WITH EMAIL + WHATSAPP)
+        // APPROVE / REJECT SCHOOL
         // ============================================================
         function approveSchool(index) {
             const pending = JSON.parse(localStorage.getItem('schoolhub_pending') || '[]');
@@ -1679,7 +2144,6 @@
             localStorage.setItem('schoolhub_schools', JSON.stringify(schools));
             localStorage.setItem('schoolhub_pending', JSON.stringify(pending));
 
-            // Send REAL Email
             sendApprovalEmail({
                 adminEmail: app.adminEmail,
                 adminName: app.adminName,
@@ -1688,14 +2152,13 @@
                 tempPassword: tempPass
             });
 
-            // Send REAL WhatsApp
             const waMessage =
                 `School Approved!\n\nSchool: ${app.schoolName}\nCode: ${code}\nPassword: ${tempPass}\nLogin: https://schoolhub.com`;
             if (app.phone) {
                 sendWhatsAppNotification(app.phone, waMessage);
             }
 
-            showToast(`✅ School "${app.schoolName}" approved!`);
+            showToast('School "' + app.schoolName + '" approved!');
             updateSuperAdminStats();
         }
 
@@ -1718,7 +2181,7 @@
         }
 
         // ============================================================
-        // REGISTER SCHOOL (Public)
+        // REGISTER SCHOOL
         // ============================================================
         function registerSchool() {
             const schoolName = document.getElementById('regSchoolName').value.trim();
@@ -1823,14 +2286,14 @@
                         <div><strong style="color:var(--text-primary);">Term:</strong> <span style="color:var(--text-muted);">1</span></div>
                         <div><strong style="color:var(--text-primary);">Year:</strong> <span style="color:var(--text-muted);">2025</span></div>
                     </div>
-                    <table style="width:100%; border-collapse:collapse; margin-bottom:12px;">
+                    <table class="report-card-table">
                         <thead>
-                            <tr style="background:var(--purple); color:#FFF;">
-                                <th style="padding:8px; text-align:left;">Subject</th>
-                                <th style="padding:8px; text-align:center;">Test</th>
-                                <th style="padding:8px; text-align:center;">Exam</th>
-                                <th style="padding:8px; text-align:center;">Total</th>
-                                <th style="padding:8px; text-align:center;">Grade</th>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Test</th>
+                                <th>Exam</th>
+                                <th>Total</th>
+                                <th>Grade</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1841,12 +2304,12 @@
                 const total = scores[0] + scores[1];
                 const grade = grades[Math.floor(total / 20)];
                 html += `
-                    <tr style="border-bottom:1px solid var(--border-color);">
-                        <td style="padding:8px; color:var(--text-secondary);">${sub}</td>
-                        <td style="padding:8px; text-align:center; color:var(--text-secondary);">${scores[0]}</td>
-                        <td style="padding:8px; text-align:center; color:var(--text-secondary);">${scores[1]}</td>
-                        <td style="padding:8px; text-align:center; color:var(--text-secondary);">${total}</td>
-                        <td style="padding:8px; text-align:center; color:var(--green); font-weight:600;">${grade}</td>
+                    <tr>
+                        <td>${sub}</td>
+                        <td>${scores[0]}</td>
+                        <td>${scores[1]}</td>
+                        <td>${total}</td>
+                        <td style="color:#4ade80; font-weight:600;">${grade}</td>
                     </tr>
                 `;
             });
@@ -2102,7 +2565,7 @@
             console.log('SchoolHub Complete loaded!');
             console.log('Built by Abraham Chiputa · Kasco · JETS 2025');
             console.log('EmailJS initialized with Service: service_46anpgz, Template: template_z0bsy46');
-            console.log('✅ All features ready!');
+            console.log('All features ready!');
         }
 
         document.addEventListener('DOMContentLoaded', init);
