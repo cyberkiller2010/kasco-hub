@@ -9,8 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <style>
         :root{--bg-primary:#0A0A0F;--bg-secondary:rgba(10,10,15,0.7);--bg-card:rgba(20,23,43,0.8);--bg-card-hover:rgba(20,23,43,1);--bg-input:rgba(255,255,255,0.04);--bg-modal:#14172B;--bg-nav:rgba(10,10,15,0.95);--bg-topnav:rgba(10,10,15,0.8);--bg-notif:rgba(20,23,43,0.8);--text-primary:#FFFFFF;--text-secondary:#EDEEF2;--text-muted:#B6BDF0;--text-dim:#9CA3E0;--border-color:rgba(255,255,255,0.06);--shadow:0 4px 16px rgba(0,0,0,0.3);--toast-bg:#14172B;--purple:#6C5CE7;--purple-light:#8B7CF7;--purple-dark:#4A42DB;--green:#4ade80;--red:#EF4444;--orange:#f59e0b;--yellow:#fbbf24;--blue:#60a5fa}
         [data-theme="light"]{--bg-primary:#F4F6FB;--bg-secondary:rgba(255,255,255,0.85);--bg-card:#FFFFFF;--bg-card-hover:#F1F5F9;--bg-input:rgba(0,0,0,0.04);--bg-modal:#FFFFFF;--bg-nav:rgba(255,255,255,0.95);--bg-topnav:rgba(255,255,255,0.9);--bg-notif:#FFFFFF;--text-primary:#1E293B;--text-secondary:#334155;--text-muted:#64748B;--text-dim:#94A3B8;--border-color:rgba(0,0,0,0.06);--toast-bg:#1F2937;--green:#16a34a;--red:#DC2626;--orange:#d97706;--yellow:#ca8a04;--blue:#2563eb}
@@ -62,8 +60,6 @@
         .btn-primary:hover{background:var(--purple-dark);transform:scale(1.01)}
         .btn-secondary{width:100%;padding:14px;border-radius:2rem;background:var(--bg-input);border:1px solid var(--border-color);color:var(--text-secondary);font-size:16px;font-weight:600;cursor:pointer;transition:.3s;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;font-family:'Inter',sans-serif}
         .btn-secondary:hover{background:var(--bg-card-hover)}
-        .auth-toggle{text-align:center;margin-top:12px;color:var(--text-muted);font-size:14px;cursor:pointer}
-        .auth-toggle:hover{color:var(--purple-light);text-decoration:underline}
         .subject-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1.2rem}
         .subject-card{background:var(--bg-card);border-radius:1.2rem;padding:1.5rem 1rem;text-align:center;border:1px solid var(--border-color);cursor:pointer;transition:.3s;color:var(--text-secondary)}
         .subject-card:hover{transform:translateY(-4px);background:var(--bg-card-hover);border-color:var(--purple)}
@@ -76,22 +72,6 @@
         .ai-card .ai-logo{width:60px;height:60px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:700;background:rgba(108,92,231,0.15);color:var(--purple);border:2px solid rgba(108,92,231,0.2)}
         .ai-card h4{font-size:16px;font-weight:600;color:var(--text-primary)}
         .ai-card p{font-size:12px;color:var(--text-muted);margin-top:4px}
-        .groups-tabs{display:flex;gap:8px;margin-bottom:24px;border-bottom:1px solid var(--border-color);padding-bottom:4px;flex-wrap:wrap}
-        .groups-tabs button{background:none;border:none;color:var(--text-dim);padding:10px 20px;border-radius:2rem;font-size:14px;font-weight:600;cursor:pointer;transition:.3s;display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif}
-        .groups-tabs button:hover{color:var(--text-primary);background:var(--bg-input)}
-        .groups-tabs button.active-tab{background:var(--purple);color:#FFF}
-        .groups-tabs button .tab-badge{background:var(--purple);color:#FFF;font-size:10px;font-weight:700;padding:1px 8px;border-radius:30px}
-        .group-content{display:none}
-        .group-content.active-content{display:block}
-        .group-card{background:var(--bg-card);border-radius:1rem;padding:1.2rem 1.5rem;border:1px solid var(--border-color);margin-bottom:12px;cursor:pointer;transition:.3s;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;box-shadow:var(--shadow)}
-        .group-card:hover{background:var(--bg-card-hover);border-color:var(--purple)}
-        .group-card .left{display:flex;align-items:center;gap:14px;flex:1}
-        .group-card .left .icon{font-size:2rem;width:50px;height:50px;border-radius:50%;background:rgba(108,92,231,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--purple)}
-        .group-card .left .info h4{font-size:16px;font-weight:600;color:var(--text-primary)}
-        .group-card .left .info p{font-size:13px;color:var(--text-muted);margin-top:2px}
-        .group-card .right{text-align:right;flex-shrink:0}
-        .group-card .right .meta{font-size:12px;color:var(--text-dim)}
-        .group-card .right .badge{background:var(--purple);color:#FFF;font-size:11px;font-weight:700;padding:2px 12px;border-radius:30px;display:inline-block;margin-top:4px}
         .notif-list{display:flex;flex-direction:column;gap:12px}
         .notif-item{background:var(--bg-notif);border-radius:1rem;padding:1rem 1.2rem;border:1px solid var(--border-color);display:flex;align-items:center;gap:14px;transition:.2s;cursor:pointer;box-shadow:var(--shadow)}
         .notif-item:hover{background:var(--bg-card-hover)}
@@ -165,7 +145,6 @@
         .resource-actions button:hover{background:var(--purple);color:#FFF;border-color:var(--purple)}
         .empty-state{text-align:center;padding:40px;color:var(--text-muted);background:var(--bg-card);border-radius:1rem;border:1px solid var(--border-color)}
         .empty-state i{font-size:3rem;color:var(--purple);display:block;margin-bottom:12px}
-        .live-badge{background:var(--red);color:#FFF;font-size:12px;font-weight:700;padding:4px 14px;border-radius:30px;display:inline-flex;align-items:center;gap:6px;flex-shrink:0}
         .schoolhub-table{width:100%;border-collapse:collapse;background:#FFF !important;border:2px solid #000 !important;border-radius:8px;overflow:hidden}
         .schoolhub-table thead th{background:#6C5CE7 !important;color:#FFF !important;padding:12px 15px;text-align:left;font-weight:600;font-size:14px;border:1px solid #000 !important}
         .schoolhub-table tbody td{padding:10px 15px;background:#FFF !important;color:#000 !important;border:1px solid #000 !important;font-size:14px}
@@ -190,7 +169,7 @@
         .ocr-result-table table{width:100%;border-collapse:collapse;background:#FFF !important}
         .ocr-result-table table th{background:#6C5CE7 !important;color:#FFF !important;padding:10px 15px;border:1px solid #000 !important;text-align:left}
         .ocr-result-table table td{padding:10px 15px;background:#FFF !important;color:#000 !important;border:1px solid #000 !important}
-        @media(max-width:768px){body{padding:.5rem;padding-bottom:80px}.top-nav{padding:.6rem 1rem}.page{padding:1rem}.sidebar{width:280px;right:-280px}.subject-grid{grid-template-columns:repeat(3,1fr);gap:10px}.subject-card{padding:1rem .5rem}.subject-card .icon{font-size:2rem}.subject-card h4{font-size:13px}.subject-card p{font-size:10px}.ai-grid{grid-template-columns:repeat(2,1fr)}.bottom-nav button{font-size:9px;padding:2px 8px}.bottom-nav button i{font-size:1.2rem}.groups-tabs button{font-size:12px;padding:8px 14px}.group-card{padding:1rem}.group-card .left .icon{width:40px;height:40px;font-size:1.4rem}.theme-toggle span{display:none}.viewer-scrollable iframe{min-height:300px}.library-header{flex-direction:column;align-items:stretch}.viewer-body{padding:10px}.viewer-footer button{padding:4px 12px;font-size:11px}.viewer-title span{max-width:150px}.ocr-image-container img{max-height:300px}}
+        @media(max-width:768px){body{padding:.5rem;padding-bottom:80px}.top-nav{padding:.6rem 1rem}.page{padding:1rem}.sidebar{width:280px;right:-280px}.subject-grid{grid-template-columns:repeat(3,1fr);gap:10px}.subject-card{padding:1rem .5rem}.subject-card .icon{font-size:2rem}.subject-card h4{font-size:13px}.subject-card p{font-size:10px}.ai-grid{grid-template-columns:repeat(2,1fr)}.bottom-nav button{font-size:9px;padding:2px 8px}.bottom-nav button i{font-size:1.2rem}.theme-toggle span{display:none}.viewer-scrollable iframe{min-height:300px}.library-header{flex-direction:column;align-items:stretch}.viewer-body{padding:10px}.viewer-footer button{padding:4px 12px;font-size:11px}.viewer-title span{max-width:150px}.ocr-image-container img{max-height:300px}}
         @media(max-width:450px){.subject-grid{grid-template-columns:repeat(2,1fr)}.ai-grid{grid-template-columns:1fr 1fr}}
     </style>
 </head>
@@ -221,7 +200,6 @@
         <button class="sidebar-item" onclick="switchPage('register', this)"><i class="fas fa-plus-circle"></i> Register School</button>
         <button class="sidebar-item" onclick="switchPage('about', this)"><i class="fas fa-info-circle"></i> About</button>
         <button class="sidebar-item" onclick="switchPage('ai', this)"><i class="fas fa-robot"></i> AI</button>
-        <button class="sidebar-item" onclick="switchPage('groups', this)"><i class="fas fa-users"></i> Groups</button>
         <button class="sidebar-item" onclick="switchPage('alerts', this)"><i class="fas fa-bell"></i> Alerts</button>
         <div class="sidebar-divider"></div>
         <button class="sidebar-item" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -242,7 +220,7 @@
                 <p style="color:var(--text-muted);">Click a subject to explore resources</p>
             </div>
 
-            <!-- Login Hint -->
+            <!-- Demo Account Hint -->
             <div style="background:rgba(108,92,231,0.1); border:1px solid rgba(108,92,231,0.2); border-radius:1rem; padding:12px; text-align:center; margin-bottom:16px;">
                 <p style="color:var(--text-muted); font-size:13px;">
                     <i class="fas fa-info-circle" style="color:var(--purple);"></i> 
@@ -270,33 +248,6 @@
                 </div>
             </div>
 
-            <!-- Find Student -->
-            <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color); margin-bottom:24px;">
-                <h3 style="color:var(--text-primary); display:flex; align-items:center; gap:10px;"><i class="fas fa-search" style="color:var(--purple);"></i> Find Your Class</h3>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;">
-                    <div class="form-group" style="grid-column:span 2;">
-                        <label style="color:var(--text-muted); font-size:13px;">School</label>
-                        <input type="text" id="findSchool" placeholder="School name" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
-                    </div>
-                    <div class="form-group">
-                        <label style="color:var(--text-muted); font-size:13px;">Your Name</label>
-                        <input type="text" id="findName" placeholder="Full name" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
-                    </div>
-                    <div class="form-group">
-                        <label style="color:var(--text-muted); font-size:13px;">Grade</label>
-                        <select id="findGrade" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);">
-                            <option value="">Select</option>
-                            <option value="12">Grade 12</option><option value="11">Grade 11</option><option value="10">Grade 10</option>
-                            <option value="9">Grade 9</option><option value="8">Grade 8</option><option value="7">Grade 7</option>
-                            <option value="6">Grade 6</option><option value="5">Grade 5</option><option value="4">Grade 4</option>
-                            <option value="3">Grade 3</option><option value="2">Grade 2</option><option value="1">Grade 1</option>
-                        </select>
-                    </div>
-                </div>
-                <button class="btn-primary" onclick="findStudent()" style="margin-top:4px;"><i class="fas fa-search"></i> Find My Class</button>
-                <div id="findResult" style="margin-top:12px; display:none;"></div>
-            </div>
-
             <!-- Subjects -->
             <div class="page-title"><i class="fas fa-graduation-cap"></i> Subjects</div>
             <p class="page-subtitle">Click a subject to explore resources</p>
@@ -313,20 +264,6 @@
                 <div class="subject-card" data-subject="Physical Education"><div class="icon"><i class="fas fa-running"></i></div><h4>Physical Education</h4><p>Health &amp; Fitness</p></div>
                 <div class="subject-card" data-subject="Music"><div class="icon"><i class="fas fa-music"></i></div><h4>Music</h4><p>Rhythm &amp; Theory</p></div>
                 <div class="subject-card" data-subject="Home Economics"><div class="icon"><i class="fas fa-utensils"></i></div><h4>Home Economics</h4><p>Life Skills</p></div>
-            </div>
-
-            <!-- Live Classes -->
-            <div style="margin-top:30px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
-                    <div class="page-title" style="font-size:20px; margin-bottom:0;"><i class="fas fa-circle" style="color:var(--red); font-size:14px;"></i> Live Classes</div>
-                    <span style="color:var(--text-muted); font-size:13px;"><i class="fas fa-globe" style="color:var(--purple);"></i> Public · No login required</span>
-                </div>
-                <div id="liveClassesHome">
-                    <div style="background:var(--bg-card); border-radius:1.2rem; padding:1.5rem; border:1px solid var(--border-color); text-align:center; color:var(--text-muted);">
-                        <i class="fas fa-video" style="font-size:2rem; color:var(--purple);"></i>
-                        <p style="margin-top:8px;">No live classes right now. Teachers can start live classes from their dashboard.</p>
-                    </div>
-                </div>
             </div>
 
             <!-- AI -->
@@ -392,7 +329,7 @@
             <!-- Teacher Dashboard -->
             <div id="teacherDashboardContent" style="display:none;">
                 <div class="page-title"><i class="fas fa-chalkboard-teacher"></i> Teacher Dashboard</div>
-                <p class="page-subtitle">Register students, create results, upload resources, start live classes</p>
+                <p class="page-subtitle">Register students, create results, upload resources</p>
 
                 <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; margin-bottom:20px;">
                     <div style="background:var(--bg-card); border-radius:1rem; padding:1rem; text-align:center; border:1px solid var(--border-color);">
@@ -406,9 +343,9 @@
                         <p style="color:var(--text-muted); font-size:12px;">Resources</p>
                     </div>
                     <div style="background:var(--bg-card); border-radius:1rem; padding:1rem; text-align:center; border:1px solid var(--border-color);">
-                        <i class="fas fa-video" style="font-size:1.5rem; color:var(--purple);"></i>
-                        <h3 style="color:var(--text-primary);" id="teacherLiveCount">0</h3>
-                        <p style="color:var(--text-muted); font-size:12px;">Live Classes</p>
+                        <i class="fas fa-chart-bar" style="font-size:1.5rem; color:var(--purple);"></i>
+                        <h3 style="color:var(--text-primary);" id="teacherResultCount">0</h3>
+                        <p style="color:var(--text-muted); font-size:12px;">Results</p>
                     </div>
                 </div>
 
@@ -504,7 +441,7 @@
                 </div>
 
                 <!-- Upload Resource -->
-                <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color); margin-bottom:16px;">
+                <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color);">
                     <h3 style="color:var(--text-primary); display:flex; align-items:center; gap:10px; margin-bottom:12px;"><i class="fas fa-upload" style="color:var(--purple);"></i> Upload Resource</h3>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                         <div class="form-group" style="grid-column:span 2;">
@@ -540,84 +477,6 @@
                     </div>
                     <button class="btn-primary" onclick="uploadResource()"><i class="fas fa-cloud-upload-alt"></i> Upload</button>
                     <div class="upload-progress" id="uploadProgress"><span class="spinner"></span><span id="uploadStatus">Uploading...</span></div>
-                </div>
-
-                <!-- Start Live -->
-                <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color); margin-bottom:16px;">
-                    <h3 style="color:var(--text-primary); display:flex; align-items:center; gap:10px; margin-bottom:12px;"><i class="fas fa-circle" style="color:var(--red); font-size:12px;"></i> Start Live Class</h3>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                        <div class="form-group" style="grid-column:span 2;">
-                            <label style="color:var(--text-muted); font-size:13px;">Live Title</label>
-                            <input type="text" id="liveTitle" placeholder="e.g., Quadratic Equations" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
-                        </div>
-                        <div class="form-group">
-                            <label style="color:var(--text-muted); font-size:13px;">Live Type</label>
-                            <select id="liveType" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);">
-                                <option value="public">Public (Anyone can join)</option>
-                                <option value="class">Class (Students only)</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label style="color:var(--text-muted); font-size:13px;">Class (if Class Live)</label>
-                            <select id="liveClass" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);">
-                                <option>Grade 12 Math</option><option>Grade 10 Science</option><option>Grade 11 English</option>
-                                <option>Grade 9 History</option><option>Grade 8 Geography</option>
-                            </select>
-                        </div>
-                    </div>
-                    <button class="btn-primary" onclick="startTeacherLive()" style="background:var(--red);"><i class="fas fa-circle"></i> Start Live</button>
-                </div>
-
-                <!-- Live Studio -->
-                <div id="liveStudio" style="display:none; background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color); margin-top:16px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                        <h3 style="color:var(--text-primary);"><i class="fas fa-circle" style="color:var(--red);"></i> LIVE STUDIO</h3>
-                        <div>
-                            <span id="liveRoomId" style="color:var(--purple); font-weight:600;">Room ID: ...</span>
-                            <span id="viewerCount" style="color:var(--text-muted); margin-left:16px;">👥 0 viewers</span>
-                        </div>
-                    </div>
-                    <div style="display:grid; grid-template-columns:2fr 1fr; gap:16px;">
-                        <div style="background:#000; border-radius:1rem; overflow:hidden; min-height:300px; display:flex; align-items:center; justify-content:center; position:relative;">
-                            <video id="teacherVideo" autoplay muted style="width:100%; height:100%; object-fit:cover; display:none;"></video>
-                            <div id="cameraPlaceholder" style="color:#FFF; text-align:center;">
-                                <i class="fas fa-video" style="font-size:4rem; display:block; margin-bottom:10px;"></i>
-                                <p>Click "Start Broadcast" to go live</p>
-                            </div>
-                            <div style="position:absolute; top:10px; left:10px; background:var(--red); color:#FFF; padding:4px 12px; border-radius:2rem; font-size:12px; font-weight:700;">
-                                <i class="fas fa-circle"></i> LIVE
-                            </div>
-                        </div>
-                        <div style="background:var(--bg-input); border-radius:1rem; padding:1rem; display:flex; flex-direction:column; max-height:300px;">
-                            <h4 style="color:var(--text-primary); margin-bottom:8px;">💬 Live Chat</h4>
-                            <div id="liveChatMessages" style="flex:1; overflow-y:auto; margin-bottom:8px; background:var(--bg-card); border-radius:0.5rem; padding:8px;">
-                                <p style="color:var(--text-muted); font-size:13px;">Chat messages will appear here</p>
-                            </div>
-                            <div style="display:flex; gap:8px;">
-                                <input type="text" id="liveChatInput" placeholder="Type a message..." style="flex:1; padding:8px 12px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
-                                <button onclick="sendTeacherChat()" style="background:var(--purple); color:#FFF; border:none; padding:8px 16px; border-radius:1rem; cursor:pointer;">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="display:flex; gap:12px; margin-top:12px; flex-wrap:wrap;">
-                        <button onclick="startBroadcast()" style="background:var(--purple); color:#FFF; border:none; padding:8px 20px; border-radius:2rem; cursor:pointer;">
-                            <i class="fas fa-video"></i> Start Broadcast
-                        </button>
-                        <button onclick="toggleTeacherMic()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:8px 20px; border-radius:2rem; cursor:pointer;">
-                            <i class="fas fa-microphone"></i> Mic
-                        </button>
-                        <button onclick="shareTeacherScreen()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:8px 20px; border-radius:2rem; cursor:pointer;">
-                            <i class="fas fa-desktop"></i> Share Screen
-                        </button>
-                        <button onclick="endTeacherLive()" style="background:var(--red); color:#FFF; border:none; padding:8px 20px; border-radius:2rem; cursor:pointer;">
-                            <i class="fas fa-stop"></i> End Live
-                        </button>
-                    </div>
-                    <div id="liveStatus" style="margin-top:8px; color:var(--text-muted); font-size:13px;">
-                        Status: <span id="liveStatusText" style="color:var(--orange);">Not started</span>
-                    </div>
                 </div>
             </div>
         </div>
@@ -745,45 +604,40 @@
             </div>
         </div>
 
-        <!-- PARENT PAGE -->
+        <!-- PARENT PAGE - No Login, Just Search -->
         <div class="page" id="parent">
-            <!-- Parent Login -->
-            <div id="parentLogin" class="login-box">
-                <h3><i class="fas fa-users" style="color:var(--purple);"></i> Parent Login</h3>
-                <p style="color:var(--text-dim); font-size:12px; text-align:center; margin-bottom:12px;">Demo: parent@demo.com / parent123</p>
-                <div class="form-group">
-                    <label style="color:var(--text-muted); font-size:13px;">Email</label>
-                    <div class="password-wrapper">
-                        <input type="email" id="parentLoginEmail" placeholder="parent@demo.com" value="parent@demo.com" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label style="color:var(--text-muted); font-size:13px;">Password</label>
-                    <div class="password-wrapper">
-                        <input type="password" id="parentLoginPassword" placeholder="parent123" value="parent123" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding-right:48px;" />
-                        <button class="password-toggle" onclick="togglePasswordVisibility('parentLoginPassword', this)"><i class="fas fa-eye"></i></button>
-                    </div>
-                </div>
-                <button class="btn-primary" onclick="parentLogin()"><i class="fas fa-sign-in-alt"></i> Login</button>
-                <p class="login-hint">Use the demo credentials above to login as a parent.</p>
-            </div>
+            <div class="page-title"><i class="fas fa-users"></i> Parent Portal</div>
+            <p class="page-subtitle">Enter your child's details to view their report card</p>
 
-            <!-- Parent Dashboard -->
-            <div id="parentDashboardContent" style="display:none;">
-                <div class="page-title"><i class="fas fa-users"></i> Parent Portal</div>
-                <p class="page-subtitle">View your child's report card</p>
-                <div style="max-width:500px; margin:0 auto;">
-                    <div class="form-group">
-                        <label style="color:var(--text-muted); font-size:13px;">Student Name</label>
-                        <input type="text" id="parentStudentName" placeholder="Child's full name" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
-                    </div>
-                    <div class="form-group">
-                        <label style="color:var(--text-muted); font-size:13px;">School Name</label>
-                        <input type="text" id="parentSchoolName" placeholder="School name" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
-                    </div>
-                    <button class="btn-primary" onclick="viewReportCard()"><i class="fas fa-search"></i> View Report Card</button>
-                    <div id="reportCardContainer" style="margin-top:20px; display:none;"></div>
+            <div style="max-width:500px; margin:0 auto; background:var(--bg-card); border-radius:1rem; padding:2rem; border:1px solid var(--border-color);">
+                <div class="form-group">
+                    <label style="color:var(--text-muted); font-size:13px;"><i class="fas fa-user" style="color:var(--purple);"></i> Student Name</label>
+                    <input type="text" id="parentStudentName" placeholder="Enter child's full name" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
                 </div>
+                <div class="form-group">
+                    <label style="color:var(--text-muted); font-size:13px;"><i class="fas fa-school" style="color:var(--purple);"></i> School Name</label>
+                    <input type="text" id="parentSchoolName" placeholder="Enter school name" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                </div>
+                <div class="form-group">
+                    <label style="color:var(--text-muted); font-size:13px;"><i class="fas fa-layer-group" style="color:var(--purple);"></i> Class / Grade</label>
+                    <select id="parentClass" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);">
+                        <option value="">Select Class</option>
+                        <option value="12">Grade 12</option>
+                        <option value="11">Grade 11</option>
+                        <option value="10">Grade 10</option>
+                        <option value="9">Grade 9</option>
+                        <option value="8">Grade 8</option>
+                        <option value="7">Grade 7</option>
+                        <option value="6">Grade 6</option>
+                        <option value="5">Grade 5</option>
+                        <option value="4">Grade 4</option>
+                        <option value="3">Grade 3</option>
+                        <option value="2">Grade 2</option>
+                        <option value="1">Grade 1</option>
+                    </select>
+                </div>
+                <button class="btn-primary" onclick="viewReportCard()"><i class="fas fa-search"></i> View Report Card</button>
+                <div id="reportCardContainer" style="margin-top:20px; display:none;"></div>
             </div>
         </div>
 
@@ -836,13 +690,13 @@
             <p class="page-subtitle">The complete school management system</p>
             <div style="background:var(--bg-card); border-radius:1rem; padding:2rem; border:1px solid var(--border-color);">
                 <h3 style="color:var(--text-primary);"><i class="fas fa-graduation-cap" style="color:var(--purple);"></i> About SchoolHub</h3>
-                <p style="color:var(--text-muted); margin-top:8px;">SchoolHub is a complete school management system. It allows schools to manage teachers, students, resources, live classes, and report cards.</p>
+                <p style="color:var(--text-muted); margin-top:8px;">SchoolHub is a complete school management system. It allows schools to manage teachers, students, resources, and report cards.</p>
                 <br>
                 <h4 style="color:var(--text-primary);"><i class="fas fa-user-graduate" style="color:var(--purple);"></i> Built by</h4>
                 <p style="color:var(--text-muted);">Abraham Chiputa · Kasco · JETS Project 2025</p>
                 <br>
                 <h4 style="color:var(--text-primary);"><i class="fas fa-check-circle" style="color:var(--green);"></i> Features</h4>
-                <p style="color:var(--text-muted);">Subject Libraries · Search · OCR · Create Table · Live Classes · Report Cards · Groups · Chat · AI Assistants · Super Admin · School Admin · Teacher Dashboard · Parent Portal · Register Students · Create Results</p>
+                <p style="color:var(--text-muted);">Subject Libraries · Search · OCR · Create Table · Report Cards · AI Assistants · Super Admin · School Admin · Teacher Dashboard · Parent Portal · Register Students · Create Results</p>
             </div>
         </div>
 
@@ -855,62 +709,6 @@
                 <div class="ai-card" onclick="openAI('Grok')"><div class="ai-logo">G</div><h4>Grok</h4><p>Conversational</p></div>
                 <div class="ai-card" onclick="openAI('ChatGPT')"><div class="ai-logo">GPT</div><h4>ChatGPT</h4><p>Versatile</p></div>
                 <div class="ai-card" onclick="openAI('Claude')"><div class="ai-logo">C</div><h4>Claude</h4><p>Thoughtful</p></div>
-            </div>
-        </div>
-
-        <!-- GROUPS PAGE (Simplified: School + Live) -->
-        <div class="page" id="groups">
-            <div class="page-title"><i class="fas fa-users"></i> Groups</div>
-            <p class="page-subtitle">School announcements and live classes</p>
-
-            <div class="groups-tabs">
-                <button class="active-tab" onclick="switchGroupTab('school', this)"><i class="fas fa-school"></i> School</button>
-                <button onclick="switchGroupTab('live', this)"><i class="fas fa-circle" style="color:var(--red);"></i> Live</button>
-            </div>
-
-            <!-- School Groups -->
-            <div class="group-content active-content" id="groupSchool">
-                <div class="group-card" onclick="showToast('School Announcements')">
-                    <div class="left">
-                        <div class="icon"><i class="fas fa-bullhorn"></i></div>
-                        <div class="info">
-                            <h4>School Announcements</h4>
-                            <p>Latest updates from administration</p>
-                        </div>
-                    </div>
-                    <div class="right"><span class="badge">3 new</span></div>
-                </div>
-                <div class="group-card" onclick="showToast('Exam Timetables')">
-                    <div class="left">
-                        <div class="icon"><i class="fas fa-calendar-alt"></i></div>
-                        <div class="info">
-                            <h4>Exam Timetables</h4>
-                            <p>Final exams schedule</p>
-                        </div>
-                    </div>
-                    <div class="right"><span class="badge">View</span></div>
-                </div>
-                <div class="group-card" onclick="showToast('School Events')">
-                    <div class="left">
-                        <div class="icon"><i class="fas fa-star"></i></div>
-                        <div class="info">
-                            <h4>School Events</h4>
-                            <p>Sports day, assemblies, parent meetings</p>
-                        </div>
-                    </div>
-                    <div class="right"><span class="badge">2 upcoming</span></div>
-                </div>
-            </div>
-
-            <!-- Live Groups -->
-            <div class="group-content" id="groupLive">
-                <div id="liveGroupsContainer">
-                    <div style="text-align:center; padding:40px; color:var(--text-muted); background:var(--bg-card); border-radius:1rem; border:1px solid var(--border-color);">
-                        <i class="fas fa-video" style="font-size:2rem; color:var(--purple);"></i>
-                        <p style="margin-top:8px;">No live classes right now.</p>
-                        <p style="font-size:13px; color:var(--text-dim);">Teachers can start live classes from their dashboard.</p>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -944,73 +742,10 @@
         </div>
     </div>
 
-    <!-- JOIN LIVE MODAL -->
-    <div class="modal-overlay" id="joinLiveModal">
-        <div class="modal-content">
-            <h2><i class="fas fa-video" style="color:var(--purple);"></i> Join Live Class</h2>
-            <p class="sub">Enter the Room ID from your teacher</p>
-            <div class="form-group">
-                <label style="color:var(--text-muted); font-size:13px;">Room ID</label>
-                <input type="text" id="joinRoomId" placeholder="Enter room ID" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
-            </div>
-            <div id="joinStatus" style="text-align:center; color:var(--text-muted); margin-bottom:12px;">Enter a room ID to join</div>
-            <button class="btn-primary" onclick="joinLiveClass()"><i class="fas fa-play"></i> Join Live</button>
-            <button class="close-modal-btn" onclick="closeModal('joinLiveModal')">Cancel</button>
-            <div id="studentVideoContainer" style="display:none; margin-top:12px;">
-                <div style="background:#000; border-radius:1rem; overflow:hidden; min-height:200px; display:flex; align-items:center; justify-content:center;">
-                    <video id="studentVideo" autoplay style="width:100%; height:100%; object-fit:cover;"></video>
-                </div>
-                <div style="display:flex; gap:8px; margin-top:8px;">
-                    <input type="text" id="studentChatInput" placeholder="Ask a question..." style="flex:1; padding:8px 12px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
-                    <button onclick="sendStudentChat()" style="background:var(--purple); color:#FFF; border:none; padding:8px 16px; border-radius:1rem; cursor:pointer;"><i class="fas fa-paper-plane"></i></button>
-                </div>
-                <div id="studentChatMessages" style="margin-top:8px; max-height:100px; overflow-y:auto; background:var(--bg-card); border-radius:0.5rem; padding:8px;">
-                    <p style="color:var(--text-muted); font-size:13px;">Chat will appear here</p>
-                </div>
-                <button onclick="leaveLiveClass()" style="margin-top:8px; background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:6px 20px; border-radius:2rem; cursor:pointer; width:100%;"><i class="fas fa-sign-out-alt"></i> Leave Live</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- CHAT MODAL -->
-    <div class="chat-modal" id="chatModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); backdrop-filter:blur(12px); z-index:3000; align-items:center; justify-content:center;">
-        <div class="chat-modal-content" style="background:var(--bg-modal); border-radius:2rem; width:95%; max-width:500px; height:85vh; max-height:600px; display:flex; flex-direction:column; border:1px solid rgba(108,92,231,0.2); overflow:hidden;">
-            <div class="chat-header" style="padding:1rem 1.5rem; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; flex-wrap:wrap; gap:8px;">
-                <h3 style="font-size:1.1rem; display:flex; align-items:center; gap:10px; color:var(--text-primary);">
-                    <i class="fas fa-comments" style="color:var(--purple);"></i>
-                    <span id="chatTitle">Group Chat</span>
-                    <span class="status" style="font-size:12px; color:var(--green);">● 0 online</span>
-                </h3>
-                <div style="display:flex; gap:6px;">
-                    <button onclick="leaveGroup()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:4px 10px; border-radius:20px; cursor:pointer; font-size:12px;"><i class="fas fa-sign-out-alt"></i> Leave</button>
-                    <button onclick="closeChat()" style="background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer;"><i class="fas fa-times"></i></button>
-                </div>
-            </div>
-            <div class="chat-messages" id="chatMessages" style="flex:1; overflow-y:auto; padding:1rem 1.5rem; display:flex; flex-direction:column; gap:10px;">
-                <div style="text-align:center; padding:20px; color:var(--text-muted);">
-                    <i class="fas fa-comment-slash" style="font-size:2rem; color:var(--purple);"></i>
-                    <p style="margin-top:8px;">No messages yet. Start the conversation!</p>
-                </div>
-            </div>
-            <div style="padding:0.8rem 1.5rem; border-top:1px solid var(--border-color); display:flex; gap:8px; flex-shrink:0; flex-wrap:wrap;">
-                <input type="text" id="chatInput" placeholder="Type a message..." style="flex:1; padding:10px 16px; border-radius:2rem; border:1px solid var(--border-color); background:var(--bg-input); color:var(--text-secondary); font-size:14px; outline:none; min-width:100px;" />
-                <div style="display:flex; gap:4px; align-items:center;">
-                    <button onclick="attachImage()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:8px 12px; border-radius:50%; cursor:pointer; width:40px; height:40px; display:flex; align-items:center; justify-content:center;"><i class="fas fa-image"></i></button>
-                    <button onclick="startVoiceRecording()" id="voiceBtn" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-muted); padding:8px 12px; border-radius:50%; cursor:pointer; width:40px; height:40px; display:flex; align-items:center; justify-content:center;"><i class="fas fa-microphone"></i></button>
-                </div>
-                <button onclick="sendMessage()" style="background:var(--purple); border:none; color:#FFF; padding:10px 20px; border-radius:2rem; font-weight:600; cursor:pointer; font-size:14px;"><i class="fas fa-paper-plane"></i> Send</button>
-            </div>
-            <div style="padding:0.6rem 1.5rem; border-top:1px solid var(--border-color); text-align:center; color:var(--text-dim); font-size:11px;">
-                Kasco · Built by <strong style="color:var(--purple-light);">Abraham Chiputa</strong>
-            </div>
-        </div>
-    </div>
-
     <!-- BOTTOM NAV -->
     <nav class="bottom-nav">
         <button class="active" onclick="switchPage('home', this)"><i class="fas fa-home"></i><span>Home</span></button>
         <button onclick="switchPage('ai', this)"><i class="fas fa-robot"></i><span>AI</span></button>
-        <button onclick="switchPage('groups', this)"><i class="fas fa-users"></i><span>Groups</span></button>
         <button onclick="switchPage('alerts', this)"><i class="fas fa-bell"></i><span>Alerts</span></button>
     </nav>
 
@@ -1022,20 +757,18 @@
         const DEMO_ACCOUNTS = {
             'teacher@demo.com': { password: 'teacher123', role: 'teacher', name: 'Demo Teacher' },
             'admin@demo.com': { password: 'admin123', role: 'schooladmin', name: 'Demo School Admin' },
-            'super@demo.com': { password: 'super123', role: 'superadmin', name: 'Super Admin' },
-            'parent@demo.com': { password: 'parent123', role: 'parent', name: 'Demo Parent' },
-            'student@demo.com': { password: 'student123', role: 'student', name: 'Demo Student' }
+            'super@demo.com': { password: 'super123', role: 'superadmin', name: 'Super Admin' }
         };
 
         let currentDemoUser = null;
 
         function demoLogin(email, password) {
             const user = DEMO_ACCOUNTS[email];
-            if (!user) { showToast('❌ Account not found'); return false; }
-            if (user.password !== password) { showToast('❌ Incorrect password'); return false; }
+            if (!user) { showToast('Account not found'); return false; }
+            if (user.password !== password) { showToast('Incorrect password'); return false; }
             currentDemoUser = { email: email, role: user.role, name: user.name };
             localStorage.setItem('demoUser', JSON.stringify(currentDemoUser));
-            showToast('✅ Welcome, ' + user.name + '!');
+            showToast('Welcome, ' + user.name + '!');
             return true;
         }
 
@@ -1052,7 +785,7 @@
             localStorage.removeItem('demoUser'); }
 
         // ============================================================
-        // PASSWORD TOGGLE (Universal)
+        // PASSWORD TOGGLE
         // ============================================================
         function togglePasswordVisibility(inputId, btn) {
             const input = document.getElementById(inputId);
@@ -1088,7 +821,7 @@
 
             // Check login for protected pages
             if (!user && pageId !== 'home' && pageId !== 'register' && pageId !== 'about' && pageId !== 'ai' && pageId !==
-                'groups' && pageId !== 'alerts') {
+                'alerts' && pageId !== 'parent') {
                 showToast('Please login first');
                 return;
             }
@@ -1107,10 +840,6 @@
                 showToast('Only Super Admin can access this page');
                 return;
             }
-            if (pageId === 'parent' && user && user.role !== 'parent' && user.role !== 'superadmin') {
-                showToast('Only parents can access this page');
-                return;
-            }
 
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
@@ -1123,7 +852,6 @@
             if (pageId === 'teacher') updateTeacherStats();
             if (pageId === 'schoolAdmin') updateAdminStats();
             if (pageId === 'superAdmin') updateSuperAdminStats();
-            if (pageId === 'groups') updateLiveGroups();
         }
 
         // ============================================================
@@ -1158,9 +886,7 @@
                 document.getElementById('adminDashboardContent').style.display = 'none';
                 document.getElementById('superLogin').style.display = 'block';
                 document.getElementById('superDashboard').style.display = 'none';
-                document.getElementById('parentLogin').style.display = 'block';
-                document.getElementById('parentDashboardContent').style.display = 'none';
-                showToast('✅ Logged out');
+                showToast('Logged out');
             }
         }
 
@@ -1225,61 +951,6 @@
                 showToast('Welcome, Super Admin!');
                 updateSuperAdminStats();
             }
-        }
-
-        // ============================================================
-        // PARENT LOGIN
-        // ============================================================
-        function parentLogin() {
-            const email = document.getElementById('parentLoginEmail').value.trim();
-            const password = document.getElementById('parentLoginPassword').value.trim();
-            if (!email || !password) { showToast('Please enter email and password'); return; }
-            if (demoLogin(email, password)) {
-                const user = getDemoUser();
-                if (user.role !== 'parent' && user.role !== 'superadmin') {
-                    showToast('You are not a parent');
-                    demoLogout();
-                    return;
-                }
-                document.getElementById('parentLogin').style.display = 'none';
-                document.getElementById('parentDashboardContent').style.display = 'block';
-                showToast('Welcome, ' + user.name + '!');
-            }
-        }
-
-        // ============================================================
-        // FIND STUDENT
-        // ============================================================
-        function findStudent() {
-            const name = document.getElementById('findName').value.trim();
-            const grade = document.getElementById('findGrade').value;
-            const school = document.getElementById('findSchool').value.trim();
-            if (!name || !grade || !school) { showToast('Please fill all fields'); return; }
-            const students = JSON.parse(localStorage.getItem('schoolhub_students') || '[]');
-            const found = students.find(s => s.name.toLowerCase() === name.toLowerCase() && s.grade === grade && s.school ===
-                school);
-            const result = document.getElementById('findResult');
-            result.style.display = 'block';
-            if (found) {
-                result.innerHTML =
-                    `<div style="background:rgba(108,92,231,0.15); border:1px solid rgba(108,92,231,0.3); border-radius:1rem; padding:1.2rem; text-align:center;"><i class="fas fa-check-circle" style="color:var(--green); font-size:2rem;"></i><h3 style="color:var(--text-primary); margin-top:8px;">Welcome back, ${name}!</h3><p style="color:var(--text-muted);">${school} · Grade ${grade}</p></div>`;
-                showToast('Welcome back, ' + name + '!');
-            } else {
-                result.innerHTML =
-                    `<div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); border-radius:1rem; padding:1.2rem; text-align:center;"><i class="fas fa-user-plus" style="color:var(--purple); font-size:2rem;"></i><h3 style="color:var(--text-primary); margin-top:8px;">Not found. Register now?</h3><p style="color:var(--text-muted);">Create your account to access resources.</p><button class="btn-primary" style="margin-top:8px; width:auto; padding:8px 24px;" onclick="registerStudent('${name}','${grade}','${school}')"><i class="fas fa-user-plus"></i> Register</button></div>`;
-            }
-        }
-
-        function registerStudent(name, grade, school) {
-            const students = JSON.parse(localStorage.getItem('schoolhub_students') || '[]');
-            if (students.some(s => s.name === name && s.grade === grade && s.school === school)) { showToast(
-                    'Already registered'); return; }
-            students.push({ name, grade, school, registeredAt: new Date().toISOString() });
-            localStorage.setItem('schoolhub_students', JSON.stringify(students));
-            showToast('Student ' + name + ' registered!');
-            document.getElementById('findResult').innerHTML =
-                `<div style="background:rgba(108,92,231,0.15); border:1px solid rgba(108,92,231,0.3); border-radius:1rem; padding:1.2rem; text-align:center;"><i class="fas fa-check-circle" style="color:var(--green); font-size:2rem;"></i><h3 style="color:var(--text-primary); margin-top:8px;">Registered successfully!</h3><p style="color:var(--text-muted);">Welcome to ${school}, ${name}!</p></div>`;
-            updateTeacherStats();
         }
 
         // ============================================================
@@ -2001,6 +1672,7 @@
                 }
             });
             localStorage.setItem('schoolhub_results', JSON.stringify(results));
+            document.getElementById('teacherResultCount').textContent = results.length;
             showToast('✅ Saved results for ' + saved + ' students!');
         }
 
@@ -2145,29 +1817,56 @@
         }
 
         // ============================================================
-        // PARENT - REPORT CARD
+        // PARENT - VIEW REPORT CARD (No Login)
         // ============================================================
         function viewReportCard() {
             const name = document.getElementById('parentStudentName').value.trim();
             const school = document.getElementById('parentSchoolName').value.trim();
-            if (!name || !school) { showToast('Please enter student name and school'); return; }
+            const cls = document.getElementById('parentClass').value;
+
+            if (!name) { showToast('Please enter student name'); return; }
+            if (!school) { showToast('Please enter school name'); return; }
+            if (!cls) { showToast('Please select a class/grade'); return; }
+
             const students = JSON.parse(localStorage.getItem('schoolhub_students') || '[]');
-            const student = students.find(s => s.name.toLowerCase() === name.toLowerCase() && s.school === school);
+            const student = students.find(s =>
+                s.name.toLowerCase() === name.toLowerCase() &&
+                s.school.toLowerCase() === school.toLowerCase() &&
+                s.grade === cls
+            );
+
             const container = document.getElementById('reportCardContainer');
-            container.style.display = 'block';
+
             if (!student) {
+                container.style.display = 'block';
                 container.innerHTML =
-                    `<div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); border-radius:1rem; padding:1.5rem; text-align:center;"><i class="fas fa-user-slash" style="font-size:2rem; color:var(--red);"></i><p style="color:var(--text-primary); margin-top:8px;">Student not found</p><p style="color:var(--text-muted);">Please check the name and school.</p></div>`;
+                    `<div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); border-radius:1rem; padding:1.5rem; text-align:center;">
+                    <i class="fas fa-user-slash" style="font-size:2rem; color:var(--red);"></i>
+                    <p style="color:var(--text-primary); margin-top:8px;">Student not found</p>
+                    <p style="color:var(--text-muted);">Please check the name, school, and class.</p>
+                </div>`;
+                showToast('Student not found');
                 return;
             }
+
             const results = JSON.parse(localStorage.getItem('schoolhub_results') || '[]');
-            const studentResults = results.filter(r => r.name === student.name);
+            const studentResults = results.filter(r => r.name === student.name && r.class === cls);
+
             let html =
-                `<div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color);"><div style="text-align:center; border-bottom:2px solid var(--purple); padding-bottom:12px; margin-bottom:12px;"><h2 style="color:var(--text-primary);"><i class="fas fa-school" style="color:var(--purple);"></i> ${school}</h2><h3 style="color:var(--text-muted); font-weight:400;">REPORT CARD</h3></div>
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; margin-bottom:12px;"><div><strong style="color:var(--text-primary);">Student:</strong> <span style="color:var(--text-muted);">${student.name}</span></div>
-            <div><strong style="color:var(--text-primary);">Grade:</strong> <span style="color:var(--text-muted);">${student.grade}</span></div>
-            <div><strong style="color:var(--text-primary);">Term:</strong> <span style="color:var(--text-muted);">1</span></div></div>
-            <table class="report-card-table"><thead><tr><th>Subject</th><th>Test</th><th>Exam</th><th>Assignment</th><th>Total</th><th>Grade</th></tr></thead><tbody>`;
+                `<div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color);">
+                <div style="text-align:center; border-bottom:2px solid var(--purple); padding-bottom:12px; margin-bottom:12px;">
+                    <h2 style="color:var(--text-primary);"><i class="fas fa-school" style="color:var(--purple);"></i> ${school}</h2>
+                    <h3 style="color:var(--text-muted); font-weight:400;">REPORT CARD</h3>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; margin-bottom:12px;">
+                    <div><strong style="color:var(--text-primary);">Student:</strong> <span style="color:var(--text-muted);">${student.name}</span></div>
+                    <div><strong style="color:var(--text-primary);">Grade:</strong> <span style="color:var(--text-muted);">${student.grade}</span></div>
+                    <div><strong style="color:var(--text-primary);">Term:</strong> <span style="color:var(--text-muted);">1</span></div>
+                </div>
+                <table class="report-card-table">
+                    <thead><tr><th>Subject</th><th>Test</th><th>Exam</th><th>Assignment</th><th>Total</th><th>Grade</th></tr></thead>
+                    <tbody>`;
+
             if (studentResults.length === 0) {
                 html += `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No results available yet</td></tr>`;
             } else {
@@ -2185,327 +1884,20 @@
                 html +=
                     `<tr style="background:rgba(108,92,231,0.1);"><td colspan="4" style="text-align:right;"><strong>Average:</strong></td><td>${avg}</td><td style="color:#4ade80; font-weight:600;">${overallGrade}</td></tr>`;
             }
-            html +=
-                `</tbody></table><div style="padding:10px; background:rgba(108,92,231,0.1); border-radius:0.8rem; border-left:3px solid var(--purple); margin-top:12px;"><p style="color:var(--text-muted); font-size:13px;"><i class="fas fa-comment" style="color:var(--purple);"></i> Teacher's Comment: Good performance! Keep up the great work.</p></div>
-            <div style="display:flex; gap:8px; justify-content:center; margin-top:12px;"><button onclick="showToast('Printing report card...')" style="background:var(--purple); color:#FFF; border:none; padding:6px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-print"></i> Print</button>
-            <button onclick="showToast('Downloading PDF...')" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:6px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-download"></i> PDF</button></div></div>`;
+
+            html += `</tbody></table>
+                <div style="padding:10px; background:rgba(108,92,231,0.1); border-radius:0.8rem; border-left:3px solid var(--purple); margin-top:12px;">
+                    <p style="color:var(--text-muted); font-size:13px;"><i class="fas fa-comment" style="color:var(--purple);"></i> Teacher's Comment: Good performance! Keep up the great work.</p>
+                </div>
+                <div style="display:flex; gap:8px; justify-content:center; margin-top:12px;">
+                    <button onclick="showToast('Printing report card...')" style="background:var(--purple); color:#FFF; border:none; padding:6px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-print"></i> Print</button>
+                    <button onclick="showToast('Downloading PDF...')" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:6px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-download"></i> PDF</button>
+                </div>
+            </div>`;
+
+            container.style.display = 'block';
             container.innerHTML = html;
             showToast('Report card loaded for ' + name);
-        }
-
-        // ============================================================
-        // PEERJS LIVE VIDEO - Teacher
-        // ============================================================
-        function startBroadcast() {
-            const title = document.getElementById('liveTitle').value.trim();
-            if (!title) { showToast('Please enter a live title first'); return; }
-            document.getElementById('liveStatusText').textContent = 'Starting camera...';
-            document.getElementById('liveStatusText').style.color = 'var(--orange)';
-            navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: true }).then(stream => {
-                teacherStream = stream;
-                document.getElementById('teacherVideo').srcObject = stream;
-                document.getElementById('teacherVideo').style.display = 'block';
-                document.getElementById('cameraPlaceholder').style.display = 'none';
-                document.getElementById('liveStatusText').textContent = '🔴 LIVE - Waiting for students...';
-                document.getElementById('liveStatusText').style.color = 'var(--red)';
-                teacherPeer = new Peer();
-                teacherPeer.on('open', (id) => {
-                    currentLiveRoom = id;
-                    document.getElementById('liveRoomId').textContent = 'Room ID: ' + id;
-                    document.getElementById('liveStatusText').textContent = '🔴 LIVE - Share Room ID: ' + id;
-                    document.getElementById('liveStatusText').style.color = 'var(--red)';
-                    isLiveActive = true;
-                    const lives = JSON.parse(localStorage.getItem('schoolhub_lives') || '[]');
-                    const live = {
-                        id: 'live_' + Date.now(),
-                        title: title,
-                        type: document.getElementById('liveType').value,
-                        class: document.getElementById('liveClass').value,
-                        roomId: id,
-                        teacher: getDemoUser()?.name || 'Teacher',
-                        startedAt: new Date().toISOString(),
-                        status: 'live',
-                        viewers: 0
-                    };
-                    lives.push(live);
-                    localStorage.setItem('schoolhub_lives', JSON.stringify(lives));
-                    updateLiveClasses();
-                    updateLiveGroups();
-                    showToast('✅ Live started! Room ID: ' + id);
-                });
-                teacherPeer.on('connection', (conn) => {
-                    conn.on('open', () => {
-                        livePeerConnections.push(conn);
-                        updateViewerCount();
-                        conn.send({ type: 'welcome', message: 'Welcome to ' + title });
-                        const call = teacherPeer.call(conn.peer, teacherStream);
-                        conn.on('close', () => {
-                            livePeerConnections = livePeerConnections.filter(c => c !== conn);
-                            updateViewerCount();
-                        });
-                    });
-                });
-                teacherPeer.on('error', (err) => {
-                    if (err.type === 'unavailable-id') { showToast('❌ Connection error. Please try again.'); }
-                });
-            }).catch(err => {
-                showToast('❌ Camera access denied: ' + err.message);
-                document.getElementById('liveStatusText').textContent = 'Camera access denied';
-                document.getElementById('liveStatusText').style.color = 'var(--red)';
-            });
-        }
-
-        function toggleTeacherMic() {
-            if (teacherStream) {
-                const audioTrack = teacherStream.getAudioTracks()[0];
-                if (audioTrack) { audioTrack.enabled = !audioTrack.enabled;
-                    showToast(audioTrack.enabled ? '🎤 Mic on' : '🔇 Mic off'); }
-            }
-        }
-
-        function shareTeacherScreen() {
-            navigator.mediaDevices.getDisplayMedia({ video: true }).then(screenStream => {
-                const videoTrack = screenStream.getVideoTracks()[0];
-                if (teacherStream) {
-                    const oldVideoTrack = teacherStream.getVideoTracks()[0];
-                    teacherStream.removeTrack(oldVideoTrack);
-                    teacherStream.addTrack(videoTrack);
-                    document.getElementById('teacherVideo').srcObject = teacherStream;
-                    showToast('📷 Screen sharing started');
-                    videoTrack.onended = () => {
-                        navigator.mediaDevices.getUserMedia({ video: true }).then(newStream => {
-                            const newVideoTrack = newStream.getVideoTracks()[0];
-                            teacherStream.removeTrack(videoTrack);
-                            teacherStream.addTrack(newVideoTrack);
-                            document.getElementById('teacherVideo').srcObject = teacherStream;
-                            showToast('📷 Back to camera');
-                        });
-                    };
-                }
-            }).catch(() => { showToast('❌ Screen share cancelled'); });
-        }
-
-        function sendTeacherChat() {
-            const input = document.getElementById('liveChatInput');
-            const msg = input.value.trim();
-            if (!msg) return;
-            const container = document.getElementById('liveChatMessages');
-            const div = document.createElement('div');
-            div.style.cssText = 'padding:4px 8px; margin-bottom:4px; border-radius:0.5rem; background:rgba(108,92,231,0.1);';
-            div.innerHTML = `<strong style="color:var(--purple);">You:</strong> ${msg}`;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-            livePeerConnections.forEach(conn => {
-                conn.send({ type: 'chat', sender: 'Teacher', message: msg, time: new Date().toLocaleTimeString() });
-            });
-            input.value = '';
-        }
-
-        function endTeacherLive() {
-            if (teacherStream) { teacherStream.getTracks().forEach(track => track.stop());
-                teacherStream = null; }
-            if (teacherPeer) { teacherPeer.destroy();
-                teacherPeer = null; }
-            livePeerConnections.forEach(conn => conn.close());
-            livePeerConnections = [];
-            const lives = JSON.parse(localStorage.getItem('schoolhub_lives') || '[]');
-            const currentLive = lives.find(l => l.roomId === currentLiveRoom);
-            if (currentLive) { currentLive.status = 'ended';
-                localStorage.setItem('schoolhub_lives', JSON.stringify(lives)); }
-            document.getElementById('liveStudio').style.display = 'none';
-            document.getElementById('teacherVideo').srcObject = null;
-            document.getElementById('teacherVideo').style.display = 'none';
-            document.getElementById('cameraPlaceholder').style.display = 'block';
-            document.getElementById('liveStatusText').textContent = 'Ended';
-            document.getElementById('liveStatusText').style.color = 'var(--text-muted)';
-            document.getElementById('viewerCount').textContent = '0';
-            isLiveActive = false;
-            currentLiveRoom = '';
-            showToast('🔴 Live ended');
-            updateLiveClasses();
-            updateLiveGroups();
-        }
-
-        function updateViewerCount() {
-            const count = livePeerConnections.length;
-            document.getElementById('viewerCount').textContent = count;
-            const lives = JSON.parse(localStorage.getItem('schoolhub_lives') || '[]');
-            const currentLive = lives.find(l => l.roomId === currentLiveRoom);
-            if (currentLive) { currentLive.viewers = count;
-                localStorage.setItem('schoolhub_lives', JSON.stringify(lives)); }
-        }
-
-        // ============================================================
-        // PEERJS LIVE VIDEO - Student Join
-        // ============================================================
-        function joinLiveClass() {
-            const roomId = document.getElementById('joinRoomId').value.trim();
-            if (!roomId) { showToast('Please enter a room ID'); return; }
-            showToast('Connecting to live...');
-            document.getElementById('joinStatus').textContent = 'Connecting...';
-            document.getElementById('joinStatus').style.color = 'var(--orange)';
-            studentPeer = new Peer();
-            studentPeer.on('open', () => {
-                const conn = studentPeer.connect(roomId);
-                conn.on('open', () => {
-                    document.getElementById('joinStatus').textContent = '✅ Connected!';
-                    document.getElementById('joinStatus').style.color = 'var(--green)';
-                    document.getElementById('studentVideoContainer').style.display = 'block';
-                    showToast('✅ Connected to live class!');
-                    const call = studentPeer.call(roomId, null);
-                    studentCall = call;
-                    call.on('stream', (remoteStream) => {
-                        document.getElementById('studentVideo').srcObject = remoteStream;
-                        document.getElementById('studentVideo').play();
-                        document.getElementById('joinStatus').textContent = '✅ Watching live';
-                        document.getElementById('joinStatus').style.color = 'var(--green)';
-                    });
-                    conn.on('data', (data) => {
-                        if (data.type === 'chat') { displayStudentMessage(data.sender, data.message); } else if (data
-                            .type === 'welcome') { showToast('📢 ' + data.message); }
-                    });
-                });
-                conn.on('close', () => {
-                    document.getElementById('joinStatus').textContent = '❌ Live ended';
-                    document.getElementById('joinStatus').style.color = 'var(--red)';
-                    document.getElementById('studentVideo').srcObject = null;
-                    document.getElementById('studentVideoContainer').style.display = 'none';
-                    showToast('❌ Live class has ended');
-                });
-            });
-            studentPeer.on('error', (err) => {
-                document.getElementById('joinStatus').textContent = '❌ Failed to connect';
-                document.getElementById('joinStatus').style.color = 'var(--red)';
-                showToast('❌ Failed to connect. Check the room ID.');
-            });
-        }
-
-        function sendStudentChat() {
-            const input = document.getElementById('studentChatInput');
-            const msg = input.value.trim();
-            if (!msg) return;
-            displayStudentMessage('You', msg);
-            if (studentPeer) {
-                const connections = Object.values(studentPeer.connections);
-                connections.forEach(conns => {
-                    conns.forEach(conn => {
-                        conn.send({ type: 'chat', sender: 'Student', message: msg, time: new Date()
-                                .toLocaleTimeString() });
-                    });
-                });
-            }
-            input.value = '';
-        }
-
-        function displayStudentMessage(sender, message) {
-            const container = document.getElementById('studentChatMessages');
-            const div = document.createElement('div');
-            div.style.cssText = 'padding:4px 8px; margin-bottom:4px; border-radius:0.5rem; background:rgba(108,92,231,0.1);';
-            div.innerHTML = `<strong style="color:var(--purple);">${sender}:</strong> ${message}`;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function leaveLiveClass() {
-            if (studentCall) { studentCall.close();
-                studentCall = null; }
-            if (studentPeer) { studentPeer.destroy();
-                studentPeer = null; }
-            document.getElementById('studentVideo').srcObject = null;
-            document.getElementById('studentVideoContainer').style.display = 'none';
-            document.getElementById('joinStatus').textContent = 'Left live';
-            document.getElementById('joinStatus').style.color = 'var(--text-muted)';
-            showToast('👋 You left the live class');
-        }
-
-        // ============================================================
-        // LIVE CLASSES - Update Home & Groups
-        // ============================================================
-        function updateLiveClasses() {
-            const lives = JSON.parse(localStorage.getItem('schoolhub_lives') || '[]');
-            const active = lives.filter(l => l.status === 'live');
-            const container = document.getElementById('liveClassesHome');
-            if (active.length === 0) {
-                container.innerHTML =
-                    `<div style="background:var(--bg-card); border-radius:1.2rem; padding:1.5rem; border:1px solid var(--border-color); text-align:center; color:var(--text-muted);"><i class="fas fa-video" style="font-size:2rem; color:var(--purple);"></i><p style="margin-top:8px;">No live classes right now.</p></div>`;
-                return;
-            }
-            let html = '';
-            active.forEach(live => {
-                html +=
-                    `<div style="background:var(--bg-card); border-radius:1.2rem; padding:1.2rem 1.5rem; border:1px solid var(--border-color); margin-bottom:10px; display:flex; align-items:center; gap:16px;">
-                <span class="live-badge"><i class="fas fa-circle"></i> LIVE</span>
-                <div style="flex:1;"><h4 style="font-size:16px; font-weight:600; color:var(--text-primary);">${live.title}</h4><p style="font-size:13px; color:var(--text-muted);">${live.teacher} · ${live.type === 'public' ? 'Public' : 'Class'} · ${live.viewers || 0} watching</p></div>
-                <button onclick="showJoinLive('${live.roomId}')" style="background:var(--purple); color:#FFF; border:none; padding:6px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-play"></i> Join</button>
-                </div>`;
-            });
-            container.innerHTML = html;
-            document.getElementById('teacherLiveCount').textContent = active.length;
-        }
-
-        function updateLiveGroups() {
-            const container = document.getElementById('liveGroupsContainer');
-            if (!container) return;
-            const lives = JSON.parse(localStorage.getItem('schoolhub_lives') || '[]');
-            const active = lives.filter(l => l.status === 'live');
-            if (active.length === 0) {
-                container.innerHTML =
-                    `<div style="text-align:center; padding:40px; color:var(--text-muted); background:var(--bg-card); border-radius:1rem; border:1px solid var(--border-color);">
-                    <i class="fas fa-video" style="font-size:2rem; color:var(--purple);"></i>
-                    <p style="margin-top:8px;">No live classes right now.</p>
-                    <p style="font-size:13px; color:var(--text-dim);">Teachers can start live classes from their dashboard.</p>
-                </div>`;
-                return;
-            }
-            let html = '';
-            active.forEach(live => {
-                html += `
-                    <div class="group-card" onclick="showJoinLive('${live.roomId || live.id}')">
-                        <div class="left">
-                            <div class="icon" style="background:rgba(239,68,68,0.15); color:var(--red);">
-                                <i class="fas fa-circle"></i>
-                            </div>
-                            <div class="info">
-                                <h4>${live.title}</h4>
-                                <p>${live.teacher || 'Teacher'} · ${live.viewers || 0} watching</p>
-                            </div>
-                        </div>
-                        <div class="right">
-                            <span class="badge" style="background:var(--red);">LIVE</span>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        function showJoinLive(roomId) {
-            document.getElementById('joinRoomId').value = roomId;
-            document.getElementById('joinLiveModal').classList.add('active');
-        }
-
-        // ============================================================
-        // TEACHER START LIVE (Original)
-        // ============================================================
-        function startTeacherLive() {
-            const title = document.getElementById('liveTitle').value.trim();
-            if (!title) { showToast('Please enter a live title'); return; }
-            document.getElementById('liveStudio').style.display = 'block';
-            document.getElementById('liveStatusText').textContent = 'Not started';
-            document.getElementById('liveStatusText').style.color = 'var(--orange)';
-            showToast('Click "Start Broadcast" to begin streaming.');
-        }
-
-        // ============================================================
-        // TEACHER STATS
-        // ============================================================
-        function updateTeacherStats() {
-            const students = JSON.parse(localStorage.getItem('schoolhub_students') || '[]');
-            const resources = JSON.parse(localStorage.getItem('schoolhub_resources') || '[]');
-            document.getElementById('teacherStudentCount').textContent = students.length;
-            document.getElementById('teacherResourceCount').textContent = resources.length;
-            document.getElementById('adminStudentCount').textContent = students.length;
-            document.getElementById('adminResourceCount').textContent = resources.length;
         }
 
         // ============================================================
@@ -2519,144 +1911,29 @@
         }
 
         // ============================================================
-        // GROUPS
-        // ============================================================
-        function switchGroupTab(tab, btn) {
-            document.querySelectorAll('.groups-tabs button').forEach(b => b.classList.remove('active-tab'));
-            if (btn) btn.classList.add('active-tab');
-            document.querySelectorAll('.group-content').forEach(c => c.classList.remove('active-content'));
-            if (tab === 'school') {
-                document.getElementById('groupSchool').classList.add('active-content');
-            } else if (tab === 'live') {
-                document.getElementById('groupLive').classList.add('active-content');
-                updateLiveGroups();
-            }
-        }
-
-        // ============================================================
-        // CHAT
-        // ============================================================
-        function openChat(name) {
-            currentChatGroup = name;
-            document.getElementById('chatTitle').textContent = name;
-            document.getElementById('chatModal').style.display = 'flex';
-            document.getElementById('chatInput').focus();
-        }
-
-        function closeChat() {
-            document.getElementById('chatModal').style.display = 'none';
-            if (mediaRecorder && isRecording) { mediaRecorder.stop();
-                isRecording = false; }
-        }
-
-        function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const msg = input.value.trim();
-            if (!msg) return;
-            const container = document.getElementById('chatMessages');
-            const div = document.createElement('div');
-            div.className = 'chat-msg sent';
-            const time = new Date();
-            div.innerHTML = msg +
-                `<span style="font-size:10px; color:rgba(255,255,255,0.6); margin-top:4px; display:block;">${time.getHours()}:${String(time.getMinutes()).padStart(2,'0')}</span>`;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-            input.value = '';
-            setTimeout(() => {
-                const reply = document.createElement('div');
-                reply.className = 'chat-msg received';
-                const replies = ['Good question!', 'I agree!', 'Can you explain more?', "That's helpful!"];
-                const randomReply = replies[Math.floor(Math.random() * replies.length)];
-                const rt = new Date();
-                reply.innerHTML =
-                    `<div style="font-size:11px; font-weight:600; color:var(--text-muted); margin-bottom:2px;">Someone</div>${randomReply}<span style="font-size:10px; color:var(--text-dim); margin-top:4px; display:block;">${rt.getHours()}:${String(rt.getMinutes()).padStart(2,'0')}</span>`;
-                container.appendChild(reply);
-                container.scrollTop = container.scrollHeight;
-            }, 1000 + Math.random() * 2000);
-        }
-
-        function attachImage() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.onchange = function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(ev) {
-                        const container = document.getElementById('chatMessages');
-                        const div = document.createElement('div');
-                        div.className = 'chat-msg sent';
-                        const time = new Date();
-                        div.innerHTML =
-                            `<img src="${ev.target.result}" style="max-width:200px;border-radius:10px;" /><span style="font-size:10px; color:rgba(255,255,255,0.6); margin-top:4px; display:block;">${time.getHours()}:${String(time.getMinutes()).padStart(2,'0')}</span>`;
-                        container.appendChild(div);
-                        container.scrollTop = container.scrollHeight;
-                        showToast('Image shared!');
-                    };
-                    reader.readAsDataURL(file);
-                }
-            };
-            input.click();
-        }
-
-        function startVoiceRecording() {
-            if (isRecording) {
-                if (mediaRecorder) mediaRecorder.stop();
-                isRecording = false;
-                document.getElementById('voiceBtn').innerHTML = '<i class="fas fa-microphone"></i>';
-                showToast('Stopped');
-                return;
-            }
-            navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
-                mediaRecorder.ondataavailable = function(event) { audioChunks.push(event.data); };
-                mediaRecorder.onstop = function() {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    const audioUrl = URL.createObjectURL(audioBlob);
-                    const container = document.getElementById('chatMessages');
-                    const div = document.createElement('div');
-                    div.className = 'chat-msg sent';
-                    const time = new Date();
-                    div.innerHTML =
-                        `<audio controls src="${audioUrl}"></audio><span style="font-size:10px; color:rgba(255,255,255,0.6); margin-top:4px; display:block;">${time.getHours()}:${String(time.getMinutes()).padStart(2,'0')}</span>`;
-                    container.appendChild(div);
-                    container.scrollTop = container.scrollHeight;
-                    showToast('Voice note sent!');
-                    stream.getTracks().forEach(track => track.stop());
-                };
-                mediaRecorder.start();
-                isRecording = true;
-                document.getElementById('voiceBtn').innerHTML = '<i class="fas fa-stop"></i>';
-                showToast('Recording... tap again to stop');
-            }).catch(function() { showToast('Microphone access denied'); });
-        }
-
-        function leaveGroup() {
-            if (confirm('Leave this group?')) { showToast('Left ' + currentChatGroup);
-                closeChat(); }
-        }
-
-        // ============================================================
         // CLOSE MODAL
         // ============================================================
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        // ============================================================
+        // TEACHER STATS
+        // ============================================================
+        function updateTeacherStats() {
+            const students = JSON.parse(localStorage.getItem('schoolhub_students') || '[]');
+            const resources = JSON.parse(localStorage.getItem('schoolhub_resources') || '[]');
+            const results = JSON.parse(localStorage.getItem('schoolhub_results') || '[]');
+            document.getElementById('teacherStudentCount').textContent = students.length;
+            document.getElementById('teacherResourceCount').textContent = resources.length;
+            document.getElementById('teacherResultCount').textContent = results.length;
+            document.getElementById('adminStudentCount').textContent = students.length;
+            document.getElementById('adminResourceCount').textContent = resources.length;
         }
 
         // ============================================================
         // KEYBOARD SHORTCUTS
         // ============================================================
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeModal('joinLiveModal');
-                closeChat();
-                closeViewer();
-            }
-            if (e.key === 'Enter' && document.activeElement?.id === 'chatInput') sendMessage();
-            if (e.key === 'Enter' && document.activeElement?.id === 'liveChatInput') sendTeacherChat();
-            if (e.key === 'Enter' && document.activeElement?.id === 'studentChatInput') sendStudentChat();
+            if (e.key === 'Escape') { closeViewer(); }
         });
 
         // ============================================================
@@ -2666,8 +1943,6 @@
             updateTeacherStats();
             updateAdminStats();
             updateSuperAdminStats();
-            updateLiveClasses();
-            updateLiveGroups();
             console.log('SchoolHub Demo loaded!');
             console.log('Built by Abraham Chiputa · Kasco · JETS 2025');
             console.log('✅ All features ready!');
@@ -2675,7 +1950,7 @@
             console.log('  Teacher: teacher@demo.com / teacher123');
             console.log('  Admin: admin@demo.com / admin123');
             console.log('  Super: super@demo.com / super123');
-            console.log('  Parent: parent@demo.com / parent123');
+            console.log('  Parent: No login required! Just search for your child.');
         }
         document.addEventListener('DOMContentLoaded', init);
     </script>
