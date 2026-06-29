@@ -323,6 +323,7 @@
             <div id="teacherDashboardContent" style="display:none;">
                 <div class="page-title"><i class="fas fa-chalkboard-teacher"></i> Teacher Dashboard</div>
                 <p class="page-subtitle">Register students, create results, upload resources</p>
+
                 <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; margin-bottom:20px;">
                     <div style="background:var(--bg-card); border-radius:1rem; padding:1rem; text-align:center; border:1px solid var(--border-color);">
                         <i class="fas fa-users" style="font-size:1.5rem; color:var(--purple);"></i>
@@ -341,6 +342,7 @@
                     </div>
                 </div>
 
+                <!-- Two Main Buttons: Register Students & Create Results -->
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
                     <div onclick="showRegisterStudents()" style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:2px solid var(--purple); cursor:pointer; text-align:center; transition:.3s;">
                         <i class="fas fa-user-plus" style="font-size:3rem; color:var(--purple);"></i>
@@ -354,6 +356,7 @@
                     </div>
                 </div>
 
+                <!-- Register Students Section -->
                 <div id="registerStudentsSection" style="display:none; background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color); margin-bottom:16px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                         <h3 style="color:var(--text-primary);"><i class="fas fa-user-plus" style="color:var(--purple);"></i> Register Students</h3>
@@ -384,6 +387,9 @@
                     </div>
                 </div>
 
+                <!-- ============================================================
+                CREATE RESULTS SECTION - UPDATED
+                ============================================================ -->
                 <div id="createResultsSection" style="display:none; background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color); margin-bottom:16px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                         <h3 style="color:var(--text-primary);"><i class="fas fa-chart-bar" style="color:var(--purple);"></i> Create Results</h3>
@@ -392,6 +398,7 @@
                         </button>
                     </div>
 
+                    <!-- Subject & Class Selection -->
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
                         <div class="form-group">
                             <label style="color:var(--text-muted); font-size:13px;">Select Subject</label>
@@ -421,13 +428,130 @@
                         </div>
                     </div>
 
-                    <button class="btn-primary" onclick="loadStudentsForResults()" style="margin-bottom:12px;"><i class="fas fa-users"></i> Load Students</button>
+                    <!-- Method Selection Tabs -->
+                    <div style="display:flex; gap:8px; margin-bottom:12px;">
+                        <button onclick="showResultMethod('manual')" id="resultManualTab" class="active-tab" style="background:var(--purple); color:#FFF; border:none; padding:8px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif; transition:.3s;">
+                            <i class="fas fa-pencil-alt"></i> Manual Entry
+                        </button>
+                        <button onclick="showResultMethod('ocr')" id="resultOcrTab" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:8px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif; transition:.3s;">
+                            <i class="fas fa-camera"></i> OCR Scan
+                        </button>
+                    </div>
 
-                    <div id="resultsTableContainer" style="display:none; overflow-x:auto;"></div>
+                    <!-- ============================================================
+                    MANUAL ENTRY METHOD
+                    ============================================================ -->
+                    <div id="resultManualMethod" style="background:var(--bg-input); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color);">
+                        <h4 style="color:var(--text-primary); margin-bottom:12px;"><i class="fas fa-pencil-alt" style="color:var(--purple);"></i> Enter Results Manually</h4>
 
-                    <button class="btn-primary" onclick="saveResults()" style="margin-top:12px; display:none;" id="saveResultsBtn"><i class="fas fa-save"></i> Save Results</button>
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; align-items:end;">
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label style="color:var(--text-muted); font-size:13px;">Student Name</label>
+                                <input type="text" id="manualResultName" placeholder="e.g., John Banda" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                            </div>
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label style="color:var(--text-muted); font-size:13px;">Week 4</label>
+                                <input type="number" id="manualWeek4" placeholder="0-100" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                            </div>
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label style="color:var(--text-muted); font-size:13px;">Week 8</label>
+                                <input type="number" id="manualWeek8" placeholder="0-100" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                            </div>
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label style="color:var(--text-muted); font-size:13px;">Week 12</label>
+                                <input type="number" id="manualWeek12" placeholder="0-100" style="width:100%; padding:10px 14px; border-radius:1rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" />
+                            </div>
+                        </div>
+
+                        <!-- Auto-calculated Average -->
+                        <div style="margin-top:8px; padding:8px 16px; background:rgba(108,92,231,0.1); border-radius:0.8rem; border-left:3px solid var(--purple);">
+                            <span style="color:var(--text-muted); font-size:13px;">Average: </span>
+                            <span id="manualAverageDisplay" style="color:var(--purple-light); font-weight:600;">-</span>
+                        </div>
+
+                        <div style="display:flex; gap:12px; margin-top:12px; flex-wrap:wrap;">
+                            <button class="btn-primary" onclick="addManualResult()" style="width:auto; padding:8px 24px;">
+                                <i class="fas fa-plus"></i> Add Student
+                            </button>
+                            <button class="btn-primary" onclick="saveAllManualResults()" style="width:auto; padding:8px 24px; background:var(--green);">
+                                <i class="fas fa-save"></i> Save All
+                            </button>
+                            <button onclick="clearManualResults()" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:8px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div>
+
+                        <!-- Manual Results Table -->
+                        <div id="manualResultsTableContainer" style="margin-top:12px; overflow-x:auto; display:none;">
+                            <table class="schoolhub-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Student Name</th>
+                                        <th>Week 4</th>
+                                        <th>Week 8</th>
+                                        <th>Week 12</th>
+                                        <th>Average</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="manualResultsBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- ============================================================
+                    OCR SCAN METHOD
+                    ============================================================ -->
+                    <div id="resultOcrMethod" style="display:none; background:var(--bg-input); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color);">
+                        <h4 style="color:var(--text-primary); margin-bottom:12px;"><i class="fas fa-camera" style="color:var(--purple);"></i> OCR Scan Results</h4>
+
+                        <div style="margin-bottom:12px;">
+                            <p style="color:var(--text-muted); font-size:13px;">Upload a photo of the results sheet to extract student scores.</p>
+                            <input type="file" id="ocrResultImage" accept="image/*" style="margin-top:8px; padding:8px; border:1px solid var(--border-color); border-radius:1rem; background:var(--bg-input); color:var(--text-secondary); width:100%;" onchange="previewOCRResult(this)" />
+                        </div>
+
+                        <!-- OCR Image Display -->
+                        <div class="ocr-image-container" id="ocrResultImageContainer" style="display:none;">
+                            <img id="ocrResultPreview" src="" alt="Results sheet" />
+                            <div class="scan-line" id="ocrResultScanLine"></div>
+                        </div>
+
+                        <!-- OCR Progress -->
+                        <div class="ocr-progress" id="ocrResultProgress" style="display:none;">
+                            <span id="ocrResultProgressText">Scanning...</span>
+                            <div class="bar"><div class="fill" id="ocrResultProgressFill"></div></div>
+                        </div>
+
+                        <button class="btn-primary" onclick="processOCRResults()" style="width:auto; padding:8px 24px; margin-top:8px;">
+                            <i class="fas fa-eye"></i> Scan & Extract
+                        </button>
+
+                        <!-- OCR Results Table -->
+                        <div id="ocrResultsTableContainer" style="margin-top:12px; overflow-x:auto; display:none;">
+                            <table class="schoolhub-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Student Name</th>
+                                        <th>Week 4</th>
+                                        <th>Week 8</th>
+                                        <th>Week 12</th>
+                                        <th>Average</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ocrResultsBody">
+                                </tbody>
+                            </table>
+                            <button class="btn-primary" onclick="saveOCRResults()" style="width:auto; padding:8px 24px; margin-top:12px; background:var(--green);">
+                                <i class="fas fa-save"></i> Save All Results
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
+                <!-- Upload Resource -->
                 <div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color);">
                     <h3 style="color:var(--text-primary); display:flex; align-items:center; gap:10px; margin-bottom:12px;"><i class="fas fa-upload" style="color:var(--purple);"></i> Upload Resource</h3>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -711,16 +835,22 @@
     <!-- VIEWER MODAL -->
     <div class="viewer-modal" id="viewerModal">
         <div class="viewer-header">
-            <div class="viewer-title"><i class="fas fa-file" id="viewerFileIcon"></i><span id="viewerFileName">File Name</span></div>
-            <button class="viewer-close" onclick="closeViewer()"><i class="fas fa-times"></i></button>
+            <div class="viewer-title">
+                <i class="fas fa-file" id="viewerFileIcon"></i>
+                <span id="viewerFileName">File Name</span>
+            </div>
+            <button class="viewer-close" onclick="closeViewer()">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
         <div class="viewer-body" id="viewerBody">
-            <div style="text-align:center; padding:40px; color:var(--text-muted);"><i class="fas fa-spinner fa-spin" style="font-size:3rem;"></i><p>Loading...</p></div>
+            <div style="text-align:center; padding:40px; color:var(--text-muted);">
+                <i class="fas fa-spinner fa-spin" style="font-size:3rem;"></i>
+                <p style="margin-top:20px;">Loading...</p>
+            </div>
         </div>
         <div class="viewer-footer" id="viewerFooter">
-            <button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button>
-            <button onclick="viewerShare()"><i class="fas fa-share-alt"></i> Share</button>
-            <button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>
+            <!-- Buttons added dynamically -->
         </div>
     </div>
 
@@ -1025,76 +1155,139 @@
         }
 
         // ============================================================
-        // VIEWER SYSTEM
+        // VIEWER SYSTEM - COMPLETE FIX
         // ============================================================
-        function openViewer(file) {
-            currentViewerFile = file;
+        let currentViewerFile = null;
+        let currentZoom = 1;
+        let translateX = 0,
+            translateY = 0;
+        let isDragging = false;
+        let startX, startY;
+
+        function viewResource(id) {
+            const resources = JSON.parse(localStorage.getItem('schoolhub_resources') || '[]');
+            const res = resources.find(r => r.id === id);
+
+            if (!res) {
+                showToast('Resource not found');
+                return;
+            }
+
+            if (!res.fileData) {
+                showToast('No file content available');
+                return;
+            }
+
+            currentViewerFile = res;
+            document.getElementById('viewerFileName').textContent = res.name || 'File';
+            document.getElementById('viewerFileIcon').className = 'fas fa-file';
+
+            const ext = (res.fileName || '').split('.').pop().toLowerCase();
+            const fileData = res.fileData;
+
+            document.getElementById('viewerModal').classList.add('active');
+
+            const body = document.getElementById('viewerBody');
+            const footer = document.getElementById('viewerFooter');
+
+            body.innerHTML = '';
+            footer.innerHTML = '';
+
             currentZoom = 1;
             translateX = 0;
             translateY = 0;
-            document.getElementById('viewerFileName').textContent = file.name || 'File';
-            document.getElementById('viewerModal').classList.add('active');
-            const body = document.getElementById('viewerBody');
-            const footer = document.getElementById('viewerFooter');
-            const ext = (file.name || '').split('.').pop().toLowerCase();
-            const url = file.fileData || file.url || file.downloadURL || '';
-            body.innerHTML = '';
-            footer.innerHTML = '';
-            const isScrollable = ['pdf', 'txt', 'md', 'log', 'js', 'html', 'css', 'json', 'xml', 'py', 'doc', 'docx', 'xls',
-                'xlsx', 'ppt', 'pptx'
-            ].includes(ext);
-            const isZoomable = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'bmp', 'tiff'].includes(ext);
-            const isMedia = ['mp4', 'webm', 'mov', 'avi', 'mkv', 'mp3', 'wav', 'ogg', 'm4a', 'flac'].includes(ext);
-            if (isScrollable) {
-                body.innerHTML = `<div class="viewer-scrollable" id="scrollableContent"></div>`;
-                const container = document.getElementById('scrollableContent');
-                if (ext === 'pdf') {
-                    container.innerHTML =
-                        `<iframe src="${url}#toolbar=1" style="width:100%; height:100%; min-height:500px; border:none;"></iframe>`;
-                } else if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(ext)) {
-                    const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
-                    container.innerHTML =
-                        `<iframe src="${viewerUrl}" style="width:100%; height:100%; min-height:500px; border:none;"></iframe>`;
-                } else if (['txt', 'md', 'log', 'js', 'html', 'css', 'json', 'xml', 'py'].includes(ext)) {
-                    fetch(url).then(r => r.text()).then(text => {
-                        container.innerHTML =
-                            `<pre style="white-space:pre-wrap; padding:20px; margin:0; font-family:'Inter',monospace; font-size:14px; line-height:1.6; color:#000; max-width:100%; overflow:auto; background:#FFF;">${escapeHtml(text)}</pre>`;
-                    }).catch(() => {
-                        container.innerHTML =
-                            `<div style="text-align:center; padding:40px; color:var(--text-muted);"><i class="fas fa-file" style="font-size:3rem; color:var(--purple);"></i><p style="margin-top:12px;">Could not load content</p></div>`;
+
+            if (ext === 'pdf') {
+                body.innerHTML = `
+                        <div class="viewer-scrollable" style="width:100%; height:100%; overflow:auto;">
+                            <iframe src="${fileData}" style="width:100%; height:100%; min-height:500px; border:none;"></iframe>
+                        </div>
+                    `;
+                footer.innerHTML =
+                    `<button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button><button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>`;
+
+            } else if (['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'bmp', 'tiff'].includes(ext)) {
+                body.innerHTML = `
+                        <div class="viewer-zoomable" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                            <div class="viewer-content" id="viewerContent">
+                                <img src="${fileData}" style="max-width:100%; max-height:80vh; object-fit:contain;" />
+                            </div>
+                        </div>
+                    `;
+                footer.innerHTML = `
+                        <button onclick="zoomIn()"><i class="fas fa-plus-circle"></i> Zoom In</button>
+                        <button onclick="zoomOut()"><i class="fas fa-minus-circle"></i> Zoom Out</button>
+                        <button onclick="resetZoom()"><i class="fas fa-expand"></i> Reset</button>
+                        <span class="zoom-level" id="zoomLevelDisplay">100%</span>
+                        <button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button>
+                        <button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>
+                    `;
+                setTimeout(setupZoomAndPan, 100);
+
+            } else if (['mp4', 'webm', 'mov', 'avi', 'mkv'].includes(ext)) {
+                body.innerHTML = `
+                        <div class="viewer-media" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                            <video controls autoplay style="max-width:100%; max-height:80vh; background:#000;">
+                                <source src="${fileData}" type="video/mp4">
+                            </video>
+                        </div>
+                    `;
+                footer.innerHTML =
+                    `<button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button><button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>`;
+
+            } else if (['mp3', 'wav', 'ogg', 'm4a', 'flac'].includes(ext)) {
+                body.innerHTML = `
+                        <div class="viewer-media" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                            <audio controls autoplay style="width:100%; max-width:600px;">
+                                <source src="${fileData}" type="audio/mpeg">
+                            </audio>
+                        </div>
+                    `;
+                footer.innerHTML =
+                    `<button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button><button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>`;
+
+            } else if (['txt', 'md', 'log', 'js', 'html', 'css', 'json', 'xml', 'py'].includes(ext)) {
+                fetch(fileData)
+                    .then(r => r.text())
+                    .then(text => {
+                        body.innerHTML = `
+                                <div class="viewer-scrollable" style="width:100%; height:100%; overflow:auto;">
+                                    <pre style="white-space:pre-wrap; padding:20px; margin:0; font-family:'Inter',monospace; font-size:14px; line-height:1.6; color:#000; max-width:100%; overflow:auto; background:#FFF;">${escapeHtml(text)}</pre>
+                                </div>
+                            `;
+                        footer.innerHTML =
+                            `<button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button><button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>`;
+                    })
+                    .catch(() => {
+                        body.innerHTML = `
+                                <div style="text-align:center; padding:40px; color:var(--text-muted);">
+                                    <i class="fas fa-file" style="font-size:3rem; color:var(--purple);"></i>
+                                    <p style="margin-top:12px;">Could not load text content.</p>
+                                </div>
+                            `;
+                        footer.innerHTML =
+                            `<button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button><button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>`;
                     });
-                }
-                footer.innerHTML =
-                    `<button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button><button onclick="viewerShare()"><i class="fas fa-share-alt"></i> Share</button><button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>`;
-            } else if (isZoomable) {
-                body.innerHTML =
-                    `<div class="viewer-zoomable"><div class="viewer-content" id="viewerContent"><img src="${url}" alt="${file.name}" style="max-width:100%; max-height:80vh; object-fit:contain;" /></div></div>`;
-                footer.innerHTML =
-                    `<button onclick="zoomIn()"><i class="fas fa-plus-circle"></i> Zoom In</button><button onclick="zoomOut()"><i class="fas fa-minus-circle"></i> Zoom Out</button><button onclick="resetZoom()"><i class="fas fa-expand"></i> Reset</button><span class="zoom-level" id="zoomLevelDisplay">100%</span><button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button><button onclick="viewerShare()"><i class="fas fa-share-alt"></i> Share</button><button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>`;
-                setupZoomAndPan();
-            } else if (isMedia) {
-                body.innerHTML = `<div class="viewer-media" id="mediaContent"></div>`;
-                const container = document.getElementById('mediaContent');
-                if (['mp4', 'webm', 'mov', 'avi', 'mkv'].includes(ext)) {
-                    container.innerHTML =
-                        `<video controls autoplay style="max-width:100%; max-height:80vh; background:#000;"><source src="${url}"></video>`;
-                } else if (['mp3', 'wav', 'ogg', 'm4a', 'flac'].includes(ext)) {
-                    container.innerHTML =
-                        `<audio controls autoplay style="width:100%; max-width:600px;"><source src="${url}"></audio>`;
-                }
-                footer.innerHTML =
-                    `<button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button><button onclick="viewerShare()"><i class="fas fa-share-alt"></i> Share</button><button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>`;
+
             } else {
-                body.innerHTML =
-                    `<div style="text-align:center; padding:40px; color:var(--text-muted);"><i class="fas fa-file" style="font-size:3rem; color:var(--purple);"></i><p style="margin-top:12px;">This file type cannot be previewed.</p><p style="font-size:13px; color:var(--text-dim);">${file.name}</p><button onclick="viewerDownload()" class="btn-primary" style="margin-top:16px; max-width:200px; padding:10px 24px;"><i class="fas fa-download"></i> Download</button></div>`;
-                footer.innerHTML =
-                    `<button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button><button onclick="viewerShare()"><i class="fas fa-share-alt"></i> Share</button><button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>`;
+                body.innerHTML = `
+                        <div style="text-align:center; padding:40px; color:var(--text-muted);">
+                            <i class="fas fa-file" style="font-size:3rem; color:var(--purple);"></i>
+                            <p style="margin-top:12px;">This file type cannot be previewed.</p>
+                            <p style="font-size:13px; color:var(--text-dim);">${res.fileName || 'File'}</p>
+                            <button onclick="viewerDownload()" class="btn-primary" style="margin-top:16px; max-width:200px; padding:10px 24px;">
+                                <i class="fas fa-download"></i> Download
+                            </button>
+                        </div>
+                    `;
+                footer.innerHTML = `<button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>`;
             }
         }
 
         function closeViewer() {
             document.getElementById('viewerModal').classList.remove('active');
-            document.getElementById('viewerBody').innerHTML = '';
+            document.getElementById('viewerBody').innerHTML =
+                '<div style="text-align:center; padding:40px; color:var(--text-muted);"><i class="fas fa-spinner fa-spin" style="font-size:3rem;"></i><p>Loading...</p></div>';
             document.getElementById('viewerFooter').innerHTML = '';
             currentViewerFile = null;
             currentZoom = 1;
@@ -1106,78 +1299,137 @@
             const container = document.querySelector('.viewer-zoomable');
             const content = document.getElementById('viewerContent');
             if (!container || !content) return;
-            container.addEventListener('wheel', function(e) { e.preventDefault(); if (e.deltaY < 0) zoomIn();
-                else zoomOut(); }, { passive: false });
-            container.addEventListener('mousedown', function(e) { if (currentZoom > 1) { isDragging = true;
+
+            container.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                if (e.deltaY < 0) zoomIn();
+                else zoomOut();
+            }, { passive: false });
+
+            container.addEventListener('mousedown', function(e) {
+                if (currentZoom > 1) {
+                    isDragging = true;
                     startX = e.clientX - translateX;
                     startY = e.clientY - translateY;
-                    content.style.cursor = 'grabbing'; } });
-            window.addEventListener('mousemove', function(e) { if (isDragging) { translateX = e.clientX - startX;
+                    content.style.cursor = 'grabbing';
+                }
+            });
+
+            window.addEventListener('mousemove', function(e) {
+                if (isDragging) {
+                    translateX = e.clientX - startX;
                     translateY = e.clientY - startY;
-                    updateTransform(); } });
-            window.addEventListener('mouseup', function() { isDragging = false;
-                content.style.cursor = currentZoom > 1 ? 'grab' : 'default'; });
+                    updateTransform();
+                }
+            });
+
+            window.addEventListener('mouseup', function() {
+                isDragging = false;
+                content.style.cursor = currentZoom > 1 ? 'grab' : 'default';
+            });
+
             let lastTouchDistance = 0;
-            container.addEventListener('touchstart', function(e) { if (e.touches.length === 2) { const touch1 = e
-                        .touches[0];
-                    const touch2 = e.touches[1];
-                    lastTouchDistance = getTouchDistance(touch1, touch2); } }, { passive: true });
-            container.addEventListener('touchmove', function(e) { if (e.touches.length === 2) { e.preventDefault();
+            container.addEventListener('touchstart', function(e) {
+                if (e.touches.length === 2) {
                     const touch1 = e.touches[0];
                     const touch2 = e.touches[1];
-                    const distance = getTouchDistance(touch1, touch2); if (lastTouchDistance > 0) { const delta =
-                            distance / lastTouchDistance;
+                    lastTouchDistance = getTouchDistance(touch1, touch2);
+                }
+            }, { passive: true });
+
+            container.addEventListener('touchmove', function(e) {
+                if (e.touches.length === 2) {
+                    e.preventDefault();
+                    const touch1 = e.touches[0];
+                    const touch2 = e.touches[1];
+                    const distance = getTouchDistance(touch1, touch2);
+                    if (lastTouchDistance > 0) {
+                        const delta = distance / lastTouchDistance;
                         currentZoom = Math.min(Math.max(currentZoom * delta, 0.5), 5);
-                        updateTransform(); const display = document.getElementById('zoomLevelDisplay'); if (display)
-                            display.textContent = Math.round(currentZoom * 100) + '%'; }
-                    lastTouchDistance = distance; } }, { passive: false });
-            container.addEventListener('touchend', function() { lastTouchDistance = 0; }, { passive: true });
+                        updateTransform();
+                        const display = document.getElementById('zoomLevelDisplay');
+                        if (display) display.textContent = Math.round(currentZoom * 100) + '%';
+                    }
+                    lastTouchDistance = distance;
+                }
+            }, { passive: false });
+
+            container.addEventListener('touchend', function() {
+                lastTouchDistance = 0;
+            }, { passive: true });
         }
 
-        function getTouchDistance(touch1, touch2) { const dx = touch1.clientX - touch2.clientX; const dy = touch1.clientY -
-                touch2.clientY; return Math.sqrt(dx * dx + dy * dy); }
+        function getTouchDistance(touch1, touch2) {
+            const dx = touch1.clientX - touch2.clientX;
+            const dy = touch1.clientY - touch2.clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
 
-        function updateTransform() { const content = document.getElementById('viewerContent'); if (content) { content
-                    .style.transform =
-                    `scale(${currentZoom}) translate(${translateX / currentZoom}px, ${translateY / currentZoom}px)`; } }
+        function updateTransform() {
+            const content = document.getElementById('viewerContent');
+            if (content) {
+                content.style.transform =
+                    `scale(${currentZoom}) translate(${translateX / currentZoom}px, ${translateY / currentZoom}px)`;
+            }
+        }
 
-        function zoomIn() { currentZoom = Math.min(currentZoom + 0.1, 5);
-            updateTransform(); const display = document.getElementById('zoomLevelDisplay'); if (display) display
-                .textContent = Math.round(currentZoom * 100) + '%'; }
+        function zoomIn() {
+            currentZoom = Math.min(currentZoom + 0.1, 5);
+            updateTransform();
+            const display = document.getElementById('zoomLevelDisplay');
+            if (display) display.textContent = Math.round(currentZoom * 100) + '%';
+        }
 
-        function zoomOut() { currentZoom = Math.max(currentZoom - 0.1, 0.5);
-            updateTransform(); const display = document.getElementById('zoomLevelDisplay'); if (display) display
-                .textContent = Math.round(currentZoom * 100) + '%'; }
+        function zoomOut() {
+            currentZoom = Math.max(currentZoom - 0.1, 0.5);
+            updateTransform();
+            const display = document.getElementById('zoomLevelDisplay');
+            if (display) display.textContent = Math.round(currentZoom * 100) + '%';
+        }
 
-        function resetZoom() { currentZoom = 1;
+        function resetZoom() {
+            currentZoom = 1;
             translateX = 0;
             translateY = 0;
-            updateTransform(); const display = document.getElementById('zoomLevelDisplay'); if (display) display
-                .textContent = '100%'; const content = document.getElementById('viewerContent'); if (content) content
-                    .style.cursor = 'default'; }
+            updateTransform();
+            const display = document.getElementById('zoomLevelDisplay');
+            if (display) display.textContent = '100%';
+            const content = document.getElementById('viewerContent');
+            if (content) content.style.cursor = 'default';
+        }
 
-        function viewerDownload() { if (currentViewerFile) { const url = currentViewerFile.fileData || currentViewerFile
-                    .url || currentViewerFile.downloadURL; if (url) { window.open(url, '_blank');
-                showToast('Downloading ' + currentViewerFile.name); } else { showToast('No download URL available'); } } }
+        function viewerDownload() {
+            if (currentViewerFile && currentViewerFile.fileData) {
+                const link = document.createElement('a');
+                link.href = currentViewerFile.fileData;
+                link.download = currentViewerFile.fileName || 'resource';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast('Downloading ' + currentViewerFile.name);
+            } else {
+                showToast('No file to download');
+            }
+        }
 
-        function viewerShare() { if (currentViewerFile) { const url = currentViewerFile.fileData || currentViewerFile.url ||
-                currentViewerFile.downloadURL; if (navigator.share) { navigator.share({ title: currentViewerFile.name,
-                    text: 'Check out this resource from SchoolHub!', url: url }).catch(() => {}); } else if (navigator
-                .clipboard) { navigator.clipboard.writeText(url).then(() => { showToast('Link copied to clipboard'); })
-                .catch(() => { showToast('Share: ' + url); }); } else { showToast('Share: ' + url); } } }
-
-        function downloadResource(id) { const resources = JSON.parse(localStorage.getItem('schoolhub_resources') || '[]');
-            const res = resources.find(r => r.id === id); if (!res || !res.fileData) { showToast('No file to download'); return; }
+        function downloadResource(id) {
+            const resources = JSON.parse(localStorage.getItem('schoolhub_resources') || '[]');
+            const res = resources.find(r => r.id === id);
+            if (!res || !res.fileData) { showToast('No file to download'); return; }
             const link = document.createElement('a');
             link.href = res.fileData;
             link.download = res.fileName || 'resource';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            showToast('Downloading ' + res.name); }
+            showToast('Downloading ' + res.name);
+        }
 
-        function escapeHtml(text) { const div = document.createElement('div');
-            div.textContent = text; return div.innerHTML; }
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
 
         // ============================================================
         // TEACHER - REGISTER STUDENTS
@@ -1200,10 +1452,306 @@
             document.getElementById('registerStudentsSection').style.display = 'none';
             document.getElementById('resultsTableContainer').style.display = 'none';
             document.getElementById('saveResultsBtn').style.display = 'none';
+            // Reset to manual tab
+            showResultMethod('manual');
         }
 
         function closeCreateResults() {
             document.getElementById('createResultsSection').style.display = 'none';
+        }
+
+        // ============================================================
+        // CREATE RESULTS - MANUAL ENTRY
+        // ============================================================
+
+        let manualResultsList = [];
+
+        function showResultMethod(method) {
+            if (method === 'manual') {
+                document.getElementById('resultManualMethod').style.display = 'block';
+                document.getElementById('resultOcrMethod').style.display = 'none';
+                document.getElementById('resultManualTab').style.background = 'var(--purple)';
+                document.getElementById('resultManualTab').style.color = '#FFF';
+                document.getElementById('resultOcrTab').style.background = 'var(--bg-input)';
+                document.getElementById('resultOcrTab').style.color = 'var(--text-secondary)';
+            } else {
+                document.getElementById('resultManualMethod').style.display = 'none';
+                document.getElementById('resultOcrMethod').style.display = 'block';
+                document.getElementById('resultOcrTab').style.background = 'var(--purple)';
+                document.getElementById('resultOcrTab').style.color = '#FFF';
+                document.getElementById('resultManualTab').style.background = 'var(--bg-input)';
+                document.getElementById('resultManualTab').style.color = 'var(--text-secondary)';
+            }
+        }
+
+        // Auto-calculate average for manual entry
+        document.getElementById('manualWeek4').addEventListener('input', calculateManualAverage);
+        document.getElementById('manualWeek8').addEventListener('input', calculateManualAverage);
+        document.getElementById('manualWeek12').addEventListener('input', calculateManualAverage);
+
+        function calculateManualAverage() {
+            const w4 = parseFloat(document.getElementById('manualWeek4').value) || 0;
+            const w8 = parseFloat(document.getElementById('manualWeek8').value) || 0;
+            const w12 = parseFloat(document.getElementById('manualWeek12').value) || 0;
+            const count = (w4 > 0 ? 1 : 0) + (w8 > 0 ? 1 : 0) + (w12 > 0 ? 1 : 0);
+            const avg = count > 0 ? (w4 + w8 + w12) / count : 0;
+            document.getElementById('manualAverageDisplay').textContent = count > 0 ? avg.toFixed(1) : '-';
+        }
+
+        function addManualResult() {
+            const name = document.getElementById('manualResultName').value.trim();
+            const w4 = parseFloat(document.getElementById('manualWeek4').value) || 0;
+            const w8 = parseFloat(document.getElementById('manualWeek8').value) || 0;
+            const w12 = parseFloat(document.getElementById('manualWeek12').value) || 0;
+
+            if (!name) {
+                showToast('Please enter student name');
+                return;
+            }
+
+            if (w4 === 0 && w8 === 0 && w12 === 0) {
+                showToast('Please enter at least one score');
+                return;
+            }
+
+            if (manualResultsList.find(s => s.name === name)) {
+                showToast('Student already added');
+                return;
+            }
+
+            const count = (w4 > 0 ? 1 : 0) + (w8 > 0 ? 1 : 0) + (w12 > 0 ? 1 : 0);
+            const avg = count > 0 ? (w4 + w8 + w12) / count : 0;
+
+            manualResultsList.push({ name, w4, w8, w12, avg });
+            renderManualResults();
+
+            document.getElementById('manualResultName').value = '';
+            document.getElementById('manualWeek4').value = '';
+            document.getElementById('manualWeek8').value = '';
+            document.getElementById('manualWeek12').value = '';
+            document.getElementById('manualAverageDisplay').textContent = '-';
+
+            showToast('Added ' + name);
+        }
+
+        function renderManualResults() {
+            const container = document.getElementById('manualResultsTableContainer');
+            const body = document.getElementById('manualResultsBody');
+
+            if (manualResultsList.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'block';
+            body.innerHTML = '';
+
+            manualResultsList.forEach((s, i) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                        <td>${i + 1}</td>
+                        <td>${s.name}</td>
+                        <td>${s.w4 || '-'}</td>
+                        <td>${s.w8 || '-'}</td>
+                        <td>${s.w12 || '-'}</td>
+                        <td>${s.avg.toFixed(1)}</td>
+                        <td><button onclick="removeManualResult(${i})" style="background:none; border:none; color:var(--red); cursor:pointer;"><i class="fas fa-trash"></i></button></td>
+                    `;
+                body.appendChild(tr);
+            });
+        }
+
+        function removeManualResult(index) {
+            manualResultsList.splice(index, 1);
+            renderManualResults();
+            showToast('Removed student');
+        }
+
+        function saveAllManualResults() {
+            if (manualResultsList.length === 0) {
+                showToast('No results to save');
+                return;
+            }
+
+            const subject = document.getElementById('resultSubject').value;
+            const cls = document.getElementById('resultClass').value;
+            const results = JSON.parse(localStorage.getItem('schoolhub_results') || '[]');
+
+            manualResultsList.forEach(s => {
+                const existingIndex = results.findIndex(r => r.name === s.name && r.subject === subject);
+                if (existingIndex !== -1) {
+                    results.splice(existingIndex, 1);
+                }
+                results.push({
+                    name: s.name,
+                    subject: subject,
+                    class: cls,
+                    week4: s.w4,
+                    week8: s.w8,
+                    week12: s.w12,
+                    average: s.avg,
+                    recordedAt: new Date().toISOString()
+                });
+            });
+
+            localStorage.setItem('schoolhub_results', JSON.stringify(results));
+            showToast('✅ Saved ' + manualResultsList.length + ' results!');
+
+            manualResultsList = [];
+            renderManualResults();
+            updateTeacherStats();
+        }
+
+        function clearManualResults() {
+            if (manualResultsList.length === 0) return;
+            if (confirm('Clear all manual results?')) {
+                manualResultsList = [];
+                renderManualResults();
+                showToast('Cleared');
+            }
+        }
+
+        // ============================================================
+        // CREATE RESULTS - OCR SCAN
+        // ============================================================
+
+        let ocrResultsList = [];
+
+        function previewOCRResult(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('ocrResultPreview');
+                img.src = e.target.result;
+                const container = document.getElementById('ocrResultImageContainer');
+                container.style.display = 'flex';
+                const scanLine = document.getElementById('ocrResultScanLine');
+                scanLine.style.display = 'block';
+                scanLine.style.animation = 'none';
+                setTimeout(() => { scanLine.style.animation = 'scanDown 2.5s ease-in-out infinite'; }, 10);
+                document.getElementById('ocrResultsTableContainer').style.display = 'none';
+                document.getElementById('ocrResultsBody').innerHTML = '';
+                showToast('Image loaded! Click "Scan & Extract" to process.');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function processOCRResults() {
+            const fileInput = document.getElementById('ocrResultImage');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                showToast('Please select an image');
+                return;
+            }
+
+            const file = fileInput.files[0];
+
+            const progress = document.getElementById('ocrResultProgress');
+            progress.style.display = 'block';
+            const progressFill = document.getElementById('ocrResultProgressFill');
+            const progressText = document.getElementById('ocrResultProgressText');
+            progressFill.style.width = '0%';
+            progressText.textContent = 'Starting OCR...';
+
+            let progressValue = 0;
+            const progressInterval = setInterval(() => {
+                progressValue += Math.random() * 15;
+                if (progressValue > 90) { progressValue = 90; }
+                progressFill.style.width = progressValue + '%';
+                progressText.textContent = 'Scanning... ' + Math.round(progressValue) + '%';
+            }, 300);
+
+            Tesseract.recognize(file, 'eng', { logger: m => console.log(m) })
+                .then(({ data: { text } }) => {
+                    clearInterval(progressInterval);
+                    progressFill.style.width = '100%';
+                    progressText.textContent = '✅ Complete!';
+                    setTimeout(() => { progress.style.display = 'none'; }, 500);
+
+                    const lines = text.split('\n').filter(line => line.trim());
+                    ocrResultsList = [];
+                    const container = document.getElementById('ocrResultsTableContainer');
+                    const body = document.getElementById('ocrResultsBody');
+                    body.innerHTML = '';
+
+                    lines.forEach(line => {
+                        const parts = line.split(/\s+/);
+                        if (parts.length >= 4) {
+                            const numbers = parts.filter(p => !isNaN(p) && p.length > 0);
+                            if (numbers.length >= 3) {
+                                const name = parts.slice(0, parts.length - numbers.length).join(' ');
+                                const w4 = parseFloat(numbers[0]) || 0;
+                                const w8 = parseFloat(numbers[1]) || 0;
+                                const w12 = parseFloat(numbers[2]) || 0;
+                                const count = (w4 > 0 ? 1 : 0) + (w8 > 0 ? 1 : 0) + (w12 > 0 ? 1 : 0);
+                                const avg = count > 0 ? (w4 + w8 + w12) / count : 0;
+                                if (name.length > 0 && (w4 > 0 || w8 > 0 || w12 > 0)) {
+                                    ocrResultsList.push({ name, w4, w8, w12, avg });
+                                }
+                            }
+                        }
+                    });
+
+                    if (ocrResultsList.length === 0) {
+                        showToast('No results found. Try a clearer image.');
+                        return;
+                    }
+
+                    container.style.display = 'block';
+                    ocrResultsList.forEach((s, i) => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                                <td>${i + 1}</td>
+                                <td>${s.name}</td>
+                                <td>${s.w4 || '-'}</td>
+                                <td>${s.w8 || '-'}</td>
+                                <td>${s.w12 || '-'}</td>
+                                <td>${s.avg.toFixed(1)}</td>
+                            `;
+                        body.appendChild(tr);
+                    });
+
+                    showToast('✅ Extracted ' + ocrResultsList.length + ' results!');
+                })
+                .catch(err => {
+                    clearInterval(progressInterval);
+                    progress.style.display = 'none';
+                    showToast('OCR failed: ' + err.message);
+                });
+        }
+
+        function saveOCRResults() {
+            if (ocrResultsList.length === 0) {
+                showToast('No results to save');
+                return;
+            }
+
+            const subject = document.getElementById('resultSubject').value;
+            const cls = document.getElementById('resultClass').value;
+            const results = JSON.parse(localStorage.getItem('schoolhub_results') || '[]');
+
+            ocrResultsList.forEach(s => {
+                const existingIndex = results.findIndex(r => r.name === s.name && r.subject === subject);
+                if (existingIndex !== -1) {
+                    results.splice(existingIndex, 1);
+                }
+                results.push({
+                    name: s.name,
+                    subject: subject,
+                    class: cls,
+                    week4: s.w4,
+                    week8: s.w8,
+                    week12: s.w12,
+                    average: s.avg,
+                    recordedAt: new Date().toISOString()
+                });
+            });
+
+            localStorage.setItem('schoolhub_results', JSON.stringify(results));
+            showToast('✅ Saved ' + ocrResultsList.length + ' results!');
+            ocrResultsList = [];
+            document.getElementById('ocrResultsTableContainer').style.display = 'none';
+            updateTeacherStats();
         }
 
         // ============================================================
@@ -1213,11 +1761,11 @@
             const area = document.getElementById('studentMethodArea');
             area.innerHTML =
                 `
-            <div style="margin-bottom:12px;"><label style="color:var(--text-muted); font-size:13px; display:flex; align-items:center; gap:8px; margin-bottom:4px;"><i class="fas fa-pencil-alt" style="color:var(--purple);"></i> Notes / Description</label><div id="tableNotes" contenteditable="true" style="padding:12px; border:2px dashed var(--border-color); border-radius:1rem; min-height:60px; color:var(--text-secondary); cursor:text; transition:border-color 0.3s; line-height:1.6; background:#FFF;" onfocus="this.style.borderColor='var(--purple)'" onblur="this.style.borderColor='var(--border-color)'"><span style="color:#999;">Click here to add notes...</span></div></div>
-            <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;"><button onclick="addTableRow()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:6px 16px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-plus" style="color:var(--purple);"></i> Add Row</button><button onclick="deleteTableRow()" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:6px 16px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-minus"></i> Delete Row</button><button onclick="addTableColumn()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:6px 16px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-plus" style="color:var(--purple);"></i> Add Column</button><button onclick="deleteTableColumn()" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:6px 16px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-minus"></i> Delete Column</button><span style="margin-left:auto; background:var(--bg-input); padding:4px 16px; border-radius:2rem; border:1px solid var(--border-color);"><span style="color:var(--text-muted);">Rows:</span><span id="rowCountDisplay" style="color:var(--text-primary); font-weight:600;">0</span><span style="color:var(--text-muted); margin-left:8px;">Cols:</span><span id="colCountDisplay" style="color:var(--text-primary); font-weight:600;">5</span></span></div>
-            <div style="overflow-x:auto; border-radius:8px; border:2px solid #000;"><table class="schoolhub-table" id="dynamicTable"><thead id="tableHeader"><tr><th style="width:50px; min-width:50px; text-align:center;">#</th><th style="min-width:150px;">Name</th><th style="min-width:80px;">Grade</th><th style="min-width:120px;">Class</th><th style="min-width:100px;">Subject</th><th style="width:60px; text-align:center;">Action</th></tr></thead><tbody id="tableBody"></tbody></table></div>
-            <div style="display:flex; gap:12px; margin-top:12px; flex-wrap:wrap;"><button onclick="saveTableStudents()" class="btn-primary" style="width:auto; padding:8px 24px;"><i class="fas fa-save"></i> Save All</button><button onclick="downloadTableExcel()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:8px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-download" style="color:var(--purple);"></i> Download Excel</button><button onclick="closeTableCreator()" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:8px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-times"></i> Close</button></div>
-            <div id="tableResultMessage" style="margin-top:8px;"></div>`;
+                <div style="margin-bottom:12px;"><label style="color:var(--text-muted); font-size:13px; display:flex; align-items:center; gap:8px; margin-bottom:4px;"><i class="fas fa-pencil-alt" style="color:var(--purple);"></i> Notes / Description</label><div id="tableNotes" contenteditable="true" style="padding:12px; border:2px dashed var(--border-color); border-radius:1rem; min-height:60px; color:var(--text-secondary); cursor:text; transition:border-color 0.3s; line-height:1.6; background:#FFF;" onfocus="this.style.borderColor='var(--purple)'" onblur="this.style.borderColor='var(--border-color)'"><span style="color:#999;">Click here to add notes...</span></div></div>
+                <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;"><button onclick="addTableRow()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:6px 16px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-plus" style="color:var(--purple);"></i> Add Row</button><button onclick="deleteTableRow()" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:6px 16px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-minus"></i> Delete Row</button><button onclick="addTableColumn()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:6px 16px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-plus" style="color:var(--purple);"></i> Add Column</button><button onclick="deleteTableColumn()" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:6px 16px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-minus"></i> Delete Column</button><span style="margin-left:auto; background:var(--bg-input); padding:4px 16px; border-radius:2rem; border:1px solid var(--border-color);"><span style="color:var(--text-muted);">Rows:</span><span id="rowCountDisplay" style="color:var(--text-primary); font-weight:600;">0</span><span style="color:var(--text-muted); margin-left:8px;">Cols:</span><span id="colCountDisplay" style="color:var(--text-primary); font-weight:600;">5</span></span></div>
+                <div style="overflow-x:auto; border-radius:8px; border:2px solid #000;"><table class="schoolhub-table" id="dynamicTable"><thead id="tableHeader"><tr><th style="width:50px; min-width:50px; text-align:center;">#</th><th style="min-width:150px;">Name</th><th style="min-width:80px;">Grade</th><th style="min-width:120px;">Class</th><th style="min-width:100px;">Subject</th><th style="width:60px; text-align:center;">Action</th></tr></thead><tbody id="tableBody"></tbody></table></div>
+                <div style="display:flex; gap:12px; margin-top:12px; flex-wrap:wrap;"><button onclick="saveTableStudents()" class="btn-primary" style="width:auto; padding:8px 24px;"><i class="fas fa-save"></i> Save All</button><button onclick="downloadTableExcel()" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:8px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-download" style="color:var(--purple);"></i> Download Excel</button><button onclick="closeTableCreator()" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:8px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-times"></i> Close</button></div>
+                <div id="tableResultMessage" style="margin-top:8px;"></div>`;
             setTimeout(() => { addTableRow();
                 addTableRow();
                 addTableRow();
@@ -1232,11 +1780,11 @@
             tr.style.border = '1px solid #000';
             tr.innerHTML =
                 `<td style="padding:8px 10px; text-align:center; font-weight:600; color:#000; border:1px solid #000;">${rowNum}</td>
-            <td style="padding:8px 10px; border:1px solid #000;"><input type="text" placeholder="Student name" class="table-name" style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;" /></td>
-            <td style="padding:8px 10px; border:1px solid #000;"><select class="table-grade" style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;"><option value="12">12</option><option value="11">11</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></td>
-            <td style="padding:8px 10px; border:1px solid #000;"><input type="text" placeholder="Class" class="table-class" style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;" /></td>
-            <td style="padding:8px 10px; border:1px solid #000;"><input type="text" placeholder="Subject" class="table-subject" style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;" /></td>
-            <td style="padding:8px 10px; text-align:center; border:1px solid #000;"><button onclick="removeThisRow(this)" style="background:none; border:none; color:#EF4444; cursor:pointer; font-size:16px;"><i class="fas fa-trash"></i></button></td>`;
+                <td style="padding:8px 10px; border:1px solid #000;"><input type="text" placeholder="Student name" class="table-name" style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;" /></td>
+                <td style="padding:8px 10px; border:1px solid #000;"><select class="table-grade" style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;"><option value="12">12</option><option value="11">11</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></td>
+                <td style="padding:8px 10px; border:1px solid #000;"><input type="text" placeholder="Class" class="table-class" style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;" /></td>
+                <td style="padding:8px 10px; border:1px solid #000;"><input type="text" placeholder="Subject" class="table-subject" style="width:100%; padding:6px 10px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000; font-family:'Inter',sans-serif; font-size:14px;" /></td>
+                <td style="padding:8px 10px; text-align:center; border:1px solid #000;"><button onclick="removeThisRow(this)" style="background:none; border:none; color:#EF4444; cursor:pointer; font-size:16px;"><i class="fas fa-trash"></i></button></td>`;
             tbody.appendChild(tr);
             updateTableCounters();
         }
@@ -1369,16 +1917,16 @@
         }
 
         // ============================================================
-        // MANUAL ENTRY
+        // MANUAL ENTRY (Students)
         // ============================================================
         function showManualEntry() {
             const area = document.getElementById('studentMethodArea');
             area.innerHTML =
                 `<i class="fas fa-pencil-alt" style="font-size:2rem; color:var(--purple);"></i><p style="color:var(--text-primary); margin-top:8px;">Manual Entry</p>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; text-align:left;"><div style="grid-column:span 2;"><input type="text" id="manualStudentName" placeholder="Student Name" style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" /></div>
-            <div><select id="manualStudentGrade" style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);"><option value="12">Grade 12</option><option value="11">Grade 11</option><option value="10">Grade 10</option><option value="9">Grade 9</option><option value="8">Grade 8</option></select></div>
-            <div><input type="text" id="manualStudentClass" placeholder="Class" value="A" style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" /></div></div>
-            <button class="btn-primary" style="margin-top:8px; width:auto; padding:8px 24px;" onclick="addManualStudent()"><i class="fas fa-plus"></i> Add Student</button>`;
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; text-align:left;"><div style="grid-column:span 2;"><input type="text" id="manualStudentName" placeholder="Student Name" style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" /></div>
+                <div><select id="manualStudentGrade" style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);"><option value="12">Grade 12</option><option value="11">Grade 11</option><option value="10">Grade 10</option><option value="9">Grade 9</option><option value="8">Grade 8</option></select></div>
+                <div><input type="text" id="manualStudentClass" placeholder="Class" value="A" style="width:100%; padding:8px 12px; border-radius:0.8rem; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary);" /></div></div>
+                <button class="btn-primary" style="margin-top:8px; width:auto; padding:8px 24px;" onclick="addManualStudent()"><i class="fas fa-plus"></i> Add Student</button>`;
         }
 
         function addManualStudent() {
@@ -1399,40 +1947,40 @@
         }
 
         // ============================================================
-        // OCR SCAN
+        // OCR SCAN (Students)
         // ============================================================
         function showOCRScan() {
             const area = document.getElementById('studentMethodArea');
             area.innerHTML =
                 `
-            <i class="fas fa-camera" style="font-size:2rem; color:var(--purple);"></i>
-            <p style="color:var(--text-primary); margin-top:8px;">OCR Scan</p>
-            <p style="color:var(--text-muted); font-size:13px;">Upload a photo of the class list to extract student names</p>
-            <input type="file" id="ocrImageInput" accept="image/*" style="margin-top:8px; padding:8px; border:1px solid var(--border-color); border-radius:1rem; background:var(--bg-input); color:var(--text-secondary); width:100%;" onchange="previewOCRImage(this)" />
+                <i class="fas fa-camera" style="font-size:2rem; color:var(--purple);"></i>
+                <p style="color:var(--text-primary); margin-top:8px;">OCR Scan</p>
+                <p style="color:var(--text-muted); font-size:13px;">Upload a photo of the class list to extract student names</p>
+                <input type="file" id="ocrImageInput" accept="image/*" style="margin-top:8px; padding:8px; border:1px solid var(--border-color); border-radius:1rem; background:var(--bg-input); color:var(--text-secondary); width:100%;" onchange="previewOCRImage(this)" />
 
-            <div class="ocr-image-container" id="ocrImageContainer">
-                <img id="ocrPreviewImage" src="" alt="Class list" />
-                <div class="scan-line" id="scanLine"></div>
-            </div>
+                <div class="ocr-image-container" id="ocrImageContainer">
+                    <img id="ocrPreviewImage" src="" alt="Class list" />
+                    <div class="scan-line" id="scanLine"></div>
+                </div>
 
-            <div class="ocr-progress" id="ocrProgress">
-                <span id="ocrProgressText">Scanning...</span>
-                <div class="bar"><div class="fill" id="ocrProgressFill"></div></div>
-            </div>
+                <div class="ocr-progress" id="ocrProgress">
+                    <span id="ocrProgressText">Scanning...</span>
+                    <div class="bar"><div class="fill" id="ocrProgressFill"></div></div>
+                </div>
 
-            <div class="ocr-result-table" id="ocrResultTable">
-                <table>
-                    <thead><tr><th>#</th><th>Name</th><th>Grade</th><th>Class</th></tr></thead>
-                    <tbody id="ocrResultBody"></tbody>
-                </table>
-            </div>
+                <div class="ocr-result-table" id="ocrResultTable">
+                    <table>
+                        <thead><tr><th>#</th><th>Name</th><th>Grade</th><th>Class</th></tr></thead>
+                        <tbody id="ocrResultBody"></tbody>
+                    </table>
+                </div>
 
-            <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
-                <button class="btn-primary" onclick="processOCRStudents()" style="width:auto; padding:8px 24px;"><i class="fas fa-eye"></i> Scan & Extract</button>
-                <button onclick="clearOCR()" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:8px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-times"></i> Clear</button>
-            </div>
-            <div id="ocrResult" style="margin-top:8px;"></div>
-            `;
+                <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
+                    <button class="btn-primary" onclick="processOCRStudents()" style="width:auto; padding:8px 24px;"><i class="fas fa-eye"></i> Scan & Extract</button>
+                    <button onclick="clearOCR()" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:8px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-times"></i> Clear</button>
+                </div>
+                <div id="ocrResult" style="margin-top:8px;"></div>
+                `;
         }
 
         function previewOCRImage(input) {
@@ -1564,83 +2112,6 @@
             });
             html += `</tbody></table>`;
             container.innerHTML = html;
-        }
-
-        // ============================================================
-        // CREATE RESULTS
-        // ============================================================
-        function loadStudentsForResults() {
-            const subject = document.getElementById('resultSubject').value;
-            const cls = document.getElementById('resultClass').value;
-            const students = JSON.parse(localStorage.getItem('schoolhub_students') || '[]');
-            const classStudents = students.filter(s => s.class === cls || s.grade === cls.replace('Grade ', ''));
-            const container = document.getElementById('resultsTableContainer');
-            const saveBtn = document.getElementById('saveResultsBtn');
-            if (classStudents.length === 0) {
-                container.innerHTML =
-                    `<div style="text-align:center; padding:20px; color:var(--text-muted);">No students found for this class.</div>`;
-                container.style.display = 'block';
-                saveBtn.style.display = 'none';
-                return;
-            }
-            container.style.display = 'block';
-            saveBtn.style.display = 'block';
-            let html =
-                `<table class="schoolhub-table"><thead><tr><th>Student</th><th>Test</th><th>Exam</th><th>Assignment</th><th>Total</th><th>Grade</th></tr></thead><tbody>`;
-            classStudents.forEach(s => {
-                html +=
-                    `<tr><td>${s.name}</td><td><input type="number" class="result-test" data-name="${s.name}" placeholder="Test" style="width:60px; padding:4px 6px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000;" /></td>
-                <td><input type="number" class="result-exam" data-name="${s.name}" placeholder="Exam" style="width:60px; padding:4px 6px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000;" /></td>
-                <td><input type="number" class="result-assignment" data-name="${s.name}" placeholder="Assign" style="width:60px; padding:4px 6px; border:1px solid #000; border-radius:4px; background:#FFF; color:#000;" /></td>
-                <td class="result-total" style="font-weight:600;">-</td>
-                <td class="result-grade" style="font-weight:600;">-</td></tr>`;
-            });
-            html += `</tbody></table>`;
-            container.innerHTML = html;
-            container.querySelectorAll('input').forEach(input => {
-                input.addEventListener('input', function() {
-                    const row = this.closest('tr');
-                    const test = parseInt(row.querySelector('.result-test').value) || 0;
-                    const exam = parseInt(row.querySelector('.result-exam').value) || 0;
-                    const assignment = parseInt(row.querySelector('.result-assignment').value) || 0;
-                    const total = test + exam + assignment;
-                    const totalCell = row.querySelector('.result-total');
-                    totalCell.textContent = total;
-                    const gradeCell = row.querySelector('.result-grade');
-                    if (total >= 90) gradeCell.textContent = 'A';
-                    else if (total >= 80) gradeCell.textContent = 'B';
-                    else if (total >= 70) gradeCell.textContent = 'C';
-                    else if (total >= 60) gradeCell.textContent = 'D';
-                    else gradeCell.textContent = 'F';
-                });
-            });
-            showToast('Enter scores for each student. Totals and grades auto-calculate.');
-        }
-
-        function saveResults() {
-            const subject = document.getElementById('resultSubject').value;
-            const cls = document.getElementById('resultClass').value;
-            const rows = document.querySelectorAll('#resultsTableContainer tbody tr');
-            const results = JSON.parse(localStorage.getItem('schoolhub_results') || '[]');
-            let saved = 0;
-            rows.forEach(row => {
-                const name = row.querySelector('td:first-child').textContent;
-                const test = parseInt(row.querySelector('.result-test').value) || 0;
-                const exam = parseInt(row.querySelector('.result-exam').value) || 0;
-                const assignment = parseInt(row.querySelector('.result-assignment').value) || 0;
-                const total = test + exam + assignment;
-                const grade = row.querySelector('.result-grade').textContent;
-                if (test > 0 || exam > 0 || assignment > 0) {
-                    const existingIndex = results.findIndex(r => r.name === name && r.subject === subject);
-                    if (existingIndex !== -1) { results.splice(existingIndex, 1); }
-                    results.push({ name, subject, class: cls, test, exam, assignment, total, grade,
-                        recordedAt: new Date().toISOString() });
-                    saved++;
-                }
-            });
-            localStorage.setItem('schoolhub_results', JSON.stringify(results));
-            document.getElementById('teacherResultCount').textContent = results.length;
-            showToast('✅ Saved results for ' + saved + ' students!');
         }
 
         // ============================================================
@@ -1808,10 +2279,10 @@
                 container.style.display = 'block';
                 container.innerHTML =
                     `<div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); border-radius:1rem; padding:1.5rem; text-align:center;">
-                    <i class="fas fa-user-slash" style="font-size:2rem; color:var(--red);"></i>
-                    <p style="color:var(--text-primary); margin-top:8px;">Student not found</p>
-                    <p style="color:var(--text-muted);">Please check the name, school, and class.</p>
-                </div>`;
+                        <i class="fas fa-user-slash" style="font-size:2rem; color:var(--red);"></i>
+                        <p style="color:var(--text-primary); margin-top:8px;">Student not found</p>
+                        <p style="color:var(--text-muted);">Please check the name, school, and class.</p>
+                    </div>`;
                 showToast('Student not found');
                 return;
             }
@@ -1821,18 +2292,18 @@
 
             let html =
                 `<div style="background:var(--bg-card); border-radius:1rem; padding:1.5rem; border:1px solid var(--border-color);">
-                <div style="text-align:center; border-bottom:2px solid var(--purple); padding-bottom:12px; margin-bottom:12px;">
-                    <h2 style="color:var(--text-primary);"><i class="fas fa-school" style="color:var(--purple);"></i> ${school}</h2>
-                    <h3 style="color:var(--text-muted); font-weight:400;">REPORT CARD</h3>
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; margin-bottom:12px;">
-                    <div><strong style="color:var(--text-primary);">Student:</strong> <span style="color:var(--text-muted);">${student.name}</span></div>
-                    <div><strong style="color:var(--text-primary);">Grade:</strong> <span style="color:var(--text-muted);">${student.grade}</span></div>
-                    <div><strong style="color:var(--text-primary);">Term:</strong> <span style="color:var(--text-muted);">1</span></div>
-                </div>
-                <table class="report-card-table">
-                    <thead><tr><th>Subject</th><th>Test</th><th>Exam</th><th>Assignment</th><th>Total</th><th>Grade</th></tr></thead>
-                    <tbody>`;
+                    <div style="text-align:center; border-bottom:2px solid var(--purple); padding-bottom:12px; margin-bottom:12px;">
+                        <h2 style="color:var(--text-primary);"><i class="fas fa-school" style="color:var(--purple);"></i> ${school}</h2>
+                        <h3 style="color:var(--text-muted); font-weight:400;">REPORT CARD</h3>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; margin-bottom:12px;">
+                        <div><strong style="color:var(--text-primary);">Student:</strong> <span style="color:var(--text-muted);">${student.name}</span></div>
+                        <div><strong style="color:var(--text-primary);">Grade:</strong> <span style="color:var(--text-muted);">${student.grade}</span></div>
+                        <div><strong style="color:var(--text-primary);">Term:</strong> <span style="color:var(--text-muted);">1</span></div>
+                    </div>
+                    <table class="report-card-table">
+                        <thead><tr><th>Subject</th><th>Week 4</th><th>Week 8</th><th>Week 12</th><th>Average</th><th>Grade</th></tr></thead>
+                        <tbody>`;
 
             if (studentResults.length === 0) {
                 html += `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No results available yet</td></tr>`;
@@ -1840,27 +2311,29 @@
                 let totalAll = 0,
                     count = 0;
                 studentResults.forEach(r => {
-                    const total = r.test + r.exam + r.assignment;
-                    totalAll += total;
+                    const avg = r.average || (r.week4 + r.week8 + r.week12) / 3;
+                    totalAll += avg;
                     count++;
+                    const grade = avg >= 90 ? 'A' : avg >= 80 ? 'B' : avg >= 70 ? 'C' : avg >= 60 ? 'D' : 'F';
                     html +=
-                        `<tr><td>${r.subject}</td><td>${r.test}</td><td>${r.exam}</td><td>${r.assignment}</td><td>${total}</td><td style="color:#4ade80; font-weight:600;">${r.grade}</td></tr>`;
+                        `<tr><td>${r.subject}</td><td>${r.week4 || '-'}</td><td>${r.week8 || '-'}</td><td>${r.week12 || '-'}</td><td>${avg.toFixed(1)}</td><td style="color:#4ade80; font-weight:600;">${grade}</td></tr>`;
                 });
-                const avg = count > 0 ? Math.round(totalAll / count) : 0;
-                const overallGrade = avg >= 90 ? 'A' : avg >= 80 ? 'B' : avg >= 70 ? 'C' : avg >= 60 ? 'D' : 'F';
+                const overallAvg = count > 0 ? totalAll / count : 0;
+                const overallGrade = overallAvg >= 90 ? 'A' : overallAvg >= 80 ? 'B' : overallAvg >= 70 ? 'C' : overallAvg >=
+                    60 ? 'D' : 'F';
                 html +=
-                    `<tr style="background:rgba(108,92,231,0.1);"><td colspan="4" style="text-align:right;"><strong>Average:</strong></td><td>${avg}</td><td style="color:#4ade80; font-weight:600;">${overallGrade}</td></tr>`;
+                    `<tr style="background:rgba(108,92,231,0.1);"><td colspan="5" style="text-align:right;"><strong>Overall Average:</strong></td><td style="color:#4ade80; font-weight:600;">${overallGrade} (${overallAvg.toFixed(1)})</td></tr>`;
             }
 
             html += `</tbody></table>
-                <div style="padding:10px; background:rgba(108,92,231,0.1); border-radius:0.8rem; border-left:3px solid var(--purple); margin-top:12px;">
-                    <p style="color:var(--text-muted); font-size:13px;"><i class="fas fa-comment" style="color:var(--purple);"></i> Teacher's Comment: Good performance! Keep up the great work.</p>
-                </div>
-                <div style="display:flex; gap:8px; justify-content:center; margin-top:12px;">
-                    <button onclick="showToast('Printing report card...')" style="background:var(--purple); color:#FFF; border:none; padding:6px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-print"></i> Print</button>
-                    <button onclick="showToast('Downloading PDF...')" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:6px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-download"></i> PDF</button>
-                </div>
-            </div>`;
+                    <div style="padding:10px; background:rgba(108,92,231,0.1); border-radius:0.8rem; border-left:3px solid var(--purple); margin-top:12px;">
+                        <p style="color:var(--text-muted); font-size:13px;"><i class="fas fa-comment" style="color:var(--purple);"></i> Teacher's Comment: Good performance! Keep up the great work.</p>
+                    </div>
+                    <div style="display:flex; gap:8px; justify-content:center; margin-top:12px;">
+                        <button onclick="showToast('Printing report card...')" style="background:var(--purple); color:#FFF; border:none; padding:6px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-print"></i> Print</button>
+                        <button onclick="showToast('Downloading PDF...')" style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-secondary); padding:6px 20px; border-radius:2rem; cursor:pointer; font-family:'Inter',sans-serif;"><i class="fas fa-download"></i> PDF</button>
+                    </div>
+                </div>`;
 
             container.style.display = 'block';
             container.innerHTML = html;
@@ -1876,11 +2349,6 @@
             if (urls[provider]) { window.open(urls[provider], '_blank');
                 showToast('Opening ' + provider); } else showToast(provider + ' coming soon');
         }
-
-        // ============================================================
-        // CLOSE MODAL
-        // ============================================================
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
         // ============================================================
         // TEACHER STATS
