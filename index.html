@@ -189,7 +189,171 @@
             transition: width 0.3s ease;
         }
         
-        @media(max-width:768px){body{padding:.5rem;padding-bottom:80px}.top-nav{padding:.6rem 1rem}.page{padding:1rem}.sidebar{width:280px;right:-280px}.subject-grid{grid-template-columns:repeat(3,1fr);gap:10px}.subject-card{padding:1rem .5rem}.subject-card .icon{font-size:2rem}.subject-card h4{font-size:13px}.subject-card p{font-size:10px}.stats-grid{grid-template-columns:repeat(3,1fr)}.report-card-gallery{grid-template-columns:1fr}}
+        /* Viewer Modal Styles */
+        .viewer-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.92);
+            z-index: 3000;
+            flex-direction: column;
+        }
+        .viewer-modal.active {
+            display: flex;
+        }
+        .viewer-header {
+            padding: .8rem 1.5rem;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+        .viewer-title {
+            font-size: 1rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .viewer-title i {
+            color: var(--purple);
+        }
+        .viewer-title span {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .viewer-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            transition: .3s;
+        }
+        .viewer-close:hover {
+            color: var(--text-primary);
+        }
+        .viewer-body {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: var(--bg-primary);
+            position: relative;
+        }
+        .viewer-scrollable {
+            width: 100%;
+            height: 100%;
+            overflow: auto !important;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 10px;
+        }
+        .viewer-scrollable iframe {
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            border: none;
+            background: #FFF;
+        }
+        .viewer-zoomable {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            touch-action: none;
+        }
+        .viewer-zoomable .viewer-content {
+            transform-origin: center center;
+            transition: transform .1s ease;
+            touch-action: none;
+            cursor: grab;
+            max-width: 100%;
+            max-height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .viewer-zoomable .viewer-content:active {
+            cursor: grabbing;
+        }
+        .viewer-zoomable .viewer-content img {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+        .viewer-media {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .viewer-media video {
+            max-width: 100%;
+            max-height: 80vh;
+            background: #000;
+        }
+        .viewer-media audio {
+            width: 100%;
+            max-width: 600px;
+        }
+        .viewer-footer {
+            padding: .6rem 1.5rem;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            z-index: 10;
+        }
+        .viewer-footer button {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 16px;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: .3s;
+            font-size: 13px;
+        }
+        .viewer-footer button:hover {
+            background: var(--purple);
+            color: #FFF;
+            border-color: var(--purple);
+        }
+        .viewer-footer .zoom-level {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 14px;
+            border-radius: 2rem;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        @media(max-width:768px){body{padding:.5rem;padding-bottom:80px}.top-nav{padding:.6rem 1rem}.page{padding:1rem}.sidebar{width:280px;right:-280px}.subject-grid{grid-template-columns:repeat(3,1fr);gap:10px}.subject-card{padding:1rem .5rem}.subject-card .icon{font-size:2rem}.subject-card h4{font-size:13px}.subject-card p{font-size:10px}.stats-grid{grid-template-columns:repeat(3,1fr)}.report-card-gallery{grid-template-columns:1fr}.viewer-title span{max-width:150px}.viewer-body{padding:10px}}
     </style>
 </head>
 <body>
@@ -525,6 +689,28 @@
 
 </div>
 
+<!-- VIEWER MODAL -->
+<div class="viewer-modal" id="viewerModal">
+    <div class="viewer-header">
+        <div class="viewer-title">
+            <i class="fas fa-file" id="viewerFileIcon"></i>
+            <span id="viewerFileName">File Name</span>
+        </div>
+        <button class="viewer-close" onclick="closeViewer()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="viewer-body" id="viewerBody">
+        <div style="text-align:center; padding:40px; color:var(--text-muted);">
+            <i class="fas fa-spinner fa-spin" style="font-size:3rem;"></i>
+            <p style="margin-top:20px;">Loading...</p>
+        </div>
+    </div>
+    <div class="viewer-footer" id="viewerFooter">
+        <!-- Buttons added dynamically -->
+    </div>
+</div>
+
 <!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal-content" id="modalContent">
@@ -607,6 +793,11 @@
     let currentUserClass = null;
     let ocrData = [];
     let ocrFileData = null;
+    let currentViewerFile = null;
+    let currentZoom = 1;
+    let translateX = 0, translateY = 0;
+    let isDragging = false;
+    let startX, startY;
     
     // ============================================================
     // THEME TOGGLE
@@ -923,7 +1114,6 @@
         if (!file) return;
         ocrFileData = file;
         
-        // Show preview with scan line
         const reader = new FileReader();
         reader.onload = function(e) {
             const img = document.getElementById('ocrPreviewImage');
@@ -931,7 +1121,6 @@
             const container = document.getElementById('ocrImageContainer');
             container.style.display = 'block';
             
-            // Start scan line animation
             const scanLine = document.getElementById('ocrScanLine');
             scanLine.style.display = 'block';
             scanLine.style.animation = 'none';
@@ -954,7 +1143,6 @@
             return; 
         }
         
-        // Show progress
         const progressContainer = document.getElementById('ocrProgressContainer');
         progressContainer.style.display = 'block';
         const progressFill = document.getElementById('ocrProgressFill');
@@ -962,10 +1150,8 @@
         const progressDetails = document.getElementById('ocrProgressDetails');
         const statusText = document.getElementById('ocrStatusText');
         
-        // Hide any previous result
         document.getElementById('ocrResult').textContent = '';
         
-        // Update progress function
         function updateProgress(percent, status, details) {
             progressFill.style.width = percent + '%';
             progressPercent.textContent = percent + '%';
@@ -973,21 +1159,16 @@
             if (details) progressDetails.textContent = details;
         }
         
-        // Start progress animation
         updateProgress(0, 'Initializing OCR engine...', 'Loading Tesseract.js');
         
         try {
-            // Simulate progress steps
             await sleep(300);
             updateProgress(10, 'Loading image...', 'Preparing for scanning');
-            
             await sleep(400);
             updateProgress(20, 'Analyzing image...', 'Detecting text regions');
-            
             await sleep(500);
             updateProgress(35, 'Scanning text...', 'Recognizing characters');
             
-            // Start actual OCR
             const result = await Tesseract.recognize(ocrFileData, 'eng', {
                 logger: function(m) {
                     if (m.status === 'recognizing text') {
@@ -1003,7 +1184,6 @@
             const text = result.data.text;
             console.log('OCR Text:', text);
             
-            // Parse the text
             const lines = text.split('\n').filter(line => line.trim().length > 5);
             const students = [];
             
@@ -1041,7 +1221,6 @@
             updateProgress(95, 'Generating report cards...', 'Creating ' + students.length + ' report cards');
             await sleep(500);
             
-            // Generate report cards
             const term = document.getElementById('reportTerm').value;
             const year = document.getElementById('reportYear').value;
             
@@ -1274,7 +1453,7 @@
     }
     
     // ============================================================
-    // RESOURCE FUNCTIONS - FIXED VIEW & DOWNLOAD
+    // RESOURCE FUNCTIONS WITH CUSTOM VIEWER
     // ============================================================
     function openSubject(subject) {
         document.getElementById('resourceFilterSubject').value = subject;
@@ -1313,49 +1492,282 @@
                 </div>
                 <div class="resource-actions">
                     ${r.fileUrl ? `<button onclick="viewResource('${r.id}')"><i class="fas fa-eye"></i> View</button>` : ''}
-                    ${r.fileUrl ? `<button onclick="downloadResource('${r.id}')"><i class="fas fa-download"></i> Download</button>` : ''}
+                    ${r.fileUrl ? `<button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button>` : ''}
                     ${!r.fileUrl ? `<button onclick="showToast('No file attached to this resource')" style="opacity:0.5;"><i class="fas fa-exclamation-circle"></i> No File</button>` : ''}
                 </div>
             </div>
         `).join('');
     }
     
-    // View Resource - Opens in new tab
+    // View Resource - Opens in custom viewer
     async function viewResource(id) {
-        const resources = await getFirebaseData('resources');
-        const resource = resources.find(r => r.id === id);
-        
-        if (!resource) {
-            showToast('Resource not found');
-            return;
+        try {
+            const resources = await getFirebaseData('resources');
+            const resource = resources.find(r => r.id === id);
+            
+            if (!resource) {
+                showToast('❌ Resource not found');
+                return;
+            }
+            
+            if (!resource.fileUrl) {
+                showToast('❌ This resource has no file attached');
+                return;
+            }
+            
+            currentViewerFile = resource;
+            document.getElementById('viewerFileName').textContent = resource.name || 'File';
+            document.getElementById('viewerFileIcon').className = 'fas fa-file';
+            
+            const fileUrl = resource.fileUrl;
+            const fileName = resource.fileName || 'resource';
+            const ext = (fileName.split('.').pop() || '').toLowerCase();
+            
+            document.getElementById('viewerModal').classList.add('active');
+            const body = document.getElementById('viewerBody');
+            const footer = document.getElementById('viewerFooter');
+            
+            body.innerHTML = '';
+            footer.innerHTML = '';
+            currentZoom = 1;
+            translateX = 0;
+            translateY = 0;
+            
+            const isCloudinary = fileUrl.includes('cloudinary.com');
+            
+            const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'bmp', 'tiff', 'ico'];
+            const videoExts = ['mp4', 'webm', 'mov', 'avi', 'mkv', 'm4v', 'ogv'];
+            const audioExts = ['mp3', 'wav', 'ogg', 'm4a', 'flac', 'aac', 'wma'];
+            
+            if (imageExts.includes(ext)) {
+                body.innerHTML = `
+                    <div class="viewer-zoomable" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;touch-action:none;">
+                        <div class="viewer-content" id="viewerContent" style="transform-origin:center center;transition:transform .1s ease;touch-action:none;cursor:grab;max-width:100%;max-height:100%;display:flex;align-items:center;justify-content:center;">
+                            <img src="${fileUrl}" style="max-width:100%;max-height:80vh;object-fit:contain;" />
+                        </div>
+                    </div>
+                `;
+                footer.innerHTML = `
+                    <button onclick="zoomIn()"><i class="fas fa-plus-circle"></i> Zoom In</button>
+                    <button onclick="zoomOut()"><i class="fas fa-minus-circle"></i> Zoom Out</button>
+                    <button onclick="resetZoom()"><i class="fas fa-expand"></i> Reset</button>
+                    <span class="zoom-level" id="zoomLevelDisplay">100%</span>
+                    <button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button>
+                    <button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>
+                `;
+                setTimeout(setupZoomAndPan, 100);
+                
+            } else if (videoExts.includes(ext)) {
+                body.innerHTML = `
+                    <div class="viewer-media" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+                        <video controls autoplay style="max-width:100%;max-height:80vh;background:#000;">
+                            <source src="${fileUrl}" type="video/${ext}">
+                        </video>
+                    </div>
+                `;
+                footer.innerHTML = `
+                    <button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button>
+                    <button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>
+                `;
+                
+            } else if (audioExts.includes(ext)) {
+                body.innerHTML = `
+                    <div class="viewer-media" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+                        <audio controls autoplay style="width:100%;max-width:600px;">
+                            <source src="${fileUrl}" type="audio/${ext}">
+                        </audio>
+                    </div>
+                `;
+                footer.innerHTML = `
+                    <button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button>
+                    <button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>
+                `;
+                
+            } else if (ext === 'pdf') {
+                body.innerHTML = `
+                    <div class="viewer-scrollable" style="width:100%;height:100%;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:10px;">
+                        <iframe src="${fileUrl}" style="width:100%;height:100%;min-height:500px;border:none;background:#FFF;"></iframe>
+                    </div>
+                `;
+                footer.innerHTML = `
+                    <button onclick="viewerDownload()"><i class="fas fa-download"></i> Download</button>
+                    <button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>
+                `;
+                
+            } else {
+                body.innerHTML = `
+                    <div style="text-align:center;padding:40px;color:var(--text-muted);">
+                        <i class="fas fa-file" style="font-size:3rem;color:var(--purple);"></i>
+                        <p style="margin-top:12px;font-size:16px;">${resource.name}</p>
+                        <p style="font-size:13px;color:var(--text-dim);">${resource.fileName || 'File'}</p>
+                        <p style="font-size:12px;color:var(--text-dim);margin-top:8px;">Click download to save the file</p>
+                        <button onclick="viewerDownload()" class="btn-primary" style="margin-top:16px;max-width:200px;padding:10px 24px;display:inline-flex;">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                        ${isCloudinary ? `<button onclick="window.open('${fileUrl}', '_blank')" class="btn-secondary" style="margin-top:8px;max-width:200px;padding:10px 24px;display:inline-flex;">
+                            <i class="fas fa-external-link-alt"></i> Open in New Tab
+                        </button>` : ''}
+                    </div>
+                `;
+                footer.innerHTML = `<button onclick="closeViewer()"><i class="fas fa-times"></i> Close</button>`;
+            }
+            
+        } catch (e) {
+            console.error('View error:', e);
+            showToast('❌ Error opening file: ' + e.message);
         }
-        
-        if (!resource.fileUrl) {
-            showToast('This resource has no file attached');
-            return;
-        }
-        
-        // Open the file in a new tab
-        window.open(resource.fileUrl, '_blank');
-        showToast('Opening file...');
     }
     
-    // Download Resource
-    async function downloadResource(id) {
-        const resources = await getFirebaseData('resources');
-        const resource = resources.find(r => r.id === id);
-        
-        if (!resource || !resource.fileUrl) {
-            showToast('No file available for download');
-            return;
-        }
-        
-        // Open the file in a new tab for download
-        window.open(resource.fileUrl, '_blank');
-        showToast('Opening file for download...');
+    // Close Viewer
+    function closeViewer() {
+        document.getElementById('viewerModal').classList.remove('active');
+        document.getElementById('viewerBody').innerHTML = `
+            <div style="text-align:center;padding:40px;color:var(--text-muted);">
+                <i class="fas fa-spinner fa-spin" style="font-size:3rem;"></i>
+                <p style="margin-top:20px;">Loading...</p>
+            </div>
+        `;
+        document.getElementById('viewerFooter').innerHTML = '';
+        currentViewerFile = null;
+        currentZoom = 1;
+        translateX = 0;
+        translateY = 0;
     }
     
-    // UPLOAD RESOURCE - Fixed
+    // Download from Viewer
+    function viewerDownload() {
+        if (currentViewerFile && currentViewerFile.fileUrl) {
+            const url = currentViewerFile.fileUrl;
+            const name = currentViewerFile.fileName || 'resource';
+            
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error('Download failed');
+                    return response.blob();
+                })
+                .then(blob => {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = name;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(link.href);
+                    showToast('✅ Download complete!');
+                })
+                .catch(() => {
+                    window.open(url, '_blank');
+                    showToast('📄 Opening file...');
+                });
+        } else {
+            showToast('❌ No file to download');
+        }
+    }
+    
+    // Zoom Functions for Images
+    function setupZoomAndPan() {
+        const container = document.querySelector('.viewer-zoomable');
+        const content = document.getElementById('viewerContent');
+        if (!container || !content) return;
+        
+        container.addEventListener('wheel', function(e) {
+            e.preventDefault();
+            if (e.deltaY < 0) zoomIn();
+            else zoomOut();
+        }, { passive: false });
+        
+        container.addEventListener('mousedown', function(e) {
+            if (currentZoom > 1) {
+                isDragging = true;
+                startX = e.clientX - translateX;
+                startY = e.clientY - translateY;
+                content.style.cursor = 'grabbing';
+            }
+        });
+        
+        window.addEventListener('mousemove', function(e) {
+            if (isDragging) {
+                translateX = e.clientX - startX;
+                translateY = e.clientY - startY;
+                updateTransform();
+            }
+        });
+        
+        window.addEventListener('mouseup', function() {
+            isDragging = false;
+            content.style.cursor = currentZoom > 1 ? 'grab' : 'default';
+        });
+        
+        let lastTouchDistance = 0;
+        container.addEventListener('touchstart', function(e) {
+            if (e.touches.length === 2) {
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                lastTouchDistance = getTouchDistance(touch1, touch2);
+            }
+        }, { passive: true });
+        
+        container.addEventListener('touchmove', function(e) {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                const distance = getTouchDistance(touch1, touch2);
+                if (lastTouchDistance > 0) {
+                    const delta = distance / lastTouchDistance;
+                    currentZoom = Math.min(Math.max(currentZoom * delta, 0.5), 5);
+                    updateTransform();
+                    const display = document.getElementById('zoomLevelDisplay');
+                    if (display) display.textContent = Math.round(currentZoom * 100) + '%';
+                }
+                lastTouchDistance = distance;
+            }
+        }, { passive: false });
+        
+        container.addEventListener('touchend', function() {
+            lastTouchDistance = 0;
+        }, { passive: true });
+    }
+    
+    function getTouchDistance(touch1, touch2) {
+        const dx = touch1.clientX - touch2.clientX;
+        const dy = touch1.clientY - touch2.clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+    
+    function updateTransform() {
+        const content = document.getElementById('viewerContent');
+        if (content) {
+            content.style.transform = `scale(${currentZoom}) translate(${translateX / currentZoom}px, ${translateY / currentZoom}px)`;
+        }
+    }
+    
+    function zoomIn() {
+        currentZoom = Math.min(currentZoom + 0.1, 5);
+        updateTransform();
+        const display = document.getElementById('zoomLevelDisplay');
+        if (display) display.textContent = Math.round(currentZoom * 100) + '%';
+    }
+    
+    function zoomOut() {
+        currentZoom = Math.max(currentZoom - 0.1, 0.5);
+        updateTransform();
+        const display = document.getElementById('zoomLevelDisplay');
+        if (display) display.textContent = Math.round(currentZoom * 100) + '%';
+    }
+    
+    function resetZoom() {
+        currentZoom = 1;
+        translateX = 0;
+        translateY = 0;
+        updateTransform();
+        const display = document.getElementById('zoomLevelDisplay');
+        if (display) display.textContent = '100%';
+        const content = document.getElementById('viewerContent');
+        if (content) content.style.cursor = 'default';
+    }
+    
+    // Upload Resource
     async function uploadResource() {
         const fileInput = document.getElementById('resourceFile');
         const name = document.getElementById('resourceName').value.trim();
@@ -1364,11 +1776,11 @@
         const type = document.getElementById('resourceType').value;
         
         if (!fileInput.files || fileInput.files.length === 0) { 
-            showToast('Please select a file'); 
+            showToast('❌ Please select a file'); 
             return; 
         }
         if (!name) { 
-            showToast('Please enter a resource name'); 
+            showToast('❌ Please enter a resource name'); 
             return; 
         }
         
@@ -1378,7 +1790,6 @@
         progress.innerHTML = '<span class="spinner"></span> Uploading to Cloudinary...';
         
         try {
-            // Upload to Cloudinary
             const formData = new FormData();
             formData.append('file', file);
             formData.append('upload_preset', window.UPLOAD_PRESET);
@@ -1390,11 +1801,14 @@
             
             const data = await response.json();
             
-            if (!data.secure_url) {
-                throw new Error('Upload failed: ' + (data.error?.message || 'Unknown error'));
+            if (!response.ok) {
+                throw new Error(data.error?.message || 'Upload failed');
             }
             
-            // Save to Firestore
+            if (!data.secure_url) {
+                throw new Error('No URL returned from Cloudinary');
+            }
+            
             await addFirebaseData('resources', {
                 name: name,
                 subject: subject,
